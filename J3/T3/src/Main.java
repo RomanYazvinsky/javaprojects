@@ -6,13 +6,8 @@ public class Main {
 		CratevaReligiosa cratevaReligiosa = new CratevaReligiosa();
 		Rose rose = new Rose();
 		Bouquet bouquet = new Bouquet("For Aliaksandra", Romashka, cratevaReligiosa, rose, new Cactus());
-		String[] bouquetFlowers = bouquet.getFlowerNames();
-		System.out.println("Bouquet name: " + bouquet.getName());
-		System.out.println("Bouquet consists of: ");
-		for (String flower : bouquetFlowers) {
-			System.out.println(flower + " ");
-		}
-		System.out.println();
-		System.out.println("Bouquet price: " + bouquet.getPrice());
+		Printer.printBouquetName(bouquet.getName());
+		Printer.printComposition(bouquet.getFlowerNames());
+		Printer.printPrice(bouquet.getPrice());
 	}
 }
