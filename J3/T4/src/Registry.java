@@ -131,8 +131,8 @@ public class Registry {
 		if (ticketIndex < 0) {
 			return false;
 		}
-		tickets[ticketIndex] = tickets[ticketCount-1];
-		tickets[ticketCount-1] = null;
+		tickets[ticketIndex] = tickets[ticketCount - 1];
+		tickets[ticketCount - 1] = null;
 		ticketCount--;
 		return true;
 	}
@@ -176,12 +176,15 @@ public class Registry {
 		if (isTicketsEmpty()) {
 			return null;
 		}
-		String[] patientsToDoctors = new String[ticketCount];
+		String[] result = new String[ticketCount];
+		StringBuilder patientsToDoctors = new StringBuilder();
 		for (int i = 0; i < ticketCount; i++) {
-			patientsToDoctors[i] = (patients[tickets[i].getPatientIndex()].getName()).concat(" to ")
-					.concat(doctors[tickets[i].getDoctorIndex()].getName());
+			patientsToDoctors.append(patients[tickets[i].getPatientIndex()].getName()).append(" to ")
+					.append(doctors[tickets[i].getDoctorIndex()].getName());
+			result[i] = patientsToDoctors.toString();
+			patientsToDoctors.delete(0, patientsToDoctors.length());
 		}
-		return patientsToDoctors;
+		return result;
 	}
 
 	public int getDoctorCount() {
