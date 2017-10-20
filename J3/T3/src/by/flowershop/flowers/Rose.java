@@ -5,6 +5,6 @@ import by.flowershop.CustomFlower;
 
 public class Rose extends CustomFlower {
 	public Rose() {
-		super("Rose", 40, Colour.RED);
+		super("Rose",new Colour[] {Colour.RED}, 40);
 	}
 }

@@ -5,6 +5,6 @@ import by.flowershop.CustomFlower;
 
 public class RanunculusGlaberrimus extends CustomFlower {
 	public RanunculusGlaberrimus() {
-		super("Ranunculus Glaberrimus", 35, Colour.YELLOW);
+		super("Ranunculus Glaberrimus",new Colour[] { Colour.YELLOW}, 35);
 	}
 }

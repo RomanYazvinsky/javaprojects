@@ -9,10 +9,8 @@ public class Main {
 	}
 
 	private static Bouquet createBouquet() {
-		CustomFlower Romashka = new CustomFlower("Romashka", 99999, Colour.WHITE, Colour.YELLOW);
+		CustomFlower Romashka = new CustomFlower("Romashka", new Colour[] {Colour.WHITE, Colour.YELLOW}, 99999);
 		Rose rose = new Rose();
-		// Bouquet bouquet = new Bouquet(new CustomFlower[]{Romashka, cratevaReligiosa,
-		// rose, new Cactus()} );
 		Bouquet bouquet = new Bouquet();
 		bouquet.addFlower(new Cactus());
 		bouquet.addFlower(Romashka);

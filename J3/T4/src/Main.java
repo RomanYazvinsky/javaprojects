@@ -10,32 +10,21 @@ public class Main {
 		Patient roma = new Patient("Roma");
 		Patient ivan = new Patient("Ivan");
 		Patient ivan4 = new Patient("Ivan IV The Terrible");
-
-		Handler.addDoctor(registry, lobanov);
-		Handler.printAllDoctors(registry);
-		Handler.printAllPatients(registry); // patients are not added
-		Handler.addPatient(registry, roma);
-		Handler.printAllPatients(registry);
-		Handler.addTicket(registry, roma, john); // john is not registred as doctor
-		Handler.addTicket(registry, roma, lobanov);
-		Handler.addPatient(registry, ivan);
-		Handler.addTicket(registry, ivan, lobanov);
-		Handler.addTicket(registry, roma, lobanov); // the same ticket, as first
-		Handler.printAllTickets(registry);
-		Handler.deleteTicket(registry, roma, lobanov); // deleting
-		Handler.printAllTickets(registry);
-		Handler.deleteTicket(registry, roma, lobanov);
-		Handler.deleteTicket(registry, ivan, lobanov);
-		Handler.printAllTickets(registry);
-		Handler.addTicket(registry, ivan, lobanov);
-		Handler.printAllTickets(registry);
-		Handler.deleteTicket(registry, ivan, lobanov);
-		Handler.printAllTickets(registry);
 		
-		
-		Handler.addTicket(registry, roma, lobanov);
-		Handler.addTicket(registry, ivan, lobanov);
-		Handler.printPatientOfDoctorCount(registry, lobanov);
+		Interface.addDoctor(registry, lobanov);
+	//	Interface.printAllDoctors(registry);
+		Interface.addPatient(registry, roma);
+		Interface.addPatient(registry, ivan4);
+		Interface.deleteTicket(registry, roma, lobanov);
+		Interface.addTicket(registry, roma, lobanov);
+		Interface.addTicket(registry, ivan4, lobanov);
+		Interface.addTicket(registry, roma, lobanov);
+		Interface.deleteTicket(registry, roma, lobanov);
+		Interface.deleteTicket(registry, roma, lobanov);
+		Interface.printAllTickets(registry);
+		Interface.printAllDoctors(registry);
+		Interface.printAllPatients(registry);
+		Interface.printPatientOfDoctorCount(registry, lobanov);
 
 	}
 }
