@@ -11,12 +11,13 @@ public class Interface {
 	
 	public static void addPatient(Registry registry, Patient patient) {
 		registry.addPatient(patient);
-		System.out.println(patient.getName().concat(" successfully registred as patient"));
+		System.out.println(patient.getName() + (" successfully registred as patient"));
 	}
 
 	public static void addDoctor(Registry registry, Doctor doctor) {
 		registry.addDoctor(doctor);
-		System.out.println(doctor.getName().concat(" successfully registred as doctor"));
+		StringBuilder result = new StringBuilder();
+		System.out.println(result.append(doctor.getName()).append(" successfully registred as doctor"));
 	}
 	
 	public static void addTicket(Registry registry, Patient patient, Doctor doctor) {
@@ -40,15 +41,16 @@ public class Interface {
 	}
 	
 	public static void printPatientOfDoctorCount(Registry registry, Doctor doctor) {
-		System.out.println("Doctor ".concat(doctor.getName()).concat(" has ")
-				.concat(Integer.toString(registry.findPatientsOfDoctor(doctor))).concat(" patients"));
+		StringBuilder result = new StringBuilder();
+		System.out.println(result.append("Doctor ").append(doctor.getName()).append(" has ")
+				.append(Integer.toString(registry.findPatientsOfDoctor(doctor))).append(" patients"));
 	}
 
 	public static void printNumberOfDoctors(Registry registry) {
-		System.out.println("Number of doctors is: ".concat(Integer.toString(registry.getDoctorCount())));
+		System.out.println("Number of doctors is: " + (Integer.toString(registry.getDoctorCount())));
 	}
 
 	public static void printNumberOfPatients(Registry registry) {
-		System.out.println("Number of patients is: ".concat(Integer.toString(registry.getPatientCount())));
+		System.out.println("Number of patients is: " + (Integer.toString(registry.getPatientCount())));
 	}
 }

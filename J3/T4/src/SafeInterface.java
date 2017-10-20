@@ -27,17 +27,18 @@ public class SafeInterface {
 
 	public static String addTicketResult(Registry registry, Patient patient, Doctor doctor) {
 		int result = registry.addTicket(patient, doctor);
+		StringBuilder stringResult = new StringBuilder();
 		if (result > 0) {
-			return (patient.getName().concat(" is succesfully registred to ").concat(doctor.getName()));
+			return stringResult.append(patient.getName()).append(" is succesfully registred to ").append(doctor.getName()).toString();
 		}
 		if (result == 0) {
 			return ("This ticket is already registred");
 		}
 		if (result == -1) {
-			return ("Patient ".concat(patient.getName()).concat(" isn't registred"));
+			return stringResult.append("Patient ").append(patient.getName()).append(" isn't registred").toString();
 		}
 		if (result == -2) {
-			return ("Doctor ".concat(doctor.getName()).concat(" isn't registred"));
+			return stringResult.append("Doctor ").append(doctor.getName()).append(" isn't registred").toString();
 		}
 		return ("No patients or doctors registred");
 	}
