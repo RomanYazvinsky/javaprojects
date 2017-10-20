@@ -5,12 +5,6 @@ public class CustomFlower {
 	private int price;
 	private String flowerName;
 
-	public CustomFlower(String flowerName, int price, Colour... colours) {
-		this.flowerName = flowerName;
-		this.price = price;
-		this.colours = colours;
-	}
-
 	public CustomFlower(String flowerName, Colour[] colours, int price) {
 		this.flowerName = flowerName;
 		this.price = price;

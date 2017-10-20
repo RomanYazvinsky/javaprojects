@@ -5,24 +5,14 @@ public class Bouquet {
 	private int flowerCount = 0;
 	private int price = 0;
 
-	/*
-	 * public Bouquet( CustomFlower...flowers) { this.flowers = flowers; for
-	 * (CustomFlower flower:flowers) { price += flower.getPrice(); } }
-	 */
 	public Bouquet() {
-		flowers = new CustomFlower[1];
-	}
-
-	public Bouquet(CustomFlower[] flowers) {
-		this.flowers = flowers;
-		calculatePrice();
-		flowerCount = flowers.length;
+		flowers = new CustomFlower[6];
 	}
 
 	private void calculatePrice() {
 		price = 0;
-		for (CustomFlower flower : flowers) {
-			price += flower.getPrice();
+		for (int i = 0; i < flowerCount; i++) {
+			price += flowers[i].getPrice();
 		}
 	}
 
@@ -31,22 +21,22 @@ public class Bouquet {
 	}
 
 	public String[] getFlowerNames() {
-		String[] flowerNames = new String[flowers.length];
-		for (int i = 0; i < flowers.length; i++) {
+		String[] flowerNames = new String[flowerCount];
+		for (int i = 0; i < flowerCount; i++) {
 			flowerNames[i] = flowers[i].getFlowerName();
 		}
 		return flowerNames;
 	}
 
 	public void addFlower(CustomFlower flower) {
-		if (flowerCount > 0) {
-			CustomFlower[] newFlowers = new CustomFlower[flowerCount + 1];
+		if (flowerCount == flowers.length) {
+			CustomFlower[] newFlowers = new CustomFlower[flowerCount + flowerCount / 3];
 			System.arraycopy(flowers, 0, newFlowers, 0, flowerCount);
 			newFlowers[flowerCount++] = flower;
 			flowers = newFlowers;
 		} else {
+			flowers[flowerCount] = flower;
 			flowerCount++;
-			flowers[0] = flower;
 		}
 		calculatePrice();
 	}

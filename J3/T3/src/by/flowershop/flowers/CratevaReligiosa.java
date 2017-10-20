@@ -5,6 +5,6 @@ import by.flowershop.CustomFlower;
 
 public class CratevaReligiosa extends CustomFlower {
 	public CratevaReligiosa() {
-		super("Crateva Religiosa", 15, Colour.WHITE, Colour.YELLOW);
+		super("Crateva Religiosa",new Colour[] {Colour.WHITE, Colour.YELLOW}, 15);
 	}
 }
