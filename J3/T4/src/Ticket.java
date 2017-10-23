@@ -1,28 +1,28 @@
 
 public class Ticket {
-	private int patientIndex;
-	private int doctorIndex;
+	private Doctor doctor;
+	private Patient patient;
 
-	public Ticket(int patientIndex, int doctorIndex) {
-		this.patientIndex = patientIndex;
-		this.doctorIndex = doctorIndex;
+	public Ticket(Patient patient, Doctor doctor) {
+		this.patient = patient;
+		this.doctor = doctor;
 
 	}
 
-	public int getPatientIndex() {
-		return patientIndex;
+	public Doctor getDoctor() {
+		return doctor;
 	}
 
-	public int getDoctorIndex() {
-		return doctorIndex;
+	public Patient getPatient() {
+		return patient;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + doctorIndex;
-		result = prime * result + patientIndex;
+		result = prime * result + ((doctor == null) ? 0 : doctor.hashCode());
+		result = prime * result + ((patient == null) ? 0 : patient.hashCode());
 		return result;
 	}
 
@@ -35,10 +35,17 @@ public class Ticket {
 		if (getClass() != obj.getClass())
 			return false;
 		Ticket other = (Ticket) obj;
-		if (doctorIndex != other.doctorIndex)
+		if (doctor == null) {
+			if (other.doctor != null)
+				return false;
+		} else if (!doctor.equals(other.doctor))
 			return false;
-		if (patientIndex != other.patientIndex)
+		if (patient == null) {
+			if (other.patient != null)
+				return false;
+		} else if (!patient.equals(other.patient))
 			return false;
 		return true;
 	}
+
 }
