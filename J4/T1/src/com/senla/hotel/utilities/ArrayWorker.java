@@ -45,18 +45,15 @@ public class ArrayWorker {
 	}
 
 	public static Order[] castToOrder(AEntity[] entities) {
-		//return Arrays.copyOf(entities, entities.length, Order[].class);
 		return (Order[]) entities;
 	}
 
 	public static Room[] castToRoom(AEntity[] entities) {
-	//	return Arrays.copyOf(entities, entities.length, Room[].class);
 		return (Room[]) entities;
 		
 	}
 
 	public static Client[] castToClient(AEntity[] entities) {
-	//	return Arrays.copyOf(entities, entities.length, Client[].class);
 		return (Client[]) entities;
 	}
 	

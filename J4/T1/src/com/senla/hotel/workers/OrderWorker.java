@@ -8,11 +8,12 @@ import com.senla.hotel.comparators.ServiceComparator;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
+import com.senla.hotel.entities.RoomStatus;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.enums.RoomStatus;
 import com.senla.hotel.managers.ClientManager;
 import com.senla.hotel.managers.OrderManager;
 import com.senla.hotel.managers.RoomManager;
+import com.senla.hotel.managers.ServiceManager;
 import com.senla.hotel.utilities.ArrayWorker;
 
 public class OrderWorker {
@@ -21,13 +22,14 @@ public class OrderWorker {
 	private RoomManager roomManager;
 	private OrderComparator orderComparator;
 	private ServiceComparator serviceComparator;
-
+	private ServiceManager serviceManager;
 	public OrderWorker() {
 		orderManager = new OrderManager();
 		clientManager = new ClientManager();
 		roomManager = new RoomManager();
 		orderComparator = new OrderComparator();
 		serviceComparator = new ServiceComparator();
+		serviceManager = new ServiceManager();
 	}
 
 	public Boolean add(Order order) {
@@ -35,6 +37,13 @@ public class OrderWorker {
 		if (room == null || room.getStatus().equals(RoomStatus.USED) || room.getStatus().equals(RoomStatus.ONSERVICE)
 				|| clientManager.getClientByID(order.getClientID()) == null) {
 			return false;
+		}
+		if (order.getServices() != null) {
+			for(Service service : order.getServices()) {
+				if (service != null && serviceManager.getServiceByID(service.getID()) == null) {
+					return false;
+				}
+			}
 		}
 		Boolean result = orderManager.add(order);
 		if (result) {
@@ -235,7 +244,14 @@ public class OrderWorker {
 
 	public Integer getPriceForServices(Order order) {
 		Integer price = 0;
-		for (Service service : order.getServices()) {
+		if (order == null) {
+			return 0;
+		}
+		Service[] services = order.getServices();
+		if (services == null) {
+			return 0;
+		}
+		for (Service service : services ) {
 			if (service != null) {
 				price += service.getPrice();
 			}

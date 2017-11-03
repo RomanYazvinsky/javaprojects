@@ -1,2 +1,2 @@
-java -jar J4.jar orders.txt clients.txt rooms.txt services.txt
+java -jar Hotel.jar res/orders.txt res/clients.txt res/rooms.txt res/services.txt
 pause
