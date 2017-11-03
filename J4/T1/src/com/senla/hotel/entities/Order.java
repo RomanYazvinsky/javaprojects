@@ -13,9 +13,9 @@ public class Order extends AEntity {
 	private GregorianCalendar orderTo;
 	private Service[] services;
 
-	public Order(Integer roomID, Integer clientID, GregorianCalendar orderFrom, GregorianCalendar orderTo,
+	public Order(Integer id, Integer roomID, Integer clientID, GregorianCalendar orderFrom, GregorianCalendar orderTo,
 			Service[] services) {
-		super(IDGenerator.createID(IDGenerator.orderIDs));
+		super(id);
 		this.roomID = roomID;
 		this.clientID = clientID;
 		if (orderFrom.before(orderTo)) {
@@ -26,24 +26,27 @@ public class Order extends AEntity {
 			this.orderTo = orderFrom;
 		}
 		this.services = services;
+		IDGenerator.addOrderID(id);
 	}
 
 	public Order(String data) {
 		super();
 		String[] orderData = data.split(" ");
-		services = new Service[orderData.length - 5];
-		id = Integer.parseInt(orderData[0]);
-		roomID = Integer.parseInt(orderData[1]);
-		clientID = Integer.parseInt(orderData[2]);
-		orderFrom = new GregorianCalendar();
-		orderFrom.setTime(new Date(Long.parseLong(orderData[3])));
-		orderTo = new GregorianCalendar();
-		orderTo.setTime(new Date(Long.parseLong(orderData[4])));
-		if (orderData.length > 7)
-			for (int i = 0; i < orderData.length - 5;) {
-				services[i] = new Service(
-						orderData[i++ + 5]+ " " + orderData[i++ + 5]+ " " + orderData[i++ + 5]+ " "+ orderData[i++ + 5]);
-			}
+		if (orderData.length > 4) {
+			services = new Service[orderData.length - 5];
+			id = Integer.parseInt(orderData[0]);
+			roomID = Integer.parseInt(orderData[1]);
+			clientID = Integer.parseInt(orderData[2]);
+			orderFrom = new GregorianCalendar();
+			orderFrom.setTime(new Date(Long.parseLong(orderData[3])));
+			orderTo = new GregorianCalendar();
+			orderTo.setTime(new Date(Long.parseLong(orderData[4])));
+			if (orderData.length > 7)
+				for (int i = 0; i < orderData.length - 5;) {
+					services[i] = new Service(orderData[i++ + 5] + " " + orderData[i++ + 5] + " " + orderData[i++ + 5]
+							+ " " + orderData[i++ + 5]);
+				}
+		}
 	}
 
 	public Service[] getServices() {
@@ -53,7 +56,7 @@ public class Order extends AEntity {
 	public void addService(Service[] additionalServices) {
 		services = ArrayWorker.addUp(services, additionalServices);
 	}
-	
+
 	public Integer getServiceCount() {
 		return ArrayWorker.getCount(services);
 	}
@@ -122,7 +125,7 @@ public class Order extends AEntity {
 				return false;
 		} else if (!clientID.equals(other.clientID))
 			return false;
-		if (compareDates((Order)obj )!= 0){
+		if (compareDates((Order) obj) != 0) {
 			return false;
 		}
 		if (roomID == null) {

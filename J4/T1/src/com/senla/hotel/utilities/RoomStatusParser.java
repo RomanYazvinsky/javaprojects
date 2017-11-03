@@ -1,6 +1,6 @@
 package com.senla.hotel.utilities;
 
-import com.senla.hotel.enums.RoomStatus;
+import com.senla.hotel.entities.RoomStatus;
 
 public class RoomStatusParser {
 	public static RoomStatus define(String state) {

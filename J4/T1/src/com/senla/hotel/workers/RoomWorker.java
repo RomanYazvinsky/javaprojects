@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.senla.hotel.comparators.RoomComparator;
 import com.senla.hotel.entities.Room;
-import com.senla.hotel.enums.RoomStatus;
+import com.senla.hotel.entities.RoomStatus;
 import com.senla.hotel.managers.RoomManager;
 import com.senla.hotel.utilities.ArrayWorker;
 

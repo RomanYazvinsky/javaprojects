@@ -12,10 +12,10 @@ public class OrderManager extends AEntityManager {
 	public OrderManager() {
 		super();
 		if (OrderManager.orders == null) {
-			orders = new Order[6];
-			entities = OrderManager.orders;
+			entities = new Order[6];
+			OrderManager.orders = (Order[]) entities;
 		} else {
-			OrderManager.orders = ArrayWorker.castToOrder(entities);
+			entities = OrderManager.orders;
 		}
 	}
 

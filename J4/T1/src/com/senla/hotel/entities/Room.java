@@ -1,6 +1,5 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.enums.RoomStatus;
 import com.senla.hotel.utilities.ArrayWorker;
 import com.senla.hotel.utilities.IDGenerator;
 import com.senla.hotel.utilities.RoomStatusParser;
@@ -12,8 +11,8 @@ public class Room extends AEntity {
 	private Integer pricePerDay;
 	private Integer[] clientIDs;
 
-	public Room(int capacity, int star, RoomStatus status, int pricePerDay) {
-		super(IDGenerator.createID(IDGenerator.roomIDs));
+	public Room(Integer id, int capacity, int star, RoomStatus status, int pricePerDay) {
+		super(id);
 		if (capacity <= 0) {
 			this.capacity = 1;
 		} else {
@@ -31,23 +30,26 @@ public class Room extends AEntity {
 			this.pricePerDay = pricePerDay;
 		}
 		clientIDs = new Integer[capacity];
+		IDGenerator.addRoomID(id);
 	}
 
 	public Room(String data) {
 		super();
 		String[] roomData = data.split(" ");
-		id = Integer.parseInt(roomData[0]);
-		star = Integer.parseInt(roomData[2]);
-		capacity = Integer.parseInt(roomData[1]);
-		status = RoomStatusParser.define(roomData[3]);
-		pricePerDay = Integer.parseInt(roomData[4]);
-		if (roomData.length > 5) {
-			clientIDs = new Integer[capacity];
-			for (int i = 0; i < roomData.length - 5; i++) {
-				if (roomData[i + 5].compareTo("null") == 0) {
-					clientIDs[i] = null;
-				}else {
-					clientIDs[i] = Integer.parseInt(roomData[i + 5]);
+		if (roomData.length > 4) {
+			id = Integer.parseInt(roomData[0]);
+			star = Integer.parseInt(roomData[2]);
+			capacity = Integer.parseInt(roomData[1]);
+			status = RoomStatusParser.define(roomData[3]);
+			pricePerDay = Integer.parseInt(roomData[4]);
+			if (roomData.length > 5) {
+				clientIDs = new Integer[capacity];
+				for (int i = 0; i < roomData.length - 5; i++) {
+					if (roomData[i + 5].compareTo("null") == 0) {
+						clientIDs[i] = null;
+					} else {
+						clientIDs[i] = Integer.parseInt(roomData[i + 5]);
+					}
 				}
 			}
 		}

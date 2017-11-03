@@ -7,9 +7,9 @@ import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.enums.OrderSortType;
-import com.senla.hotel.enums.RoomSortType;
-import com.senla.hotel.enums.ServiceSortType;
+import com.senla.hotel.sorttypes.OrderSortType;
+import com.senla.hotel.sorttypes.RoomSortType;
+import com.senla.hotel.sorttypes.ServiceSortType;
 import com.senla.hotel.utilities.Saver;
 import com.senla.hotel.workers.ClientWorker;
 import com.senla.hotel.workers.OrderWorker;
@@ -25,6 +25,9 @@ public class Facade {
 	private String[] paths;
 
 	public Facade(String[] paths, GregorianCalendar now) {
+		if (paths[0] == null) {
+			paths = new String[] { "orders.txt", "clients.txt", "rooms.txt", "services.txt" };
+		}
 		this.now = now;
 		roomWorker = new RoomWorker();
 		clientWorker = new ClientWorker();
@@ -38,144 +41,193 @@ public class Facade {
 	}
 
 	public Boolean addClient(Client client) {
-		return clientWorker.add(client);
+		Boolean result = clientWorker.add(client);
+		Printer.isSuccessful(result);
+		return result;
 	}
 
 	public Boolean addOrder(Order order) {
-		return orderWorker.add(order);
+		Boolean result = orderWorker.add(order);
+		Printer.isSuccessful(result);
+		return result;
 	}
 
 	public Boolean addRoom(Room room) {
-		return roomWorker.add(room);
+		Boolean result = roomWorker.add(room);
+		Printer.isSuccessful(result);
+		return result;
 	}
 
 	public Boolean addService(Service service) {
-		return serviceWorker.add(service);
+		Boolean result = serviceWorker.add(service);
+		Printer.isSuccessful(result);
+		return result;
 	}
-	
+
 	public Room getRoomByID(Integer roomID) {
-		return roomWorker.getRoomByID(roomID);
+		Room room = roomWorker.getRoomByID(roomID);
+		Printer.printRoom(room);
+		return room;
 	}
-	
+
 	public Client getClientByID(Integer clientID) {
-		return clientWorker.getClientByID(clientID);
+		Client client = clientWorker.getClientByID(clientID);
+		Printer.printClient(client);
+		return client;
 	}
-	
+
 	public Order getOrderByID(Integer orderID) {
-		return orderWorker.getOrderByID(orderID);
+		Order order = orderWorker.getOrderByID(orderID);
+		Printer.printOrder(order);
+		return order;
 	}
-	
+
 	public Service getServiceByID(Integer serviceID) {
-		return serviceWorker.getServiceByID(serviceID);
+		Service service = serviceWorker.getServiceByID(serviceID);
+		Printer.printService(service);
+		return service;
 	}
 
 	public Room[] getRooms(RoomSortType sortType, Boolean isFree) {
+		Room[] rooms;
 		switch (sortType) {
-		case NO: {
-			if (isFree) {
-				return roomWorker.getFreeRooms();
-			} else {
-				return roomWorker.getRooms();
-			}
-		}
 		case CAPACITY: {
-			return roomWorker.getSortedByCapacity(isFree);
-		}
-		case PRICE: {
-			return roomWorker.getSortedByPrice(isFree);
-		}
-		case STARS: {
-			return roomWorker.getSortedByStar(isFree);
-		}
-		default: {
+			rooms = roomWorker.getSortedByCapacity(isFree);
 			break;
 		}
+		case PRICE: {
+			rooms = roomWorker.getSortedByPrice(isFree);
+			break;
 		}
-		return roomWorker.getRooms();
+		case STARS: {
+			rooms = roomWorker.getSortedByStar(isFree);
+			break;
+		}
+		default: {
+			if (isFree) {
+				rooms = roomWorker.getFreeRooms();
+				break;
+			} else {
+				rooms = roomWorker.getRooms();
+				break;
+			}
+		}
+		}
+		Printer.printEntityArray(rooms);
+		return rooms;
 	}
 
 	public Order[] getOrders(OrderSortType sortType) {
+		Order[] orders;
 		switch (sortType) {
-		case NO: {
-			return orderWorker.getOrders();
-		}
 		case DATE: {
-			return orderWorker.getOrderSortedByDate();
-		}
-		case NAME: {
-			return orderWorker.getOrdersSortedByClientName();
-		}
-		default:
+			orders = orderWorker.getOrderSortedByDate();
 			break;
 		}
-		return orderWorker.getOrders();
+		case NAME: {
+			orders = orderWorker.getOrdersSortedByClientName();
+			break;
+		}
+		default:
+			orders = orderWorker.getOrders();
+			break;
+		}
+		Printer.printOrderArray(orders);
+		return orders;
 	}
 
 	public Client[] getClients() {
-		return clientWorker.getClients();
+		Client[] clients = clientWorker.getClients();
+		Printer.printEntityArray(clients);
+		return clients;
 	}
 
 	public Integer getFreeRoomsCount() {
-		return roomWorker.getFreeRoomsCount();
+		Integer result = roomWorker.getFreeRoomsCount();
+		Printer.print(result.toString());
+		return result;
 	}
 
 	public Integer getActualClientCount() {
-		return orderWorker.getActualClientCount(now);
+		Integer result = orderWorker.getActualClientCount(now);
+		Printer.print(result.toString());
+		return result;
 	}
 
 	public Room[] getFreeRoomByDate(GregorianCalendar date) {
-		return orderWorker.getFreeRoomByDate(date);
+		Room[] rooms = orderWorker.getFreeRoomByDate(date);
+		Printer.printEntityArray(rooms);
+		return rooms;
 	}
 
 	public Integer getPriceForRoom(Client client) {
-		return orderWorker.getPriceForRoom(client, now);
+		Integer result = orderWorker.getPriceForRoom(client, now);
+		Printer.print(result.toString());
+		return result;
 	}
 
 	public Order[] getLastOrdersOfRoom(Room room, Integer clientCount) {
-
-		return orderWorker.getLastClients(room, clientCount);
+		Order[] orders = orderWorker.getLastClients(room, clientCount);
+		Printer.printOrderArray(orders);
+		return orders;
 	}
 
 	public Service[] getServicesOfClient(Client client, ServiceSortType sortType) {
+		Service[] services;
 		switch (sortType) {
-		case NO: {
-			return orderWorker.getServicesOfClient(client);
-		}
 		case DATE: {
-			return orderWorker.getServicesSortedByDate(client);
+			services = orderWorker.getServicesSortedByDate(client);
+			break;
+
 		}
 		case NAME: {
-			return orderWorker.getServicesSortedByName(client);
+			services = orderWorker.getServicesSortedByName(client);
+			break;
+
 		}
 		case PRICE: {
-			return orderWorker.getServicesSortedByPrice(client);
+			services = orderWorker.getServicesSortedByPrice(client);
+			break;
+
 		}
 		default:
+			services = orderWorker.getServicesOfClient(client);
 			break;
 		}
-		return orderWorker.getServicesOfClient(client);
+		Printer.printServiceArray(services);
+		return services;
 	}
 
 	public Order[] getActualOrder() {
-		return orderWorker.getActualOrders(now);
+		Order[] orders = orderWorker.getActualOrders(now);
+		Printer.printOrderArray(orders);
+		return orders;
 	}
-	
+
 	public Service[] getServices() {
-		return serviceWorker.getServices();
+		Service[] services = serviceWorker.getServices();
+		Printer.printServiceArray(services);
+		return services;
 	}
-	
+
 	public Boolean closeOrder(Order order) {
-		return orderWorker.closeOrder(order, now);
+		Boolean result = orderWorker.closeOrder(order, now);
+		Printer.isSuccessful(result);
+		return result;
 	}
-	
+
 	public Integer getPriceForServices(Order order) {
-		return orderWorker.getPriceForServices(order);
+		Integer result = orderWorker.getPriceForServices(order);
+		Printer.print(result.toString());
+		return result;
 	}
-	
+
 	public Order getActualOrder(Client client) {
-		return orderWorker.getActualOrder(client, now);
+		Order order = orderWorker.getActualOrder(client, now);
+		Printer.printOrder(order);
+		return order;
 	}
-	
+
 	public void loadServices() {
 		serviceWorker.load(new TextFileWorker(paths[3]).readFromFile());
 	}
@@ -214,17 +266,17 @@ public class Facade {
 	}
 
 	public void saveServices() {
-		Saver.save(paths[3],serviceWorker.makeWriteableArray());
+		Saver.save(paths[3], serviceWorker.makeWriteableArray());
 	}
 
 	public void reset() {
-		Saver.save(paths[0], new String[] {""});
-		Saver.save(paths[1], new String[] {""});
-		Saver.save(paths[2], new String[] {""});
-		Saver.save(paths[3], new String[] {""});
+		Saver.save(paths[0], new String[] { "" });
+		Saver.save(paths[1], new String[] { "" });
+		Saver.save(paths[2], new String[] { "" });
+		Saver.save(paths[3], new String[] { "" });
 
 	}
-	
+
 	public void save() {
 		saveOrders();
 		saveClients();

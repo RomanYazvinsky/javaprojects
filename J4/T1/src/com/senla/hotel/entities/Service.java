@@ -10,8 +10,8 @@ public class Service extends AEntity {
 	private String name;
 	private GregorianCalendar date;
 
-	public Service(int price, String name, GregorianCalendar date) {
-		super(IDGenerator.createID(IDGenerator.serviceIDs));
+	public Service(Integer id, int price, String name, GregorianCalendar date) {
+		super(id);
 		if (price <= 0) {
 			this.price = 1;
 		} else {
@@ -24,16 +24,19 @@ public class Service extends AEntity {
 			this.name = name;
 		}
 		this.date = date;
+		IDGenerator.addServiceID(id);
 	}
 
 	public Service(String data) {
 		super();
 		String[] serviceData = data.split(" ");
-		id = Integer.parseInt(serviceData[0]);
-		price = Integer.parseInt(serviceData[1]);
-		name = serviceData[2];
-		date = new GregorianCalendar();
-		date.setTime(new Date(Long.parseLong(serviceData[3])));
+		if (serviceData.length == 4) {
+			id = Integer.parseInt(serviceData[0]);
+			price = Integer.parseInt(serviceData[1]);
+			name = serviceData[2];
+			date = new GregorianCalendar();
+			date.setTime(new Date(Long.parseLong(serviceData[3])));
+		}
 	}
 
 	public GregorianCalendar getDate() {

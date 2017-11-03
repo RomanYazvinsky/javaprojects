@@ -5,20 +5,23 @@ import com.senla.hotel.utilities.IDGenerator;
 public class Client extends AEntity {
 	private String name;
 
-	public Client(String name) {
-		super(IDGenerator.createID(IDGenerator.clientIDs));
+	public Client(Integer id, String name) {
+		super(id);
 		if (name.contains(" ")) {
 			this.name = name.split(" ")[0];
-		}else {
+		} else {
 			this.name = name;
 		}
+		IDGenerator.addClientID(id);
 	}
-	
-	public Client(Boolean isLoaded, String data) {
+
+	public Client(String data) {
 		super();
 		String[] clientData = data.split(" ");
-		name = clientData[0];
-		id = Integer.parseInt(clientData[1]);
+		if (clientData.length == 2) {
+			name = clientData[0];
+			id = Integer.parseInt(clientData[1]);
+		}
 	}
 
 	public String getName() {
