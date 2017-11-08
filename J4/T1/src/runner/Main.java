@@ -2,12 +2,13 @@ package runner;
 
 import java.util.GregorianCalendar;
 
-import com.senla.hotel.Facade;
 import com.senla.hotel.entities.RoomStatus;
+import com.senla.hotel.facade.Facade;
 import com.senla.hotel.sorttypes.OrderSortType;
 import com.senla.hotel.sorttypes.RoomSortType;
 import com.senla.hotel.sorttypes.ServiceSortType;
-import com.senla.hotel.utilities.DateCreator;
+
+import utilities.DateCreator;
 
 public class Main {
 	public static void main(String[] args) {

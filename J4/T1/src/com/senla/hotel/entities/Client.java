@@ -1,7 +1,5 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.utilities.IDGenerator;
-
 public class Client extends AEntity {
 	private String name;
 
@@ -12,7 +10,6 @@ public class Client extends AEntity {
 		} else {
 			this.name = name;
 		}
-		IDGenerator.addClientID(id);
 	}
 
 	public Client(String data) {
@@ -26,6 +23,12 @@ public class Client extends AEntity {
 
 	public String getName() {
 		return name;
+	}
+	
+	public void setString(String name) {
+		if (!name.isEmpty()) {
+			this.name = name;
+		}
 	}
 
 	@Override
@@ -54,5 +57,6 @@ public class Client extends AEntity {
 	public String toString() {
 		return name + " " + id;
 	}
-
+	
+	
 }

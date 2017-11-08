@@ -1,8 +1,0 @@
-roma 0
-vasya 1
-igor 2
-Benedict 3
-wow 4
-ahhahaha 5
-ha 6
-as 7

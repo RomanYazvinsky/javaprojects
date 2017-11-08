@@ -1,4 +1,4 @@
-package com.senla.hotel;
+package com.senla.hotel.facade;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -79,7 +79,7 @@ public class Printer {
 
 	public static void isSuccessful(Boolean result) {
 		if (result) {
-			System.out.println("Succesful");
+			System.out.println("Successfull");
 		} else {
 			System.out.println("Error");
 		}
@@ -105,8 +105,9 @@ public class Printer {
 		if (service == null) {
 			System.out.println("This service does not exist");
 		} else {
-			System.out.println(service.getID() + " " + service.getName() + " " + service.getPrice() + " ");
+			System.out.print(service.getID() + " " + service.getName() + " " + service.getPrice() + " ");
 			printDate(service.getDate());
+			System.out.println();
 		}
 	}
 }

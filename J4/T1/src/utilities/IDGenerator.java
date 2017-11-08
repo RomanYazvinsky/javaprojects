@@ -1,4 +1,4 @@
-package com.senla.hotel.utilities;
+package utilities;
 
 public class IDGenerator {
 	private static Integer[] clientIDs = new Integer[10];
@@ -22,8 +22,8 @@ public class IDGenerator {
 		}
 		int i = count;
 		for (; IDGenerator.isRegistred(IDGenerator.clientIDs, i); i++) {
-			IDGenerator.roomIDs[count] = i;
 		}
+		IDGenerator.clientIDs[count] = i;
 		return i;
 	}
 
@@ -34,8 +34,8 @@ public class IDGenerator {
 		}
 		int i = count;
 		for (; IDGenerator.isRegistred(IDGenerator.orderIDs, i); i++) {
-			IDGenerator.roomIDs[count] = i;
 		}
+		IDGenerator.orderIDs[count] = i;
 		return i;
 	}
 
@@ -46,8 +46,8 @@ public class IDGenerator {
 		}
 		int i = count;
 		for (; IDGenerator.isRegistred(IDGenerator.roomIDs, i); i++) {
-			IDGenerator.roomIDs[count] = i;
 		}
+		IDGenerator.roomIDs[count] = i;
 		return i;
 	}
 
@@ -58,8 +58,8 @@ public class IDGenerator {
 		}
 		int i = count;
 		for (; IDGenerator.isRegistred(IDGenerator.serviceIDs, i); i++) {
-			IDGenerator.roomIDs[count] = i;
 		}
+		IDGenerator.serviceIDs[count] = i;
 		return i;
 	}
 
@@ -68,7 +68,9 @@ public class IDGenerator {
 		if (IDGenerator.serviceIDs.length == count) {
 			ArrayWorker.extendIntegerArray(IDGenerator.serviceIDs);
 		}
-		IDGenerator.serviceIDs[count] = id;
+		if (!isRegistred(serviceIDs, id)) {
+			IDGenerator.serviceIDs[count] = id;
+		}
 	}
 
 	public static void addClientID(int id) {
@@ -76,7 +78,9 @@ public class IDGenerator {
 		if (IDGenerator.clientIDs.length == count) {
 			ArrayWorker.extendIntegerArray(IDGenerator.clientIDs);
 		}
-		IDGenerator.clientIDs[count] = id;
+		if (!isRegistred(clientIDs, id)) {
+			IDGenerator.clientIDs[count] = id;
+		}
 	}
 
 	public static void addOrderID(int id) {
@@ -84,7 +88,9 @@ public class IDGenerator {
 		if (IDGenerator.orderIDs.length == count) {
 			ArrayWorker.extendIntegerArray(IDGenerator.orderIDs);
 		}
-		IDGenerator.clientIDs[count] = id;
+		if (!isRegistred(orderIDs, id)) {
+		IDGenerator.orderIDs[count] = id;
+		}
 	}
 
 	public static void addRoomID(int id) {
@@ -92,7 +98,9 @@ public class IDGenerator {
 		if (IDGenerator.roomIDs.length == count) {
 			ArrayWorker.extendIntegerArray(IDGenerator.roomIDs);
 		}
+		if (!isRegistred(roomIDs, id)) {
 		IDGenerator.roomIDs[count] = id;
+		}
 	}
 
 }

@@ -2,23 +2,24 @@ package com.senla.hotel.workers;
 
 import java.util.Arrays;
 
-import com.senla.hotel.comparators.RoomComparator;
+import com.senla.hotel.comparators.room.RoomCapacityComparator;
+import com.senla.hotel.comparators.room.RoomPriceComparator;
+import com.senla.hotel.comparators.room.RoomStarComparator;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.RoomStatus;
-import com.senla.hotel.managers.RoomManager;
-import com.senla.hotel.utilities.ArrayWorker;
+import com.senla.hotel.repositories.RoomRepository;
+
+import utilities.ArrayWorker;
 
 public class RoomWorker {
-	private RoomManager roomManager;
-	private RoomComparator roomComparator;
+	private RoomRepository roomRepository;
 
 	public RoomWorker() {
-		roomManager = new RoomManager();
-		roomComparator = new RoomComparator();
+		roomRepository = new RoomRepository();
 	}
 
 	public Boolean add(Room room) {
-		return roomManager.add(room);
+		return roomRepository.add(room);
 	}
 
 	public void load(String[] roomData) {
@@ -30,21 +31,21 @@ public class RoomWorker {
 	}
 
 	public Room getRoomByID(Integer roomID) {
-		return roomManager.getRoomByID(roomID);
+		return roomRepository.getByID(roomID);
 	}
 
 	private Room[] sortByPrice(Room[] rooms) {
-		Arrays.sort(rooms, roomComparator.priceComparator);
+		Arrays.sort(rooms, new RoomPriceComparator());
 		return rooms;
 	}
 
 	private Room[] sortByCapacity(Room[] rooms) {
-		Arrays.sort(rooms, roomComparator.capacityComparator);
+		Arrays.sort(rooms, new RoomCapacityComparator());
 		return rooms;
 	}
 
 	private Room[] sortByStar(Room[] rooms) {
-		Arrays.sort(rooms, roomComparator.starComparator);
+		Arrays.sort(rooms, new RoomStarComparator());
 		return rooms;
 	}
 
@@ -89,14 +90,14 @@ public class RoomWorker {
 	}
 
 	public Room[] getRooms() {
-		return roomManager.getRooms();
+		return roomRepository.getRooms();
 	}
 
 	public String[] makeWriteableArray() {
-		int count = roomManager.getCount();
+		int count = roomRepository.getCount();
 		String[] result = new String[count];
 		for (int i = 0; i < count; i++) {
-			result[i] = roomManager.getRooms()[i].toString();
+			result[i] = roomRepository.getRooms()[i].toString();
 		}
 		return result;
 	}

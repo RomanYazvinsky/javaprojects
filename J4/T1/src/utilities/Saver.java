@@ -1,4 +1,4 @@
-package com.senla.hotel.utilities;
+package utilities;
 
 import com.danco.training.TextFileWorker;
 
