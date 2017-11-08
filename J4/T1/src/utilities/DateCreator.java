@@ -1,4 +1,4 @@
-package com.senla.hotel.utilities;
+package utilities;
 
 import java.util.GregorianCalendar;
 

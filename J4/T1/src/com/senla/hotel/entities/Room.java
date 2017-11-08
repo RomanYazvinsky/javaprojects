@@ -1,8 +1,7 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.utilities.ArrayWorker;
-import com.senla.hotel.utilities.IDGenerator;
-import com.senla.hotel.utilities.RoomStatusParser;
+import utilities.ArrayWorker;
+import utilities.RoomStatusParser;
 
 public class Room extends AEntity {
 	private Integer capacity;
@@ -30,7 +29,6 @@ public class Room extends AEntity {
 			this.pricePerDay = pricePerDay;
 		}
 		clientIDs = new Integer[capacity];
-		IDGenerator.addRoomID(id);
 	}
 
 	public Room(String data) {
@@ -56,7 +54,7 @@ public class Room extends AEntity {
 
 	}
 
-	private int findClient(Integer id) {
+	public int getClientIndex(Integer id) {
 		for (int i = 0; i < ArrayWorker.getCount(clientIDs); i++) {
 			if (clientIDs[i].equals(id)) {
 				return i;
@@ -89,7 +87,7 @@ public class Room extends AEntity {
 
 	public int addClient(Integer id) {
 		int clientNumber = ArrayWorker.getCount(clientIDs);
-		if (clientNumber == capacity || findClient(id) >= 0 || status == RoomStatus.ONSERVICE) {
+		if (clientNumber == capacity || getClientIndex(id) >= 0 || status == RoomStatus.ONSERVICE) {
 			return -1;
 		}
 		clientIDs[clientNumber] = id;
@@ -106,7 +104,7 @@ public class Room extends AEntity {
 			return false;
 		}
 		int clientNumber = ArrayWorker.getCount(clientIDs);
-		int clientIndex = findClient(id);
+		int clientIndex = getClientIndex(id);
 		if (clientIndex < 0) {
 			return false;
 		}

@@ -1,26 +1,27 @@
 package com.senla.hotel.workers;
 
 import com.senla.hotel.entities.Client;
-import com.senla.hotel.managers.ClientManager;
-import com.senla.hotel.utilities.ArrayWorker;
+import com.senla.hotel.repositories.ClientRepository;
+
+import utilities.ArrayWorker;
 
 public class ClientWorker {
-	private ClientManager clientManager;
+	private ClientRepository clientRepository;
 
 	public ClientWorker() {
-		clientManager = new ClientManager();
+		clientRepository = new ClientRepository();
 	}
 
 	public Boolean add(Client client) {
-		return clientManager.add(client);
+		return clientRepository.add(client);
 	}
 
 	public Client getClientByID(Integer clientID) {
-		return clientManager.getClientByID(clientID);
+		return clientRepository.getByID(clientID);
 	}
 
 	public Client[] getClients() {
-		return ArrayWorker.castToClient(ArrayWorker.decreaseArray(clientManager.getClients()));
+		return ArrayWorker.castToClient(ArrayWorker.decreaseArray(clientRepository.getClients()));
 	}
 
 	public void load(String[] clientData) {
@@ -32,10 +33,10 @@ public class ClientWorker {
 	}
 
 	public String[] makeWritableArray() {
-		int count = clientManager.getCount();
+		int count = clientRepository.getCount();
 		String[] result = new String[count];
 		for (int i = 0; i < count; i++) {
-			result[i] = clientManager.getClients()[i].toString();
+			result[i] = clientRepository.getClients()[i].toString();
 		}
 		return result;
 	}

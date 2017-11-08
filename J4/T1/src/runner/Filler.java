@@ -2,13 +2,14 @@ package runner;
 
 import java.util.GregorianCalendar;
 
-import com.senla.hotel.Facade;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.RoomStatus;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.utilities.IDGenerator;
+import com.senla.hotel.facade.Facade;
+
+import utilities.IDGenerator;
 
 public class Filler {
 	public static Client cl1 = new Client(IDGenerator.createClientID(), "roma");
@@ -77,6 +78,11 @@ public class Filler {
 		manager.addRoom(rm8);
 		manager.addRoom(rm9);
 
+
+		manager.addService(sr1);
+		manager.addService(sr2);
+		manager.addService(sr3);
+		
 		manager.addOrder(or1);
 		manager.addOrder(or2);
 		manager.addOrder(or3);
@@ -87,9 +93,6 @@ public class Filler {
 
 		manager.closeOrder(or5);
 
-		manager.addService(sr1);
-		manager.addService(sr2);
-		manager.addService(sr3);
 
 		return manager;
 	}

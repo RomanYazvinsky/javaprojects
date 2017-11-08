@@ -3,8 +3,7 @@ package com.senla.hotel.entities;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.senla.hotel.utilities.ArrayWorker;
-import com.senla.hotel.utilities.IDGenerator;
+import utilities.ArrayWorker;
 
 public class Order extends AEntity {
 	private Integer roomID;
@@ -26,7 +25,6 @@ public class Order extends AEntity {
 			this.orderTo = orderFrom;
 		}
 		this.services = services;
-		IDGenerator.addOrderID(id);
 	}
 
 	public Order(String data) {

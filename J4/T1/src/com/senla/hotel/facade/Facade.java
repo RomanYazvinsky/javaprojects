@@ -1,4 +1,4 @@
-package com.senla.hotel;
+package com.senla.hotel.facade;
 
 import java.util.GregorianCalendar;
 
@@ -10,11 +10,12 @@ import com.senla.hotel.entities.Service;
 import com.senla.hotel.sorttypes.OrderSortType;
 import com.senla.hotel.sorttypes.RoomSortType;
 import com.senla.hotel.sorttypes.ServiceSortType;
-import com.senla.hotel.utilities.Saver;
 import com.senla.hotel.workers.ClientWorker;
 import com.senla.hotel.workers.OrderWorker;
 import com.senla.hotel.workers.RoomWorker;
 import com.senla.hotel.workers.ServiceWorker;
+
+import utilities.Saver;
 
 public class Facade {
 	private RoomWorker roomWorker;
@@ -25,7 +26,7 @@ public class Facade {
 	private String[] paths;
 
 	public Facade(String[] paths, GregorianCalendar now) {
-		if (paths[0] == null) {
+		if (paths.length != 4) {
 			paths = new String[] { "orders.txt", "clients.txt", "rooms.txt", "services.txt" };
 		}
 		this.now = now;

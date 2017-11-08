@@ -4,7 +4,6 @@ public abstract class AEntity {
 	protected Integer id;
 
 	public AEntity() {
-
 	}
 	
 	public AEntity(final int id) {

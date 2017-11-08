@@ -1,4 +1,4 @@
-package com.senla.hotel.utilities;
+package utilities;
 
 import java.util.Arrays;
 
@@ -20,7 +20,7 @@ public class ArrayWorker {
 		}
 		return array.length;
 	}
-
+	
 	public static int getCount(Integer[] array) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == null) {

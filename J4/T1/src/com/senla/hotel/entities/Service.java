@@ -3,7 +3,7 @@ package com.senla.hotel.entities;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.senla.hotel.utilities.IDGenerator;
+import utilities.IDGenerator;
 
 public class Service extends AEntity {
 	private Integer price;

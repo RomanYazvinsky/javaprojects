@@ -1,4 +1,4 @@
-package com.senla.hotel.utilities;
+package utilities;
 
 import com.senla.hotel.entities.RoomStatus;
 
