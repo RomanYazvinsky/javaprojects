@@ -138,6 +138,10 @@ public class Room extends AEntity {
 	public Integer getClientCount() {
 		return clientIDs.size();
 	}
+	
+	public Boolean isOnService() {
+		return status.equals(RoomStatus.ONSERVICE);
+	}
 
 	private String getClientIDString() {
 		if (clientIDs == null) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class OrderWorker {
 	}
 
 	private Client[] makeClientArray(Order[] orders) {
-		ArrayList<Client> clients = new ArrayList<>();
+		ArrayList<Client> clients = new ArrayList<Client>();
 		for (Order order : orders) {
 			clients.add(clientRepository.getByID(order.getClientID()));
 		}
@@ -105,9 +106,10 @@ public class OrderWorker {
 	}
 
 	public Order[] getActualOrders(GregorianCalendar now) {
-		Set<Order> actualOrders = orderRepository.getOrders();
+		Set<Order> actualOrders = new HashSet<Order>(orderRepository.getOrders());
 		for (Iterator<Order> i = actualOrders.iterator(); i.hasNext();) {
-			if (!i.next().isActive(now)) {
+			Order order = i.next();
+			if (!order.isActive(now) || roomRepository.getByID(order.getRoomID()).isOnService()) {
 				i.remove();
 			}
 		}
@@ -123,10 +125,13 @@ public class OrderWorker {
 	}
 
 	public Room[] getFreeRoomByDate(GregorianCalendar date) {
-		Room[] usedRooms = makeRoomArray(getActualOrders(date));
+		List<Room> usedRooms = Arrays.asList(makeRoomArray(getActualOrders(date)));
 		List<Room> freeRooms = new ArrayList<Room>(roomRepository.getRooms());
-		for (Room room : usedRooms) {
-			freeRooms.remove(room);
+		freeRooms.removeAll(usedRooms);
+		for(Iterator<Room> i = freeRooms.iterator(); i.hasNext();) {
+			if (i.next().isOnService()) {
+				i.remove();
+			}
 		}
 		return freeRooms.toArray(new Room[freeRooms.size()]);
 	}

@@ -16,6 +16,9 @@ public class Main {
 		Facade manager = Filler.fill(args, now);
 		manager.load();
 
+		manager.getActualOrder();
+
+		
 		Filler.rm1.setStatus(RoomStatus.ONSERVICE);
 		manager.getRooms(RoomSortType.NO, true);
 		jump();
