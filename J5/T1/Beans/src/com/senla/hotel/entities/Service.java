@@ -1,21 +1,22 @@
 package com.senla.hotel.entities;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
+
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class Service extends AEntity {
 	private Integer price;
 	private String name;
-	private GregorianCalendar date;
+	private Date date;
 
-	public Service(Integer id, int price, String name, GregorianCalendar date) {
+	public Service(Integer id, int price, String name, Date date)
+			throws IncorrectIDEcxeption, IncorrectParameterException {
 		super(id);
 		if (price <= 0) {
-			this.price = 1;
-		} else {
-			this.price = price;
-
+			throw new IncorrectParameterException();
 		}
+		this.price = price;
 		if (name.contains(" ")) {
 			this.name = name.split(" ")[0];
 		} else {
@@ -24,19 +25,22 @@ public class Service extends AEntity {
 		this.date = date;
 	}
 
-	public Service(String data) {
+	public Service(String data) throws NumberFormatException, ArrayIndexOutOfBoundsException, IncorrectIDEcxeption {
 		super();
 		String[] serviceData = data.split(" ");
 		if (serviceData.length == 4) {
 			id = Integer.parseInt(serviceData[0]);
+			if (id < 0) {
+				throw new IncorrectIDEcxeption();
+			}
 			price = Integer.parseInt(serviceData[1]);
 			name = serviceData[2];
-			date = new GregorianCalendar();
-			date.setTime(new Date(Long.parseLong(serviceData[3])));
+			date = new Date();
+			date.setTime(Long.parseLong(serviceData[3]));
 		}
 	}
 
-	public GregorianCalendar getDate() {
+	public Date getDate() {
 		return date;
 	}
 
@@ -44,10 +48,12 @@ public class Service extends AEntity {
 		return price;
 	}
 
-	public void setPrice(int price) {
-		if (price > 0) {
-			this.price = price;
+	public void setPrice(int price) throws IncorrectParameterException {
+		if (price < 0) {
+			throw new IncorrectParameterException();
 		}
+		this.price = price;
+		
 	}
 
 	public String getName() {
@@ -92,7 +98,7 @@ public class Service extends AEntity {
 
 	@Override
 	public String toString() {
-		return id + " " + price + " " + name + " " + date.getTimeInMillis();
+		return id + " " + price + " " + name + " " + date.getTime();
 	}
 
 }

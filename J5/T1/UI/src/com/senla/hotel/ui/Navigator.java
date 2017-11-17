@@ -19,8 +19,8 @@ public class Navigator {
 		}
 		return instance;
 	}
-	
-	public Boolean isEnd() {
+
+	public Boolean isNotEnd() {
 		return !exit;
 	}
 
@@ -32,18 +32,18 @@ public class Navigator {
 		}
 	}
 
-	public void navigate(Integer index) {
+	public void navigate(Integer index) throws IndexOutOfBoundsException {
 		exit = false;
 		if (index > 0) {
 			MenuItem menuItem = currentMenu.getMenuItems().get(index);
 			menuItem.doAction();
-			currentMenu = currentMenu.getMenuItems().get(index).getNextMenu();
+			currentMenu = menuItem.getNextMenu();
 		} else {
 			if (currentMenu == Builder.getInstance().getRootMenu()) {
+				currentMenu.getMenuItems().get(0).doAction();
 				exit = true;
-			}
-			else {
-				currentMenu = currentMenu.getMenuItems().get(index).getNextMenu();
+			} else {
+				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		}
 	}

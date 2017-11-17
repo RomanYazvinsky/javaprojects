@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.repositories.ServiceRepository;
 
 public class ServiceWorker {
@@ -24,15 +25,33 @@ public class ServiceWorker {
 		return serviceRepository.add(service);
 	}
 
-	public void load(String[] serviceData) {
-		for (String data : serviceData) {
-			if (data.compareTo("") != 0) {
-				add(new Service(data));
+	public void load(String[] serviceData) throws Exception {
+		try {
+			for (String data : serviceData) {
+				if (data.compareTo("") != 0) {
+					add(new Service(data));
+				}
 			}
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException | IncorrectIDEcxeption e) {
+			throw e;
 		}
 	}
 
+	public Integer getPriceForServices(ArrayList<Service> services) {
+		if (services == null || services.size() == 0) {
+			return 0;
+		}
+		Integer price = 0;
+		for (Service service : services) {
+			price += service.getPrice();
+		}
+		return price;
+	}
+
 	public Service getServiceByID(Integer serviceID) {
+		if (serviceID == null) {
+			return null;
+		}
 		return serviceRepository.getByID(serviceID);
 	}
 

@@ -1,9 +1,12 @@
 package com.senla.hotel.entities;
 
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.IncorrectNameException;
+
 public class Client extends AEntity {
 	private String name;
 
-	public Client(Integer id, String name) {
+	public Client(Integer id, String name) throws NullPointerException, IncorrectIDEcxeption {
 		super(id);
 		if (name.contains(" ")) {
 			this.name = name.split(" ")[0];
@@ -12,12 +15,14 @@ public class Client extends AEntity {
 		}
 	}
 
-	public Client(String data) {
+	public Client(String data) throws NumberFormatException, ArrayIndexOutOfBoundsException {
 		super();
 		String[] clientData = data.split(" ");
-		if (clientData.length == 2) {
+		try {
 			name = clientData[0];
 			id = Integer.parseInt(clientData[1]);
+		}catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			throw e;
 		}
 	}
 
@@ -25,10 +30,11 @@ public class Client extends AEntity {
 		return name;
 	}
 
-	public void setString(String name) {
-		if (!name.isEmpty()) {
-			this.name = name;
+	public void setName(String name) throws IncorrectNameException {
+		if (name == null || name.isEmpty()) {
+			throw new IncorrectNameException();
 		}
+		this.name = name;
 	}
 
 	@Override
@@ -50,6 +56,9 @@ public class Client extends AEntity {
 		Client other = (Client) obj;
 		if (id != other.id)
 			return false;
+		if (!name.equals(other.getName())) {
+			return false;
+		}
 		return true;
 	}
 
@@ -57,6 +66,5 @@ public class Client extends AEntity {
 	public String toString() {
 		return name + " " + id;
 	}
-
 
 }
