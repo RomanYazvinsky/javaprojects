@@ -21,21 +21,21 @@ public class Printer {
 		System.out.print(message);
 	}
 
-	public static void printStringList(ArrayList<String> stringArray) {
-		if (stringArray.size() == 0) {
+	public static void printStrings(ArrayList<String> strings) {
+		if (strings.size() == 0) {
 			System.out.println("List is empty");
 		} else {
-			for (String message : stringArray) {
+			for (String message : strings) {
 				System.out.println(message);
 			}
 		}
 	}
 
-	public static void printEntityList(ArrayList<? extends AEntity> entityArray) {
-		if (entityArray == null) {
+	public static void printEntities(ArrayList<? extends AEntity> entities) {
+		if (entities == null || entities.size() == 0) {
 			System.out.println("List is empty");
 		} else {
-			for (AEntity entity : entityArray) {
+			for (AEntity entity : entities) {
 				if (entity != null) {
 					System.out.println(entity.toString());
 				}

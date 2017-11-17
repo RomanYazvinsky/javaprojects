@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.facade.Facade;
 import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectClientAction;
@@ -13,9 +14,12 @@ import utilities.Printer;
 public class PrintClientServicesAction implements IAction {
 
 	@Override
-	public void execute() {
+	public void execute() throws ActionForceStopException {
 		Client client = SelectClientAction.getClient();
 		ArrayList<Service> services = Facade.getInstance().getServicesOfClient(client);
+		if (services.size()==0) {
+			throw new ActionForceStopException();
+		}
 		for (Service service : services) {
 			Printer.printService(service);
 		}

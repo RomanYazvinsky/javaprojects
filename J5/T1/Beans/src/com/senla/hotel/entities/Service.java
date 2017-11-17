@@ -10,9 +10,9 @@ public class Service extends AEntity {
 	private String name;
 	private Date date;
 
-	public Service(Integer id, int price, String name, Date date)
+	public Service( int price, String name, Date date)
 			throws IncorrectIDEcxeption, IncorrectParameterException {
-		super(id);
+		super();
 		if (price <= 0) {
 			throw new IncorrectParameterException();
 		}
@@ -29,10 +29,6 @@ public class Service extends AEntity {
 		super();
 		String[] serviceData = data.split(" ");
 		if (serviceData.length == 4) {
-			id = Integer.parseInt(serviceData[0]);
-			if (id < 0) {
-				throw new IncorrectIDEcxeption();
-			}
 			price = Integer.parseInt(serviceData[1]);
 			name = serviceData[2];
 			date = new Date();

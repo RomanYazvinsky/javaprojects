@@ -49,6 +49,7 @@ public class RoomRepository implements IEntityRepository {
 
 	@Override
 	public Boolean add(AEntity entity) {
+		entity.setID(IDGenerator.createRoomID());
 		Boolean result = rooms.add((Room) entity);
 		if (result) {
 			IDGenerator.addRoomID(entity.getID());

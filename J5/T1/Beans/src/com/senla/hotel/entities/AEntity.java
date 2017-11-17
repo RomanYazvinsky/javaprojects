@@ -19,6 +19,10 @@ public abstract class AEntity implements Comparable<AEntity> {
 		return id;
 	}
 
+	public void setID(Integer id) {
+		this.id = id;
+	}
+
 	@Override
 	public int compareTo(AEntity arg0) {
 		if (arg0 != null) {

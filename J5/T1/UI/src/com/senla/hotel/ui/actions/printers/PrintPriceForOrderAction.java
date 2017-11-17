@@ -12,7 +12,10 @@ public class PrintPriceForOrderAction implements IAction {
 	@Override
 	public void execute() {
 		Order order = SelectOrderAction.getOrder();
-		Printer.print(Facade.getInstance().getPriceForRoom(order).toString());
+		Facade facade = Facade.getInstance();
+		Printer.println(((Integer) (facade.getPriceForRoom(order)
+				+ facade.getPriceForServices(facade.getServicesOfClient(facade.getClientByID(order.getClientID())))))
+						.toString());
 	}
 
 }

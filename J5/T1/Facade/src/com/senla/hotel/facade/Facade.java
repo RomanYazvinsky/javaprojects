@@ -12,11 +12,13 @@ import com.senla.hotel.comparators.room.RoomStarComparator;
 import com.senla.hotel.comparators.service.ServiceDateComparator;
 import com.senla.hotel.comparators.service.ServiceNameComparator;
 import com.senla.hotel.comparators.service.ServicePriceComparator;
+import com.senla.hotel.entities.AEntity;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.IncorrectNameException;
 import com.senla.hotel.workers.ClientWorker;
 import com.senla.hotel.workers.OrderWorker;
 import com.senla.hotel.workers.RoomWorker;
@@ -53,10 +55,10 @@ public class Facade {
 		return result;
 	}
 
-	public Boolean addOrder(Order order) {
+	public Boolean addOrder(Order order, Date date) {
 		Boolean result;
 		try {
-			result = orderWorker.add(order);
+			result = orderWorker.add(order, date);
 			return result;
 		} catch (IncorrectIDEcxeption e) {
 			LogWriter.getInstance().log(e, "addOrder");
@@ -98,10 +100,6 @@ public class Facade {
 		return roomWorker.getRooms();
 	}
 
-	public ArrayList<Room> getFreeRooms() {
-		return roomWorker.getFreeRooms();
-	}
-
 	public ArrayList<Room> sortRoomsByCapacity(ArrayList<Room> rooms) {
 		return roomWorker.sort(rooms, new RoomCapacityComparator());
 	}
@@ -134,8 +132,8 @@ public class Facade {
 		return clientWorker.getClients();
 	}
 
-	public Integer getFreeRoomsCount() {
-		Integer result = roomWorker.getFreeRoomsCount();
+	public Integer getFreeRoomsCount(Date date) {
+		Integer result = orderWorker.getFreeRooms(date).size();
 		return result;
 	}
 
@@ -144,8 +142,8 @@ public class Facade {
 		return result;
 	}
 
-	public ArrayList<Room> getFreeRoomByDate(Date date) {
-		ArrayList<Room> rooms = orderWorker.getFreeRoomByDate(date);
+	public ArrayList<Room> getFreeRooms(Date date) {
+		ArrayList<Room> rooms = orderWorker.getFreeRooms(date);
 		return rooms;
 	}
 
@@ -220,7 +218,11 @@ public class Facade {
 	}
 
 	public void loadClients() {
-		clientWorker.load(Loader.load(Parameters.getPaths()[1]));
+		try {
+			clientWorker.load(Loader.load(Parameters.getPaths()[1]));
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException | IncorrectNameException e) {
+			LogWriter.getInstance().log(e, "loadClients");
+		}
 	}
 
 	public void loadOrders() {
@@ -269,5 +271,9 @@ public class Facade {
 		saveClients();
 		saveRooms();
 		saveServices();
+	}
+
+	public ArrayList<Client> getActualClients(Date date) {
+		return orderWorker.getActualClients(date);
 	}
 }

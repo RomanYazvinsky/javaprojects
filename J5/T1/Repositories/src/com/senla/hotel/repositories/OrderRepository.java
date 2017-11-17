@@ -64,6 +64,7 @@ public class OrderRepository implements IEntityRepository {
 
 	@Override
 	public Boolean add(AEntity entity) {
+		entity.setID(IDGenerator.createOrderID());
 		Boolean result = orders.add((Order) entity);
 		if (result) {
 			IDGenerator.addOrderID(entity.getID());
