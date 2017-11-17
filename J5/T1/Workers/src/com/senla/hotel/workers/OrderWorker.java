@@ -3,13 +3,21 @@ package com.senla.hotel.workers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import com.senla.hotel.comparators.order.*;
-import com.senla.hotel.entities.*;
-import com.senla.hotel.repositories.*;
+import com.senla.hotel.comparators.order.OrderDateComparator;
+import com.senla.hotel.entities.Client;
+import com.senla.hotel.entities.Order;
+import com.senla.hotel.entities.Room;
+import com.senla.hotel.entities.Service;
+import com.senla.hotel.enums.RoomStatus;
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.repositories.ClientRepository;
+import com.senla.hotel.repositories.OrderRepository;
+import com.senla.hotel.repositories.RoomRepository;
+import com.senla.hotel.repositories.ServiceRepository;
 
 public class OrderWorker {
 	private OrderRepository orderRepository;
@@ -45,12 +53,6 @@ public class OrderWorker {
 		return list;
 	}
 
-	/*
-	 * public ArrayList<Service> sortClients(ArrayList<Service> services,
-	 * Comparator<Service> comparator) { Collections.sort(services, comparator);
-	 * return services; }
-	 */
-
 	public ArrayList<Order> getLastClients(Room room, int clientCount) {
 		ArrayList<Order> lastOrders = new ArrayList<>();
 		for (Order order : sort(orderRepository.searchByRoom(room), new OrderDateComparator())) {
@@ -61,7 +63,7 @@ public class OrderWorker {
 		return lastOrders;
 	}
 
-	public Order getActualOrder(Client client, GregorianCalendar now) {
+	public Order getActualOrder(Client client, Date now) {
 		for (Order order : orderRepository.searchByClient(client)) {
 			if (order.isActive(now)) {
 				return order;
@@ -71,10 +73,13 @@ public class OrderWorker {
 	}
 
 	public Order getOrderByID(Integer orderID) {
+		if (orderID == null) {
+			return null;
+		}
 		return orderRepository.getByID(orderID);
 	}
 
-	public ArrayList<Order> getActualOrders(GregorianCalendar now) {
+	public ArrayList<Order> getActualOrders(Date now) {
 		ArrayList<Order> actualOrders = new ArrayList<Order>(orderRepository.getOrders());
 		for (Iterator<Order> i = actualOrders.iterator(); i.hasNext();) {
 			Order order = i.next();
@@ -85,15 +90,15 @@ public class OrderWorker {
 		return actualOrders;
 	}
 
-	public ArrayList<Client> getActualClients(GregorianCalendar now) {
+	public ArrayList<Client> getActualClients(Date now) {
 		return makeClientList(getActualOrders(now));
 	}
 
-	public Integer getActualClientCount(GregorianCalendar now) {
+	public Integer getActualClientCount(Date now) {
 		return getActualClients(now).size();
 	}
 
-	public ArrayList<Room> getFreeRoomByDate(GregorianCalendar date) {
+	public ArrayList<Room> getFreeRoomByDate(Date date) {
 		ArrayList<Room> usedRooms = makeRoomList(getActualOrders(date));
 		ArrayList<Room> freeRooms = new ArrayList<Room>(roomRepository.getRooms());
 		freeRooms.removeAll(usedRooms);
@@ -105,16 +110,15 @@ public class OrderWorker {
 		return freeRooms;
 	}
 
-	public Integer getPriceForRoom(Client client, GregorianCalendar now) {
-		Order order = getActualOrder(client, now);
+	public Integer getPriceForRoom(Order order) {
 		if (order == null)
 			return 0;
-		long milliseconds = now.getTimeInMillis() - getActualOrder(client, now).getOrderFrom().getTimeInMillis();
+		long milliseconds = order.getOrderTo().getTime() - order.getOrderFrom().getTime();
 		int days = (int) (milliseconds / (24 * 60 * 60 * 1000));
 		return days * roomRepository.getByID(order.getRoomID()).getPricePerDay();
 	}
 
-	public Boolean add(Order order) {
+	public Boolean add(Order order) throws IncorrectIDEcxeption {
 		Room room = roomRepository.getByID(order.getRoomID());
 		if (room == null || room.getStatus().equals(RoomStatus.USED) || room.getStatus().equals(RoomStatus.ONSERVICE)
 				|| clientRepository.getByID(order.getClientID()) == null
@@ -124,16 +128,25 @@ public class OrderWorker {
 
 		Boolean result = orderRepository.add(order);
 		if (result) {
-			roomRepository.getByID(order.getRoomID()).addClient(order.getClientID());
+			try {
+				roomRepository.getByID(order.getRoomID()).addClient(order.getClientID());
+			} catch (IncorrectIDEcxeption e) {
+				throw e;
+			}
 		}
 		return result;
 	}
 
-	public void load(String[] orderData) {
-		for (String data : orderData) {
-			if (data.compareTo("") != 0) {
-				add(new Order(data));
+	public void load(String[] orderData)
+			throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectIDEcxeption {
+		try {
+			for (String data : orderData) {
+				if (data.compareTo("") != 0) {
+					add(new Order(data));
+				}
 			}
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectIDEcxeption e) {
+			throw e;
 		}
 	}
 
@@ -153,7 +166,7 @@ public class OrderWorker {
 		return orderRepository.getOrders();
 	}
 
-	public Boolean closeOrder(Order order, GregorianCalendar now) {
+	public Boolean closeOrder(Order order, Date now) {
 		order.setOrderTo(now);
 		return roomRepository.deleteClient(order.getRoomID(), order.getClientID());
 	}

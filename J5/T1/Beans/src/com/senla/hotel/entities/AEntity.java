@@ -1,12 +1,17 @@
 package com.senla.hotel.entities;
 
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+
 public abstract class AEntity implements Comparable<AEntity> {
 	protected Integer id;
 
 	public AEntity() {
 	}
-	
-	public AEntity(final int id) {
+
+	public AEntity(final int id) throws IncorrectIDEcxeption {
+		if (id < 0) {
+			throw new IncorrectIDEcxeption();
+		}
 		this.id = id;
 	}
 
@@ -22,6 +27,5 @@ public abstract class AEntity implements Comparable<AEntity> {
 			return 1;
 		}
 	}
-	
-	
+
 }

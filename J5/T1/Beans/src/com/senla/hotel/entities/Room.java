@@ -1,6 +1,11 @@
 package com.senla.hotel.entities;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+
+import com.senla.hotel.enums.RoomStatus;
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class Room extends AEntity {
 	private Integer capacity;
@@ -9,28 +14,20 @@ public class Room extends AEntity {
 	private Integer pricePerDay;
 	private HashSet<Integer> clientIDs;
 
-	public Room(Integer id, int capacity, int star, RoomStatus status, int pricePerDay) {
+	public Room(Integer id, int capacity, int star, RoomStatus status, int pricePerDay)
+			throws IncorrectParameterException, IncorrectIDEcxeption {
 		super(id);
-		if (capacity <= 0) {
-			this.capacity = 1;
-		} else {
-			this.capacity = capacity;
+		if (capacity <= 0 || star <= 0 || pricePerDay <= 0) {
+			throw new IncorrectParameterException();
 		}
-		if (star <= 0) {
-			this.star = 1;
-		} else {
-			this.star = star;
-		}
+		this.capacity = capacity;
+		this.star = star;
 		this.status = status;
-		if (pricePerDay <= 0) {
-			this.pricePerDay = 1;
-		} else {
-			this.pricePerDay = pricePerDay;
-		}
+		this.pricePerDay = pricePerDay;
 		clientIDs = new HashSet<>();
 	}
 
-	public Room(String data) {
+	public Room(String data) throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectParameterException {
 		super();
 		String[] roomData = data.split(" ");
 		if (roomData.length > 4) {
@@ -40,6 +37,9 @@ public class Room extends AEntity {
 			star = Integer.parseInt(roomData[2]);
 			status = RoomStatus.valueOf(roomData[3]);
 			pricePerDay = Integer.parseInt(roomData[4]);
+			if (pricePerDay <= 0) {
+				throw new IncorrectParameterException();
+			}
 			if (roomData.length > 5) {
 				for (int i = 0; i < roomData.length - 5 && i < capacity; i++) {
 					if (roomData[i + 5] != null) {
@@ -73,7 +73,13 @@ public class Room extends AEntity {
 		return true;
 	}
 
-	public Boolean addClient(Integer id) {
+	public Boolean addClient(Integer id) throws IncorrectIDEcxeption {
+		if (id < 0) {
+			throw new IncorrectIDEcxeption();
+		}
+		if (status == RoomStatus.USED || status == RoomStatus.ONSERVICE) {
+			return false;
+		}
 		Boolean result = clientIDs.add(id);
 		if (result) {
 			if (clientIDs.size() == capacity) {
@@ -100,18 +106,20 @@ public class Room extends AEntity {
 		return result;
 	}
 
-	public Integer[] getClientIDs() {
-		return (Integer[]) clientIDs.toArray();
+	public ArrayList<Integer> getClientIDs() {
+		return new ArrayList<Integer>(clientIDs);
 	}
 
 	public Integer getPricePerDay() {
 		return pricePerDay;
 	}
 
-	public void setPricePerDay(int pricePerDay) {
-		if (pricePerDay > 0) {
-			this.pricePerDay = pricePerDay;
+	public void setPricePerDay(int pricePerDay) throws IncorrectParameterException {
+		if (pricePerDay <= 0) {
+			throw new IncorrectParameterException();
 		}
+		this.pricePerDay = pricePerDay;
+
 	}
 
 	public Integer getCapacity() {
@@ -122,11 +130,13 @@ public class Room extends AEntity {
 		return status;
 	}
 
-	public void setStatus(RoomStatus status) {
-		this.status = status;
-		if (status == RoomStatus.ONSERVICE) {
-			clientIDs.clear();
-		}
+	public void setOnServiceStatus() {
+		this.status = RoomStatus.ONSERVICE;
+		clientIDs.clear();
+	}
+	
+	public void setUsableStatus() {
+		status = RoomStatus.FREE;
 	}
 
 	public Integer getStar() {
@@ -136,7 +146,7 @@ public class Room extends AEntity {
 	public Integer getClientCount() {
 		return clientIDs.size();
 	}
-	
+
 	public Boolean isOnService() {
 		return status.equals(RoomStatus.ONSERVICE);
 	}

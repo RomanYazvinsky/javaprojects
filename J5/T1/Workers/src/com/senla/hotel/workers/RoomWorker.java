@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.senla.hotel.entities.Room;
-import com.senla.hotel.entities.RoomStatus;
+import com.senla.hotel.enums.RoomStatus;
+import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.repositories.RoomRepository;
 
 public class RoomWorker {
@@ -20,15 +21,22 @@ public class RoomWorker {
 		return roomRepository.add(room);
 	}
 
-	public void load(String[] roomData) {
-		for (String data : roomData) {
-			if (data.compareTo("") != 0) {
-				add(new Room(data));
+	public void load(String[] roomData) throws Exception {
+		try {
+			for (String data : roomData) {
+				if (data.compareTo("") != 0) {
+					add(new Room(data));
+				}
 			}
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectParameterException e) {
+			throw e;
 		}
 	}
 
 	public Room getRoomByID(Integer roomID) {
+		if (roomID == null) {
+			return null;
+		}
 		return roomRepository.getByID(roomID);
 	}
 

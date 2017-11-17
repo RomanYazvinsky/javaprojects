@@ -1,15 +1,29 @@
 package com.senla.hotel.facade;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
-import com.senla.hotel.comparators.order.*;
-import com.senla.hotel.comparators.room.*;
-import com.senla.hotel.comparators.service.*;
-import com.senla.hotel.entities.*;
-import com.senla.hotel.workers.*;
+import com.senla.hotel.comparators.client.ClientNameComparator;
+import com.senla.hotel.comparators.order.OrderClientNameComparator;
+import com.senla.hotel.comparators.order.OrderDateComparator;
+import com.senla.hotel.comparators.room.RoomCapacityComparator;
+import com.senla.hotel.comparators.room.RoomPriceComparator;
+import com.senla.hotel.comparators.room.RoomStarComparator;
+import com.senla.hotel.comparators.service.ServiceDateComparator;
+import com.senla.hotel.comparators.service.ServiceNameComparator;
+import com.senla.hotel.comparators.service.ServicePriceComparator;
+import com.senla.hotel.entities.Client;
+import com.senla.hotel.entities.Order;
+import com.senla.hotel.entities.Room;
+import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.workers.ClientWorker;
+import com.senla.hotel.workers.OrderWorker;
+import com.senla.hotel.workers.RoomWorker;
+import com.senla.hotel.workers.ServiceWorker;
 
 import utilities.Loader;
+import utilities.LogWriter;
 import utilities.Saver;
 
 public class Facade {
@@ -17,31 +31,21 @@ public class Facade {
 	private ClientWorker clientWorker;
 	private ServiceWorker serviceWorker;
 	private OrderWorker orderWorker;
-	private GregorianCalendar now;
-	private String[] paths;
+	private static Facade instance;
 
-	public Facade() {
-		paths = new String[] { "orders.txt", "clients.txt", "rooms.txt", "services.txt" };
-		now = new GregorianCalendar();
+	private Facade() {
+		Parameters.setPaths(new String[] { "orders.txt", "clients.txt", "rooms.txt", "services.txt" });
 		roomWorker = new RoomWorker();
 		clientWorker = new ClientWorker();
 		serviceWorker = new ServiceWorker();
 		orderWorker = new OrderWorker();
 	}
-
-	public void setParameters(String[] paths, GregorianCalendar now) {
-		if (paths == null || paths.length != 4) {
-			paths = new String[] { "orders.txt", "clients.txt", "rooms.txt", "services.txt" };
+	
+	public static Facade getInstance() {
+		if (instance == null) {
+			instance = new Facade();
 		}
-		this.paths = paths;
-		if (now == null) {
-			now = new GregorianCalendar();
-		}
-		this.now = now;
-	}
-
-	public void setDate(GregorianCalendar now) {
-		this.now = now;
+		return instance;
 	}
 
 	public Boolean addClient(Client client) {
@@ -50,8 +54,14 @@ public class Facade {
 	}
 
 	public Boolean addOrder(Order order) {
-		Boolean result = orderWorker.add(order);
-		return result;
+		Boolean result;
+		try {
+			result = orderWorker.add(order);
+			return result;
+		} catch (IncorrectIDEcxeption e) {
+			LogWriter.getInstance().log(e, "addOrder");
+			return false;
+		}
 	}
 
 	public Boolean addRoom(Room room) {
@@ -108,7 +118,7 @@ public class Facade {
 		return orderWorker.getOrders();
 	}
 
-	public ArrayList<Order> getActualOrders(GregorianCalendar date) {
+	public ArrayList<Order> getActualOrders(Date date) {
 		return orderWorker.getActualOrders(date);
 	}
 
@@ -129,24 +139,28 @@ public class Facade {
 		return result;
 	}
 
-	public Integer getActualClientCount(GregorianCalendar date) {
+	public Integer getActualClientCount(Date date) {
 		Integer result = orderWorker.getActualClientCount(date);
 		return result;
 	}
 
-	public ArrayList<Room> getFreeRoomByDate(GregorianCalendar date) {
+	public ArrayList<Room> getFreeRoomByDate(Date date) {
 		ArrayList<Room> rooms = orderWorker.getFreeRoomByDate(date);
 		return rooms;
 	}
 
-	public Integer getPriceForRoom(Client client) {
-		Integer result = orderWorker.getPriceForRoom(client, now);
+	public Integer getPriceForRoom(Order order) {
+		Integer result = orderWorker.getPriceForRoom(order);
 		return result;
 	}
 
 	public ArrayList<Order> getLastOrdersOfRoom(Room room, Integer clientCount) {
 		ArrayList<Order> orders = orderWorker.getLastClients(room, clientCount);
 		return orders;
+	}
+	
+	public Integer getPriceForServices(ArrayList<Service> services) {
+		return serviceWorker.getPriceForServices(services);
 	}
 
 	public ArrayList<Service> getServicesOfClient(Client client) {
@@ -165,12 +179,16 @@ public class Facade {
 		return serviceWorker.sort(services, new ServicePriceComparator());
 	}
 
+	public ArrayList<Client> sortClientsByName(ArrayList<Client> clients){
+		return clientWorker.sort(clients, new ClientNameComparator());
+	}
+	
 	public ArrayList<Service> getServices() {
 		ArrayList<Service> services = serviceWorker.getServices();
 		return services;
 	}
 
-	public Boolean closeOrder(Order order) {
+	public Boolean closeOrder(Order order, Date now) {
 		Boolean result = orderWorker.closeOrder(order, now);
 		return result;
 	}
@@ -180,26 +198,38 @@ public class Facade {
 		return result;
 	}
 
-	public Order getActualOrder(Client client) {
+	public Order getActualOrder(Client client, Date now) {
 		Order order = orderWorker.getActualOrder(client, now);
 		return order;
 	}
 
 	public void loadServices() {
-		serviceWorker.load(Loader.load(paths[3]));
+		try {
+			serviceWorker.load(Loader.load(Parameters.getPaths()[3]));
+		} catch (Exception e) {
+			LogWriter.getInstance().log(e, "loadServices");
+		}
 	}
 
 	public void loadRooms() {
-		roomWorker.load(Loader.load(paths[2]));
+		try {
+			roomWorker.load(Loader.load(Parameters.getPaths()[2]));
+		} catch (Exception e) {
+			LogWriter.getInstance().log(e, "loadRooms");
+		}
 	}
 
 	public void loadClients() {
-		clientWorker.load(Loader.load(paths[1]));
+		clientWorker.load(Loader.load(Parameters.getPaths()[1]));
 	}
 
 	public void loadOrders() {
 		if (roomWorker.getRooms().size() != 0 && clientWorker.getClients().size() != 0) {
-			orderWorker.load(Loader.load(paths[0]));
+			try {
+				orderWorker.load(Loader.load(Parameters.getPaths()[0]));
+			} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectIDEcxeption e) {
+				LogWriter.getInstance().log(e, "loadOrders");
+			}
 		}
 	}
 
@@ -211,26 +241,26 @@ public class Facade {
 	}
 
 	public void saveOrders() {
-		Saver.save(paths[0], orderWorker.toStringArray(orderWorker.getOrders()));
+		Saver.save(Parameters.getPaths()[0], orderWorker.toStringArray(orderWorker.getOrders()));
 	}
 
 	public void saveClients() {
-		Saver.save(paths[1], clientWorker.toStringArray(clientWorker.getClients()));
+		Saver.save(Parameters.getPaths()[1], clientWorker.toStringArray(clientWorker.getClients()));
 	}
 
 	public void saveRooms() {
-		Saver.save(paths[2], roomWorker.toStringArray(roomWorker.getRooms()));
+		Saver.save(Parameters.getPaths()[2], roomWorker.toStringArray(roomWorker.getRooms()));
 	}
 
 	public void saveServices() {
-		Saver.save(paths[3], serviceWorker.toStringArray(serviceWorker.getServices()));
+		Saver.save(Parameters.getPaths()[3], serviceWorker.toStringArray(serviceWorker.getServices()));
 	}
 
 	public void reset() {
-		Saver.save(paths[0], new String[] { "" });
-		Saver.save(paths[1], new String[] { "" });
-		Saver.save(paths[2], new String[] { "" });
-		Saver.save(paths[3], new String[] { "" });
+		Saver.save(Parameters.getPaths()[0], new String[] { "" });
+		Saver.save(Parameters.getPaths()[1], new String[] { "" });
+		Saver.save(Parameters.getPaths()[2], new String[] { "" });
+		Saver.save(Parameters.getPaths()[3], new String[] { "" });
 
 	}
 
