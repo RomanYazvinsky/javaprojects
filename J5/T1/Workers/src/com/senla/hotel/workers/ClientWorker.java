@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.senla.hotel.entities.Client;
+import com.senla.hotel.exceptions.IncorrectNameException;
 import com.senla.hotel.repositories.ClientRepository;
 
 public class ClientWorker {
@@ -34,14 +35,15 @@ public class ClientWorker {
 		return new ArrayList<>(clientRepository.getClients());
 	}
 
-	public void load(String[] clientData) throws NumberFormatException, ArrayIndexOutOfBoundsException {
+	public void load(String[] clientData)
+			throws NumberFormatException, ArrayIndexOutOfBoundsException, IncorrectNameException {
 		try {
 			for (String data : clientData) {
 				if (data.compareTo("") != 0) {
 					add(new Client(data));
 				}
 			}
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException | IncorrectNameException e) {
 			throw e;
 		}
 	}

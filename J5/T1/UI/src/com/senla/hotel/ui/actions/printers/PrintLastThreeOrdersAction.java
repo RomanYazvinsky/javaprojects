@@ -1,5 +1,6 @@
 package com.senla.hotel.ui.actions.printers;
 
+import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.NullFieldException;
 import com.senla.hotel.facade.Facade;
 import com.senla.hotel.ui.actions.IAction;
@@ -11,11 +12,13 @@ import utilities.Printer;
 public class PrintLastThreeOrdersAction implements IAction {
 
 	@Override
-	public void execute() {
+	public void execute() throws ActionForceStopException {
 		try {
 			Printer.printOrders(Facade.getInstance().getLastOrdersOfRoom(SelectRoomAction.getRoom(), 3));
 		} catch (NullFieldException e) {
 			LogWriter.getInstance().log(e, this.getClass().getName());
+			throw new ActionForceStopException();
+
 		}
 	}
 

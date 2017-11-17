@@ -1,5 +1,6 @@
 package com.senla.hotel.ui;
 
+import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.NoAction;
 
@@ -26,7 +27,7 @@ public class MenuItem {
 		nextMenu = menu;
 	}
 	
-	public void doAction() {
+	public void doAction() throws ActionForceStopException {
 		action.execute();
 	}
 

@@ -14,9 +14,9 @@ public class Room extends AEntity {
 	private Integer pricePerDay;
 	private HashSet<Integer> clientIDs;
 
-	public Room(Integer id, int capacity, int star, RoomStatus status, int pricePerDay)
+	public Room(int capacity, int star, RoomStatus status, int pricePerDay)
 			throws IncorrectParameterException, IncorrectIDEcxeption {
-		super(id);
+		super();
 		if (capacity <= 0 || star <= 0 || pricePerDay <= 0) {
 			throw new IncorrectParameterException();
 		}
@@ -32,7 +32,6 @@ public class Room extends AEntity {
 		String[] roomData = data.split(" ");
 		if (roomData.length > 4) {
 			clientIDs = new HashSet<>();
-			id = Integer.parseInt(roomData[0]);
 			capacity = Integer.parseInt(roomData[1]);
 			star = Integer.parseInt(roomData[2]);
 			status = RoomStatus.valueOf(roomData[3]);
@@ -77,36 +76,39 @@ public class Room extends AEntity {
 		if (id < 0) {
 			throw new IncorrectIDEcxeption();
 		}
-		if (status == RoomStatus.USED || status == RoomStatus.ONSERVICE) {
+		if (status == RoomStatus.USED_NOW || status == RoomStatus.ONSERVICE_NOW) {
 			return false;
 		}
 		Boolean result = clientIDs.add(id);
 		if (result) {
 			if (clientIDs.size() == capacity) {
-				status = RoomStatus.USED;
+				status = RoomStatus.USED_NOW;
 			} else {
-				status = RoomStatus.PARTIALLY_FREE;
+				status = RoomStatus.PARTIALLY_FREE_NOW;
 			}
 		}
 		return result;
 	}
 
 	public Boolean deleteClient(Integer id) {
-		if (status == RoomStatus.ONSERVICE) {
+		if (status == RoomStatus.ONSERVICE_NOW) {
 			return false;
 		}
 		Boolean result = clientIDs.remove(id);
 		if (result) {
 			if (clientIDs.size() == 0) {
-				status = RoomStatus.FREE;
+				status = RoomStatus.FREE_NOW;
 			} else {
-				status = RoomStatus.PARTIALLY_FREE;
+				status = RoomStatus.PARTIALLY_FREE_NOW;
 			}
 		}
 		return result;
 	}
 
 	public ArrayList<Integer> getClientIDs() {
+		if (status == RoomStatus.ONSERVICE_NOW) {
+			return new ArrayList<Integer>();
+		}
 		return new ArrayList<Integer>(clientIDs);
 	}
 
@@ -130,13 +132,8 @@ public class Room extends AEntity {
 		return status;
 	}
 
-	public void setOnServiceStatus() {
-		this.status = RoomStatus.ONSERVICE;
-		clientIDs.clear();
-	}
-	
-	public void setUsableStatus() {
-		status = RoomStatus.FREE;
+	public void setStatus(RoomStatus status) {
+		this.status = status;
 	}
 
 	public Integer getStar() {
@@ -148,7 +145,7 @@ public class Room extends AEntity {
 	}
 
 	public Boolean isOnService() {
-		return status.equals(RoomStatus.ONSERVICE);
+		return status.equals(RoomStatus.ONSERVICE_NOW);
 	}
 
 	private String getClientIDString() {

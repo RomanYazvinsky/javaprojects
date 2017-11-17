@@ -25,6 +25,7 @@ public class ClientRepository implements IEntityRepository {
 
 	@Override
 	public Boolean add(AEntity entity) {
+		entity.setID(IDGenerator.createClientID());
 		Boolean result = clients.add((Client) entity);
 		if (result) {
 			IDGenerator.addClientID(entity.getID());

@@ -53,6 +53,7 @@ public class ServiceRepository implements IEntityRepository {
 
 	@Override
 	public Boolean add(AEntity entity) {
+		entity.setID(IDGenerator.createServiceID());
 		Boolean result = services.add((Service) entity);
 		if (result) {
 			IDGenerator.addServiceID(entity.getID());

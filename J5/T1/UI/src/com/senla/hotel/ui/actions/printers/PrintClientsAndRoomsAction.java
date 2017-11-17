@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Room;
+import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.facade.Facade;
 import com.senla.hotel.ui.actions.IAction;
 
@@ -12,7 +13,7 @@ import utilities.Printer;
 public class PrintClientsAndRoomsAction implements IAction {
 
 	@Override
-	public void execute() {
+	public void execute() throws ActionForceStopException {
 		Facade facade = Facade.getInstance();
 		for (Client client : facade.getClients()) {
 			Printer.printClient(client);
@@ -20,6 +21,8 @@ public class PrintClientsAndRoomsAction implements IAction {
 					.getRoomByID(facade.getActualOrder(client, new GregorianCalendar().getTime()).getRoomID());
 			if (room != null) {
 				Printer.printRoom(room);
+			} else {
+				throw new ActionForceStopException();
 			}
 		}
 	}

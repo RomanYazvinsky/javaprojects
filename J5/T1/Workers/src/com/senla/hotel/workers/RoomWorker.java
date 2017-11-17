@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.senla.hotel.entities.Room;
-import com.senla.hotel.enums.RoomStatus;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.repositories.RoomRepository;
 
@@ -43,20 +42,6 @@ public class RoomWorker {
 	public ArrayList<Room> sort(ArrayList<Room> rooms, Comparator<Room> comparator) {
 		Collections.sort(rooms, comparator);
 		return rooms;
-	}
-
-	public ArrayList<Room> getFreeRooms() {
-		ArrayList<Room> rooms = new ArrayList<>();
-		for (Room room : roomRepository.getRooms()) {
-			if (room.getStatus().equals(RoomStatus.FREE)) {
-				rooms.add(room);
-			}
-		}
-		return rooms;
-	}
-
-	public int getFreeRoomsCount() {
-		return getFreeRooms().size();
 	}
 
 	public ArrayList<Room> getRooms() {

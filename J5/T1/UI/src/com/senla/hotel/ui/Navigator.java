@@ -1,5 +1,7 @@
 package com.senla.hotel.ui;
 
+import com.senla.hotel.exceptions.ActionForceStopException;
+
 import utilities.Printer;
 
 public class Navigator {
@@ -36,13 +38,21 @@ public class Navigator {
 		exit = false;
 		if (index > 0) {
 			MenuItem menuItem = currentMenu.getMenuItems().get(index);
-			menuItem.doAction();
-			currentMenu = menuItem.getNextMenu();
+			try {
+				menuItem.doAction();
+				currentMenu = menuItem.getNextMenu();
+			} catch (ActionForceStopException e) {
+				currentMenu = Builder.getInstance().getRootMenu();
+			}
 		} else {
-			if (currentMenu == Builder.getInstance().getRootMenu()) {
-				currentMenu.getMenuItems().get(0).doAction();
-				exit = true;
-			} else {
+			try {
+				if (currentMenu == Builder.getInstance().getRootMenu()) {
+					currentMenu.getMenuItems().get(0).doAction();
+					exit = true;
+				} else {
+					currentMenu = Builder.getInstance().getRootMenu();
+				}
+			} catch (ActionForceStopException e) {
 				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		}

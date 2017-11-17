@@ -13,9 +13,9 @@ public class Order extends AEntity {
 	private Date orderTo;
 	private ArrayList<Service> services;
 
-	public Order(Integer id, Integer roomID, Integer clientID, Date orderFrom, Date orderTo,
+	public Order(Integer roomID, Integer clientID, Date orderFrom, Date orderTo,
 			ArrayList<Service> services) throws IncorrectIDEcxeption, IncorrectParameterException {
-		super(id);
+		super();
 		if (roomID == null || roomID < 0 || orderFrom == null || orderTo == null) {
 			throw new IncorrectParameterException();
 		}
@@ -40,7 +40,6 @@ public class Order extends AEntity {
 		String[] orderData = data.split(" ");
 		if (orderData.length > 4) {
 			services = new ArrayList<Service>();
-			id = Integer.parseInt(orderData[0]);
 			roomID = Integer.parseInt(orderData[1]);
 			clientID = Integer.parseInt(orderData[2]);
 			orderFrom = new Date();

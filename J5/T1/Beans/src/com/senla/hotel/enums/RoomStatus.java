@@ -1,5 +1,5 @@
 package com.senla.hotel.enums;
 
 public enum RoomStatus {
-	FREE, USED, ONSERVICE, PARTIALLY_FREE;
+	FREE_NOW, USED_NOW, ONSERVICE_NOW, PARTIALLY_FREE_NOW;
 }

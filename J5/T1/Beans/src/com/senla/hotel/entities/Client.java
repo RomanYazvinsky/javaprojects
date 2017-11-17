@@ -1,29 +1,16 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectNameException;
 
 public class Client extends AEntity {
 	private String name;
 
-	public Client(Integer id, String name) throws NullPointerException, IncorrectIDEcxeption {
-		super(id);
-		if (name.contains(" ")) {
-			this.name = name.split(" ")[0];
-		} else {
-			this.name = name;
-		}
-	}
-
-	public Client(String data) throws NumberFormatException, ArrayIndexOutOfBoundsException {
+	public Client(String data) throws IncorrectNameException {
 		super();
-		String[] clientData = data.split(" ");
-		try {
-			name = clientData[0];
-			id = Integer.parseInt(clientData[1]);
-		}catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-			throw e;
+		if (data == null || data.equals("")) {
+			throw new IncorrectNameException();
 		}
+		name = data.split(" ")[0];
 	}
 
 	public String getName() {

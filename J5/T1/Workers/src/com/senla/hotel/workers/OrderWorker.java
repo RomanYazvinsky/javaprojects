@@ -98,7 +98,7 @@ public class OrderWorker {
 		return getActualClients(now).size();
 	}
 
-	public ArrayList<Room> getFreeRoomByDate(Date date) {
+	public ArrayList<Room> getFreeRooms(Date date) {
 		ArrayList<Room> usedRooms = makeRoomList(getActualOrders(date));
 		ArrayList<Room> freeRooms = new ArrayList<Room>(roomRepository.getRooms());
 		freeRooms.removeAll(usedRooms);
@@ -118,18 +118,29 @@ public class OrderWorker {
 		return days * roomRepository.getByID(order.getRoomID()).getPricePerDay();
 	}
 
-	public Boolean add(Order order) throws IncorrectIDEcxeption {
+	private Boolean isRoomAvailable(Order order) {
+		int clientCount = 0;
+		for (Order iterator : orderRepository.getOrders()) {
+			if (order.compareDates(iterator) == 0 && order.getRoomID().equals(iterator.getRoomID())) {
+				clientCount++;
+			}
+		}
+		return clientCount < roomRepository.getByID(order.getRoomID()).getCapacity();
+	}
+
+	public Boolean add(Order order, Date date) throws IncorrectIDEcxeption {
 		Room room = roomRepository.getByID(order.getRoomID());
-		if (room == null || room.getStatus().equals(RoomStatus.USED) || room.getStatus().equals(RoomStatus.ONSERVICE)
+		if (room == null || room.getStatus().equals(RoomStatus.ONSERVICE_NOW)
 				|| clientRepository.getByID(order.getClientID()) == null
-				|| !serviceRepository.checkServices(order.getServices())) {
+				|| !serviceRepository.checkServices(order.getServices())
+				|| !isRoomAvailable(order)) {
 			return false;
 		}
 
 		Boolean result = orderRepository.add(order);
-		if (result) {
+		if (result && order.isActive(date)) {
 			try {
-				roomRepository.getByID(order.getRoomID()).addClient(order.getClientID());
+				room.addClient(order.getClientID());
 			} catch (IncorrectIDEcxeption e) {
 				throw e;
 			}
@@ -142,7 +153,7 @@ public class OrderWorker {
 		try {
 			for (String data : orderData) {
 				if (data.compareTo("") != 0) {
-					add(new Order(data));
+					orderRepository.add(new Order(data));
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectIDEcxeption e) {
