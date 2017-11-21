@@ -170,7 +170,6 @@ public class Builder {
 		rootMenu.addMenuItem(chooseServiceSortType);
 		rootMenu.addMenuItem(addClient);
 		rootMenu.addMenuItem(addRoom);
-		rootMenu.addMenuItem(addOrder);
 		rootMenu.addMenuItem(addService);
 		rootMenu.addMenuItem(setParameters);
 
