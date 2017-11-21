@@ -1,2 +1,0 @@
-0 1 3 USED_NOW 4 0
-1 1 2 FREE_NOW 2
