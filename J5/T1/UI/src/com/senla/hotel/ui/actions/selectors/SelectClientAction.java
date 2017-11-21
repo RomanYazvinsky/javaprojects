@@ -16,6 +16,9 @@ public class SelectClientAction implements IAction {
 	public void execute() throws ActionForceStopException {
 		try {
 			client = Facade.getInstance().getClientByID(Integer.parseInt(Input.userInput()));
+			if (client == null) {
+				throw new ActionForceStopException();
+			}
 			Printer.printClient(client);
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
 			LogWriter.getInstance().log(e, this.getClass().getName());
