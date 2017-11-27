@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.senla.hotel.entities.AEntity;
-import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Service;
 
 import utilities.CSVWorker;

@@ -15,8 +15,8 @@ public class AddRoomCloneAction implements IAction {
 	@Override
 	public void execute() throws ActionForceStopException {
 		try {
-			Printer.isSuccessful(Facade.getInstance().addRoom(new Room(SelectRoomAction.getRoom())));
-		} catch (NullException e) {
+			Printer.isSuccessful(Facade.getInstance().addRoom((Room) SelectRoomAction.getRoom().clone()));
+		} catch (NullException | CloneNotSupportedException e) {
 			LogWriter.getInstance().log(e, this.getClass().getName());
 		}
 	}

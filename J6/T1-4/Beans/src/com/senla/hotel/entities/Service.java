@@ -29,12 +29,12 @@ public class Service extends AEntity implements Serializable {
 
 	public Service(String data) throws NumberFormatException, ArrayIndexOutOfBoundsException, IncorrectIDEcxeption {
 		super();
-		String[] serviceData = data.split(" ");
+		String[] serviceData = data.split(",");
 		if (serviceData.length == 4) {
-			price = Integer.parseInt(serviceData[1]);
-			name = serviceData[2];
+			price = Integer.parseInt(serviceData[1].trim());
+			name = serviceData[2].trim();
 			date = new Date();
-			date.setTime(Long.parseLong(serviceData[3]));
+			date.setTime(Long.parseLong(serviceData[3].trim()));
 		}
 	}
 
@@ -74,17 +74,6 @@ public class Service extends AEntity implements Serializable {
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
-			return false;
-		Service other = (Service) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (price == null) {
-			if (other.price != null)
-				return false;
-		} else if (!price.equals(other.price))
 			return false;
 		return true;
 	}

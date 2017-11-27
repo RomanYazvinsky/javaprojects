@@ -200,6 +200,7 @@ public class Builder {
 		rootMenu.addMenuItem(addClient);
 		rootMenu.addMenuItem(addRoom);
 		rootMenu.addMenuItem(addService);
+		rootMenu.addMenuItem(importOrder);
 		rootMenu.addMenuItem(setParameters);
 
 		addClientSubMenu.addMenuItem(upToRoot);

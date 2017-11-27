@@ -4,7 +4,6 @@ import com.senla.hotel.constants.Messages;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.facade.Facade;
 import com.senla.hotel.ui.actions.IAction;
@@ -23,7 +22,7 @@ public class AddRoomAction implements IAction {
 			Room room = new Room(Integer.parseInt(params[0].trim()),
 					Integer.parseInt(params[1].trim()), RoomStatus.FREE_NOW, Integer.parseInt(params[2].trim()));
 			Facade.getInstance().addRoom(room);
-		} catch (IncorrectParameterException | IncorrectIDEcxeption | NumberFormatException
+		} catch (IncorrectParameterException | NumberFormatException
 				| ArrayIndexOutOfBoundsException e) {
 			LogWriter.getInstance().log(e, this.getClass().getName());
 			throw new ActionForceStopException();

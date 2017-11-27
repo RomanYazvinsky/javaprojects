@@ -8,7 +8,7 @@ import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 
-public class Room extends AEntity implements Serializable {
+public class Room extends AEntity implements Serializable, Cloneable {
 	private static final long serialVersionUID = 6938497574865077752L;
 	private Integer capacity;
 	private Integer star;
@@ -16,17 +16,7 @@ public class Room extends AEntity implements Serializable {
 	private Integer pricePerDay;
 	private HashSet<Integer> clientIDs;
 
-	public Room(Room room) {
-		super();
-		this.capacity = room.capacity;
-		this.star = room.star;
-		this.status = room.status;
-		this.pricePerDay = room.pricePerDay;
-		clientIDs = new HashSet<>(room.clientIDs);
-	}
-		
-	public Room(int capacity, int star, RoomStatus status, int pricePerDay)
-			throws IncorrectParameterException, IncorrectIDEcxeption {
+	public Room(int capacity, int star, RoomStatus status, int pricePerDay) throws IncorrectParameterException {
 		super();
 		if (capacity <= 0 || star <= 0 || pricePerDay <= 0) {
 			throw new IncorrectParameterException();
@@ -40,20 +30,20 @@ public class Room extends AEntity implements Serializable {
 
 	public Room(String data) throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectParameterException {
 		super();
-		String[] roomData = data.split(" ");
+		String[] roomData = data.split(",");
 		if (roomData.length > 4) {
 			clientIDs = new HashSet<>();
-			capacity = Integer.parseInt(roomData[1]);
-			star = Integer.parseInt(roomData[2]);
-			status = RoomStatus.valueOf(roomData[3]);
-			pricePerDay = Integer.parseInt(roomData[4]);
+			capacity = Integer.parseInt(roomData[1].trim());
+			star = Integer.parseInt(roomData[2].trim());
+			status = RoomStatus.valueOf(roomData[3].trim());
+			pricePerDay = Integer.parseInt(roomData[4].trim());
 			if (pricePerDay <= 0) {
 				throw new IncorrectParameterException();
 			}
 			if (roomData.length > 5) {
 				for (int i = 0; i < roomData.length - 5 && i < capacity; i++) {
 					if (roomData[i + 5] != null) {
-						clientIDs.add(Integer.parseInt(roomData[i + 5]));
+						clientIDs.add(Integer.parseInt(roomData[i + 5].trim()));
 					}
 				}
 			}
@@ -170,6 +160,17 @@ public class Room extends AEntity implements Serializable {
 	@Override
 	public String toString() {
 		return id + ", " + capacity + ", " + star + ", " + status + ", " + pricePerDay + getClientIDString();
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Room room;
+		try {
+			room = new Room(capacity, star, status, pricePerDay);
+			return room;
+
+		} catch (IncorrectParameterException e) {}
+		return null;
 	}
 
 }
