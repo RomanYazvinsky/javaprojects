@@ -39,15 +39,15 @@ public class Order extends AEntity  implements Serializable{
 
 	public Order(String data) throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectIDEcxeption {
 		super();
-		String[] orderData = data.split(" ");
+		String[] orderData = data.split(",");
 		if (orderData.length > 4) {
 			services = new ArrayList<Service>();
-			roomID = Integer.parseInt(orderData[1]);
-			clientID = Integer.parseInt(orderData[2]);
+			roomID = Integer.parseInt(orderData[1].trim());
+			clientID = Integer.parseInt(orderData[2].trim());
 			orderFrom = new Date();
-			orderFrom.setTime(Long.parseLong(orderData[3]));
+			orderFrom.setTime(Long.parseLong(orderData[3].trim()));
 			orderTo = new Date();
-			orderTo.setTime(Long.parseLong(orderData[4]));
+			orderTo.setTime(Long.parseLong(orderData[4].trim()));
 			if (orderData.length > 7)
 				for (int i = 0; i < orderData.length - 5;) {
 					services.add(new Service(orderData[i++ + 5] + " " + orderData[i++ + 5] + " " + orderData[i++ + 5]

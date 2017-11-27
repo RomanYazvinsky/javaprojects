@@ -2,25 +2,13 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2017-11-21T17:00:28</date>
-  <millis>1511272828056</millis>
+  <date>2017-11-27T04:17:46</date>
+  <millis>1511745466212</millis>
   <sequence>0</sequence>
   <logger>log</logger>
   <level>SEVERE</level>
   <class>utilities.LogWriter</class>
   <method>log</method>
   <thread>1</thread>
-  <message>com.senla.hotel.ui.MenuController java.lang.NumberFormatException: For input string: "w"</message>
+  <message>importClient java.nio.file.NoSuchFileException: 0.csv</message>
 </record>
-<record>
-  <date>2017-11-21T17:00:32</date>
-  <millis>1511272832297</millis>
-  <sequence>1</sequence>
-  <logger>log</logger>
-  <level>SEVERE</level>
-  <class>utilities.LogWriter</class>
-  <method>log</method>
-  <thread>1</thread>
-  <message>importRoom java.nio.file.NoSuchFileException: ..\Data\Room\1</message>
-</record>
-</log>
