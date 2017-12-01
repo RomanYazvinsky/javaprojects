@@ -3,6 +3,8 @@ package com.senla.hotel.facade;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.senla.hotel.comparators.client.ClientNameComparator;
 import com.senla.hotel.comparators.order.OrderClientNameComparator;
@@ -13,29 +15,35 @@ import com.senla.hotel.comparators.room.RoomStarComparator;
 import com.senla.hotel.comparators.service.ServiceDateComparator;
 import com.senla.hotel.comparators.service.ServiceNameComparator;
 import com.senla.hotel.comparators.service.ServicePriceComparator;
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
-import com.senla.hotel.exceptions.NullException;
 import com.senla.hotel.properties.HotelProperties;
 import com.senla.hotel.workers.ClientWorker;
 import com.senla.hotel.workers.OrderWorker;
 import com.senla.hotel.workers.RoomWorker;
 import com.senla.hotel.workers.ServiceWorker;
 
-import utilities.LogWriter;
-
 public class Facade {
+	private static Logger logger;
 	private RoomWorker roomWorker;
 	private ClientWorker clientWorker;
 	private ServiceWorker serviceWorker;
 	private OrderWorker orderWorker;
 	private HotelProperties properties;
 	private static Facade instance;
+	
+	static {
+		logger = Logger.getLogger(Facade.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	private Facade() {
 		roomWorker = new RoomWorker();
@@ -45,7 +53,7 @@ public class Facade {
 		try {
 			properties = HotelProperties.getInstance();
 		} catch (IOException e) {
-			LogWriter.getInstance().log(e, HotelProperties.class.getName());
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -67,7 +75,7 @@ public class Facade {
 			result = orderWorker.add(order, date);
 			return result;
 		} catch (IncorrectIDEcxeption e) {
-			LogWriter.getInstance().log(e, "addOrder");
+			logger.log(Level.SEVERE, "addOrder");
 			return false;
 		}
 	}
@@ -164,8 +172,8 @@ public class Facade {
 					Integer.parseInt(properties.getProperty(PropertyNames.ROOM_HISTORY_LENGTH.toString())));
 			return orders;
 
-		} catch (NumberFormatException | NullException e) {
-			LogWriter.getInstance().log(e, "getLastOrdersOfRoom");
+		} catch (NumberFormatException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "getLastOrdersOfRoom");
 			return new ArrayList<Order>();
 		}
 	}
@@ -217,32 +225,32 @@ public class Facade {
 	public void loadServices() {
 		try {
 			serviceWorker.load(properties.getProperty(PropertyNames.SERVICE_FILENAME.toString()));
-		} catch (ClassNotFoundException | IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadServices");
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadServices");
 		}
 	}
 
 	public void loadRooms() {
 		try {
 			roomWorker.load(properties.getProperty(PropertyNames.ROOM_FILENAME.toString()));
-		} catch (ClassNotFoundException | IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadRooms");
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadRooms");
 		}
 	}
 
 	public void loadClients() {
 		try {
 			clientWorker.load(properties.getProperty(PropertyNames.CLIENT_FILENAME.toString()));
-		} catch (ClassNotFoundException | IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadClient");
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadClient");
 		}
 	}
 
 	public void loadOrders() {
 		try {
 			orderWorker.load(properties.getProperty(PropertyNames.ORDER_FILENAME.toString()));
-		} catch (ClassNotFoundException | IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadOrders");
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadOrders");
 		}
 	}
 
@@ -256,32 +264,32 @@ public class Facade {
 	public void saveOrders() {
 		try {
 			orderWorker.save(properties.getProperty(PropertyNames.ORDER_FILENAME.toString()));
-		} catch (IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadOrders");
+		} catch (IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadOrders");
 		}
 	}
 
 	public void saveClients() {
 		try {
 			clientWorker.save(properties.getProperty(PropertyNames.CLIENT_FILENAME.toString()));
-		} catch (IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadClient");
+		} catch (IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE,"loadClient");
 		}
 	}
 
 	public void saveRooms() {
 		try {
 			roomWorker.save(properties.getProperty(PropertyNames.ROOM_FILENAME.toString()));
-		} catch (IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadRooms");
+		} catch (IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadRooms");
 		}
 	}
 
 	public void saveServices() {
 		try {
 			serviceWorker.save(properties.getProperty(PropertyNames.SERVICE_FILENAME.toString()));
-		} catch (IOException | NullException e) {
-			LogWriter.getInstance().log(e, "loadServices");
+		} catch (IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, "loadServices");
 		}
 	}
 
@@ -296,21 +304,13 @@ public class Facade {
 		return orderWorker.getActualClients(date);
 	}
 
-	public void allowRoomStatusChangeAbility() {
-		properties.setProperty(PropertyNames.CHANGE_ROOMSTATUS_ABILITY.toString(), "1");
-	}
-
-	public void denyRoomStatusChangeAbility() {
-		properties.setProperty(PropertyNames.CHANGE_ROOMSTATUS_ABILITY.toString(), "0");
-	}
-
 	public Boolean setRoomStatus(Room room, RoomStatus status) {
 		try {
 			if (properties.getProperty(PropertyNames.CHANGE_ROOMSTATUS_ABILITY.toString()).equals("0")) {
 				return false;
 			}
-		} catch (NullException e) {
-			LogWriter.getInstance().log(e, "setRoomStatus");
+		} catch (EmptyObjectException e) {
+			logger.log(Level.SEVERE, "setRoomStatus");
 		}
 		room.setStatus(status);
 		return false;

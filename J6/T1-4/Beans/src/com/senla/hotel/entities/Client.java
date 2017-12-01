@@ -1,25 +1,29 @@
 package com.senla.hotel.entities;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.IncorrectNameException;
 
 public class Client extends AEntity implements Serializable {
 	private static final long serialVersionUID = 1676886118386345127L;
+	private static Logger logger;
 	private String name;
+	static {
+		logger = Logger.getLogger(Client.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
-	public Client(String data) throws IncorrectNameException {
+	public Client(String name) throws IncorrectNameException {
 		super();
-		if (data == null || data.equals("")) {
+		if (name == null || name.isEmpty()) {
+			logger.log(Level.SEVERE, "incorrect name");
 			throw new IncorrectNameException();
 		}
-		String[] params = data.split(",");
-		if (params.length > 1) {
-			id = Integer.parseInt(params[0].trim());
-			name = params[1].trim();
-		}else {
-			name = params[0].trim();
-		}
+		this.name = name;
 	}
 
 	public String getName() {
@@ -28,6 +32,7 @@ public class Client extends AEntity implements Serializable {
 
 	public void setName(String name) throws IncorrectNameException {
 		if (name == null || name.isEmpty()) {
+			logger.log(Level.SEVERE, "incorrect name");
 			throw new IncorrectNameException();
 		}
 		this.name = name;

@@ -3,26 +3,37 @@ package com.senla.hotel.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class Order extends AEntity  implements Serializable{
 	private static final long serialVersionUID = -4420394137579611748L;
-	private Integer roomID;
-	private Integer clientID;
+	private static Logger logger;
+	private Integer roomId;
+	private Integer clientId;
 	private Date orderFrom;
 	private Date orderTo;
 	private ArrayList<Service> services;
+	static {
+		logger = Logger.getLogger(Order.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
+
 
 	public Order(Integer roomID, Integer clientID, Date orderFrom, Date orderTo,
 			ArrayList<Service> services) throws IncorrectIDEcxeption, IncorrectParameterException {
 		super();
 		if (roomID == null || roomID < 0 || orderFrom == null || orderTo == null) {
+			logger.log(Level.SEVERE, "incorrect parameters");
 			throw new IncorrectParameterException();
 		}
-		this.roomID = roomID;
-		this.clientID = clientID;
+		this.roomId = roomID;
+		this.clientId = clientID;
 		if (orderFrom.before(orderTo)) {
 			this.orderFrom = orderFrom;
 			this.orderTo = orderTo;
@@ -34,25 +45,6 @@ public class Order extends AEntity  implements Serializable{
 			this.services = new ArrayList<>();
 		} else {
 			this.services = services;
-		}
-	}
-
-	public Order(String data) throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectIDEcxeption {
-		super();
-		String[] orderData = data.split(",");
-		if (orderData.length > 4) {
-			services = new ArrayList<Service>();
-			roomID = Integer.parseInt(orderData[1].trim());
-			clientID = Integer.parseInt(orderData[2].trim());
-			orderFrom = new Date();
-			orderFrom.setTime(Long.parseLong(orderData[3].trim()));
-			orderTo = new Date();
-			orderTo.setTime(Long.parseLong(orderData[4].trim()));
-			if (orderData.length > 7)
-				for (int i = 0; i < orderData.length - 5;) {
-					services.add(new Service(orderData[i++ + 5] + " " + orderData[i++ + 5] + " " + orderData[i++ + 5]
-							+ " " + orderData[i++ + 5]));
-				}
 		}
 	}
 
@@ -72,12 +64,12 @@ public class Order extends AEntity  implements Serializable{
 		return orderTo;
 	}
 
-	public Integer getRoomID() {
-		return roomID;
+	public Integer getRoomId() {
+		return roomId;
 	}
 
-	public Integer getClientID() {
-		return clientID;
+	public Integer getClientId() {
+		return clientId;
 	}
 
 	public Date getOrderFrom() {
@@ -111,10 +103,10 @@ public class Order extends AEntity  implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((clientID == null) ? 0 : clientID.hashCode());
+		result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
 		result = prime * result + ((orderFrom == null) ? 0 : orderFrom.hashCode());
 		result = prime * result + ((orderTo == null) ? 0 : orderTo.hashCode());
-		result = prime * result + ((roomID == null) ? 0 : roomID.hashCode());
+		result = prime * result + ((roomId == null) ? 0 : roomId.hashCode());
 		return result;
 	}
 
@@ -127,18 +119,18 @@ public class Order extends AEntity  implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Order other = (Order) obj;
-		if (clientID == null) {
-			if (other.clientID != null)
+		if (clientId == null) {
+			if (other.clientId != null)
 				return false;
-		} else if (!clientID.equals(other.clientID))
+		} else if (!clientId.equals(other.clientId))
 			return false;
 		if (compareDates((Order) obj) != 0) {
 			return false;
 		}
-		if (roomID == null) {
-			if (other.roomID != null)
+		if (roomId == null) {
+			if (other.roomId != null)
 				return false;
-		} else if (!roomID.equals(other.roomID))
+		} else if (!roomId.equals(other.roomId))
 			return false;
 		return true;
 	}
@@ -157,7 +149,7 @@ public class Order extends AEntity  implements Serializable{
 
 	@Override
 	public String toString() {
-		return id + ", " + roomID + ", " + clientID + ", " + orderFrom.getTime() + ", " + orderTo.getTime()
+		return id + ", " + roomId + ", " + clientId + ", " + orderFrom.getTime() + ", " + orderTo.getTime()
 				+ getServicesString();
 	}
 }

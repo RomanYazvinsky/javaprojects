@@ -1,8 +1,19 @@
 package utilities;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.senla.hotel.constants.Constants;
 
 public class Input {
+	private static Logger logger;
+	static {
+		logger = Logger.getLogger(Input.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
+
 	public static Scanner input = new Scanner(System.in);
 
 	public static String userInput() {
@@ -14,7 +25,7 @@ public class Input {
 				return "1";
 			}
 		} catch (IllegalStateException e) {
-			LogWriter.getInstance().log(e, Input.class.getName());
+			logger.log(Level.SEVERE,  Input.class.getName());
 			return "Error";
 		}
 

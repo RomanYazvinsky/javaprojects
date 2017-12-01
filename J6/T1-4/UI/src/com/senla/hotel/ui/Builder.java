@@ -11,11 +11,40 @@ import com.senla.hotel.ui.actions.RoomExportAction;
 import com.senla.hotel.ui.actions.RoomImportAction;
 import com.senla.hotel.ui.actions.ServiceExportAction;
 import com.senla.hotel.ui.actions.ServiceImportAction;
-import com.senla.hotel.ui.actions.addition.*;
-import com.senla.hotel.ui.actions.printers.*;
-import com.senla.hotel.ui.actions.selectors.*;
-import com.senla.hotel.ui.actions.setters.*;
-import com.senla.hotel.ui.actions.sortprinters.*;
+import com.senla.hotel.ui.actions.addition.AddClientAction;
+import com.senla.hotel.ui.actions.addition.AddOrderAction;
+import com.senla.hotel.ui.actions.addition.AddOrderServiceAction;
+import com.senla.hotel.ui.actions.addition.AddRoomAction;
+import com.senla.hotel.ui.actions.addition.AddRoomCloneAction;
+import com.senla.hotel.ui.actions.addition.AddServiceAction;
+import com.senla.hotel.ui.actions.printers.PrintActualClientsAction;
+import com.senla.hotel.ui.actions.printers.PrintClientServicesAction;
+import com.senla.hotel.ui.actions.printers.PrintClientsAction;
+import com.senla.hotel.ui.actions.printers.PrintFreeRoomsAction;
+import com.senla.hotel.ui.actions.printers.PrintFreeRoomsInFutureAction;
+import com.senla.hotel.ui.actions.printers.PrintLastRoomOrdersAction;
+import com.senla.hotel.ui.actions.printers.PrintOrdersAction;
+import com.senla.hotel.ui.actions.printers.PrintPriceForOrderAction;
+import com.senla.hotel.ui.actions.printers.PrintRoomsAction;
+import com.senla.hotel.ui.actions.printers.PrintServicesAction;
+import com.senla.hotel.ui.actions.selectors.SelectClientAction;
+import com.senla.hotel.ui.actions.selectors.SelectOrderAction;
+import com.senla.hotel.ui.actions.selectors.SelectRoomAction;
+import com.senla.hotel.ui.actions.selectors.SelectServiceAction;
+import com.senla.hotel.ui.actions.setters.SetRoomOnServiceAction;
+import com.senla.hotel.ui.actions.setters.SetRoomPriceAction;
+import com.senla.hotel.ui.actions.setters.SetRoomUsableAction;
+import com.senla.hotel.ui.actions.setters.SetServicePriceAction;
+import com.senla.hotel.ui.actions.sortprinters.SortClientsByNameAction;
+import com.senla.hotel.ui.actions.sortprinters.SortFreeRoomsByCapacityAction;
+import com.senla.hotel.ui.actions.sortprinters.SortFreeRoomsByPriceAction;
+import com.senla.hotel.ui.actions.sortprinters.SortFreeRoomsByStarsAction;
+import com.senla.hotel.ui.actions.sortprinters.SortOrdersByDateAction;
+import com.senla.hotel.ui.actions.sortprinters.SortRoomsByCapacityAction;
+import com.senla.hotel.ui.actions.sortprinters.SortRoomsByPriceAction;
+import com.senla.hotel.ui.actions.sortprinters.SortRoomsByStarsAction;
+import com.senla.hotel.ui.actions.sortprinters.SortServiceByNameAction;
+import com.senla.hotel.ui.actions.sortprinters.SortServicesByPriceAction;
 
 public class Builder {
 	private Menu rootMenu;
@@ -72,7 +101,6 @@ public class Builder {
 
 		MenuItem upToRoot = new MenuItem("<-Root");
 		MenuItem load = new MenuItem("--Load", new LoadAction());
-		MenuItem setParameters = new MenuItem("--Set file paths", new SetFilePathsAction());
 		MenuItem importClient = new MenuItem("--Import client", new ClientImportAction());
 		MenuItem addClientByParams = new MenuItem("--Enter params", new AddClientAction());
 		MenuItem addRoomByParams = new MenuItem("--Enter params", new AddRoomAction());
@@ -201,7 +229,6 @@ public class Builder {
 		rootMenu.addMenuItem(addRoom);
 		rootMenu.addMenuItem(addService);
 		rootMenu.addMenuItem(importOrder);
-		rootMenu.addMenuItem(setParameters);
 
 		addClientSubMenu.addMenuItem(upToRoot);
 		addClientSubMenu.addMenuItem(importClient);

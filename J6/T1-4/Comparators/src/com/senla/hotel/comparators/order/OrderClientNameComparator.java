@@ -15,8 +15,8 @@ public class OrderClientNameComparator implements Comparator<Order> {
 	@Override
 	public int compare(Order o1, Order o2) {
 		if (o1 != null && o2 != null) {
-			return clientManager.getByID(o1.getClientID()).getName().toLowerCase()
-					.compareTo(clientManager.getByID(o2.getClientID()).getName().toLowerCase());
+			return clientManager.getByID(o1.getClientId()).getName().toLowerCase()
+					.compareTo(clientManager.getByID(o2.getClientId()).getName().toLowerCase());
 		} else {
 			if (o1 != null && o2 == null) {
 				return -1;

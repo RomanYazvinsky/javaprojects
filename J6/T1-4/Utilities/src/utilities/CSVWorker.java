@@ -6,7 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Client;
@@ -19,126 +20,108 @@ import com.senla.hotel.exceptions.IncorrectNameException;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class CSVWorker {
+	private static Logger logger;
+	static {
+		logger = Logger.getLogger(CSVWorker.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	public static void exportClient(Client client) {
 		try {
-			FileWriter fileWriter = new FileWriter(Constants.getPath(client));
-			fileWriter.write(Constants.clientHeaderCSV + client.toString());
+			FileWriter fileWriter = new FileWriter(Constants.clientExportFile, true);
+			fileWriter.write(client.toString() + System.lineSeparator());
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (IOException e) {
-			LogWriter.getInstance().log(e, "exportClient");
+			logger.log(Level.SEVERE, "exportClient");
 		}
 	}
 
-	public static Client importClient(String path) throws ActionForceStopException {
-		ArrayList<String> params = new ArrayList<>();
+	public static ArrayList<Client> importClient() throws ActionForceStopException {
+		ArrayList<Client> clients = new ArrayList<>();
 		try {
-			Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8).forEach(new Consumer<String>() {
-
-				@Override
-				public void accept(String arg0) {
-					params.add(arg0);
-				}
-			});
-			Client client = new Client(params.get(1));
-			client.setID(Integer.parseInt(params.get(1).split(",")[0]));
-			return client;
-		} catch (IOException | IncorrectNameException | ArrayIndexOutOfBoundsException e) {
-			LogWriter.getInstance().log(e, "importClient");
+			for (String param : Files.readAllLines(Paths.get(Constants.clientExportFile), StandardCharsets.UTF_8)) {
+				clients.add(ParametersParser.parseClient(param));
+			}
+			return clients;
+		} catch (IOException | ArrayIndexOutOfBoundsException | IncorrectNameException
+				| IncorrectParameterException e) {
+			logger.log(Level.SEVERE, "importClient");
 			throw new ActionForceStopException();
 		}
 	}
 
 	public static void exportRoom(Room room) {
 		try {
-			FileWriter fileWriter = new FileWriter(Constants.getPath(room));
-			fileWriter.write(Constants.roomHeaderCSV + room.toString());
+			FileWriter fileWriter = new FileWriter(Constants.roomExportFile, true);
+			fileWriter.write(room.toString() + System.lineSeparator());
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (IOException e) {
-			LogWriter.getInstance().log(e, "exportRoom");
+			logger.log(Level.SEVERE, "exportRoom");
 		}
 	}
 
-	public static Room importRoom(String path) throws ActionForceStopException {
-		ArrayList<String> params = new ArrayList<>();
+	public static ArrayList<Room> importRoom() throws ActionForceStopException {
+		ArrayList<Room> rooms = new ArrayList<>();
 		try {
-			Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8).forEach(new Consumer<String>() {
-
-				@Override
-				public void accept(String arg0) {
-					params.add(arg0);
-				}
-			});
-			String data = params.get(1);
-			Room room = new Room(data);
-			room.setID(Integer.parseInt(data.split(",")[0]));
-			return room;
+			for (String param : Files.readAllLines(Paths.get(Constants.roomExportFile), StandardCharsets.UTF_8)) {
+				rooms.add(ParametersParser.parseRoom(param));
+			}
+			return rooms;
 		} catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectParameterException e) {
-			LogWriter.getInstance().log(e, "importRoom");
+			logger.log(Level.SEVERE, "importRoom");
 			throw new ActionForceStopException();
 		}
 	}
 
 	public static void exportOrder(Order order) {
 		try {
-			FileWriter fileWriter = new FileWriter(Constants.getPath(order));
-			fileWriter.write(Constants.orderHeaderCSV + order.toString());
+			FileWriter fileWriter = new FileWriter(Constants.orderExportFile, true);
+			fileWriter.write(order.toString() + System.lineSeparator());
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (IOException e) {
-			LogWriter.getInstance().log(e, "exportOrder");
+			logger.log(Level.SEVERE, "exportOrder");
 		}
 	}
 
-	public static Order importOrder(String path) throws ActionForceStopException {
-		ArrayList<String> params = new ArrayList<>();
+	public static ArrayList<Order> importOrder() throws ActionForceStopException {
+		ArrayList<Order> orders = new ArrayList<>();
 		try {
-			Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8).forEach(new Consumer<String>() {
-
-				@Override
-				public void accept(String arg0) {
-					params.add(arg0);
-				}
-			});
-			String data = params.get(1);
-			Order order = new Order(data);
-			order.setID(Integer.parseInt(data.split(",")[0]));
-			return order;
-		} catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectIDEcxeption e) {
-			LogWriter.getInstance().log(e, "importOrder");
+			for (String param : Files.readAllLines(Paths.get(Constants.orderExportFile), StandardCharsets.UTF_8)) {
+				orders.add(ParametersParser.parseOrder(param));
+			}
+			return orders;
+		} catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException | IncorrectIDEcxeption
+				| IncorrectParameterException e) {
+			logger.log(Level.SEVERE, "importOrder");
 			throw new ActionForceStopException();
 		}
 	}
 
 	public static void exportService(Service service) {
 		try {
-			FileWriter fileWriter = new FileWriter(Constants.getPath(service));
-			fileWriter.write(Constants.serviceHeaderCSV + service.toString());
+			FileWriter fileWriter = new FileWriter(Constants.serviceExportFile, true);
+			fileWriter.write(service.toString() + System.lineSeparator());
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (IOException e) {
-			LogWriter.getInstance().log(e, "exportService");
+			logger.log(Level.SEVERE, "exportService");
 		}
 	}
 
-	public static Service importService(String path) throws ActionForceStopException {
-		ArrayList<String> params = new ArrayList<>();
+	public static ArrayList<Service> importService() throws ActionForceStopException {
+		ArrayList<Service> services = new ArrayList<>();
 		try {
-			Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8).forEach(new Consumer<String>() {
-
-				@Override
-				public void accept(String arg0) {
-					params.add(arg0);
-				}
-			});
-			String data = params.get(1);
-			Service service = new Service(data);
-			service.setID(Integer.parseInt(data.split(",")[0]));
-			return service;
-		} catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException | IncorrectIDEcxeption e) {
-			LogWriter.getInstance().log(e, "importService");
+			for (String param : Files.readAllLines(Paths.get(Constants.serviceExportFile), StandardCharsets.UTF_8)) {
+				services.add(ParametersParser.parseService(param));
+			}
+			return services;
+		} catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException | IncorrectIDEcxeption
+				| IncorrectParameterException e) {
+			logger.log(Level.SEVERE, "importService");
 			throw new ActionForceStopException();
 		}
 	}

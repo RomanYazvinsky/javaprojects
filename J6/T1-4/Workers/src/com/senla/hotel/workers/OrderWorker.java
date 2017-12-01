@@ -7,24 +7,37 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.senla.hotel.comparators.order.OrderDateComparator;
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.repositories.ClientRepository;
 import com.senla.hotel.repositories.OrderRepository;
 import com.senla.hotel.repositories.RoomRepository;
 import com.senla.hotel.repositories.ServiceRepository;
 
+import utilities.Loader;
+import utilities.Saver;
+
 public class OrderWorker {
+	private static Logger logger;
 	private OrderRepository orderRepository;
 	private ClientRepository clientRepository;
 	private RoomRepository roomRepository;
 	private ServiceRepository serviceRepository;
+	static {
+		logger = Logger.getLogger(OrderWorker.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	public OrderWorker() {
 		orderRepository = OrderRepository.getInstance();
@@ -36,7 +49,7 @@ public class OrderWorker {
 	private ArrayList<Client> makeClientList(ArrayList<Order> orders) {
 		ArrayList<Client> clients = new ArrayList<Client>();
 		for (Order order : orders) {
-			clients.add(clientRepository.getByID(order.getClientID()));
+			clients.add(clientRepository.getByID(order.getClientId()));
 		}
 		return clients;
 	}
@@ -44,7 +57,7 @@ public class OrderWorker {
 	private ArrayList<Room> makeRoomList(ArrayList<Order> orders) {
 		ArrayList<Room> rooms = new ArrayList<>();
 		for (Order order : orders) {
-			rooms.add(roomRepository.getByID(order.getRoomID()));
+			rooms.add(roomRepository.getByID(order.getRoomId()));
 		}
 		return rooms;
 	}
@@ -84,7 +97,7 @@ public class OrderWorker {
 		ArrayList<Order> actualOrders = new ArrayList<Order>(orderRepository.getOrders());
 		for (Iterator<Order> i = actualOrders.iterator(); i.hasNext();) {
 			Order order = i.next();
-			if (!order.isActive(now) || roomRepository.getByID(order.getRoomID()).isOnService()) {
+			if (!order.isActive(now) || roomRepository.getByID(order.getRoomId()).isOnService()) {
 				i.remove();
 			}
 		}
@@ -116,39 +129,38 @@ public class OrderWorker {
 			return 0;
 		long milliseconds = order.getOrderTo().getTime() - order.getOrderFrom().getTime();
 		int days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-		return days * roomRepository.getByID(order.getRoomID()).getPricePerDay();
+		return days * roomRepository.getByID(order.getRoomId()).getPricePerDay();
 	}
 
 	private Boolean isRoomAvailable(Order order) {
 		int clientCount = 0;
 		for (Order iterator : orderRepository.getOrders()) {
-			if (order.compareDates(iterator) == 0 && order.getRoomID().equals(iterator.getRoomID())) {
+			if (order.compareDates(iterator) == 0 && order.getRoomId().equals(iterator.getRoomId())) {
 				clientCount++;
 			}
 		}
-		return clientCount < roomRepository.getByID(order.getRoomID()).getCapacity();
+		return clientCount < roomRepository.getByID(order.getRoomId()).getCapacity();
 	}
 
 	public Boolean add(Order order, Date date) throws IncorrectIDEcxeption {
-		Room room = roomRepository.getByID(order.getRoomID());
+		Room room = roomRepository.getByID(order.getRoomId());
 		if (room == null || room.getStatus().equals(RoomStatus.ONSERVICE_NOW)
-				|| clientRepository.getByID(order.getClientID()) == null
-				|| !serviceRepository.checkServices(order.getServices())
-				|| !isRoomAvailable(order)) {
+				|| clientRepository.getByID(order.getClientId()) == null
+				|| !serviceRepository.checkServices(order.getServices()) || !isRoomAvailable(order)) {
 			return false;
 		}
 
 		Boolean result = orderRepository.add(order);
 		if (result && order.isActive(date)) {
 			try {
-				room.addClient(order.getClientID());
+				room.addClient(order.getClientId());
 			} catch (IncorrectIDEcxeption e) {
 				throw e;
 			}
 		}
 		return result;
 	}
-	
+
 	public Boolean addNoIDGenerating(Order order) {
 		return orderRepository.addNoIDGenerating(order);
 	}
@@ -171,7 +183,7 @@ public class OrderWorker {
 
 	public Boolean closeOrder(Order order, Date now) {
 		order.setOrderTo(now);
-		return roomRepository.deleteClient(order.getRoomID(), order.getClientID());
+		return roomRepository.deleteClient(order.getRoomId(), order.getClientId());
 	}
 
 	public ArrayList<Order> getOrdersOfClient(Client client) {
@@ -197,20 +209,29 @@ public class OrderWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
-	
-	public void load(String path) throws ClassNotFoundException, IOException {
-		orderRepository.load(path);
+	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+		try {
+			orderRepository.setOrders(Loader.loadOrders(path));
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
 
 	public void save(String path) throws IOException {
-		orderRepository.save(path);
+		try {
+			Saver.saveOrders(path, orderRepository.getOrders());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
-	
+
 	public void export(Order order) {
 		orderRepository.export(order);
 	}
-	
-	public Boolean delete (Order order) {
+
+	public Boolean delete(Order order) {
 		return orderRepository.delete(order);
 	}
 }

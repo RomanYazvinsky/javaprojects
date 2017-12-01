@@ -1,11 +1,11 @@
 package com.senla.hotel.exceptions;
 
-public class NullException extends Exception {
+public class EmptyObjectException extends Exception {
 
 
 	private static final long serialVersionUID = 5095104434279780261L;
 
-	public NullException() {
+	public EmptyObjectException() {
 		super("Some var is null");
 	}
 }

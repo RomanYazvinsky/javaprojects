@@ -14,7 +14,7 @@ public class PrintPriceForOrderAction implements IAction {
 		Order order = SelectOrderAction.getOrder();
 		Facade facade = Facade.getInstance();
 		Printer.println(((Integer) (facade.getPriceForRoom(order)
-				+ facade.getPriceForServices(facade.getServicesOfClient(facade.getClientByID(order.getClientID())))))
+				+ facade.getPriceForServices(facade.getServicesOfClient(facade.getClientByID(order.getClientId())))))
 						.toString());
 	}
 

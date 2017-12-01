@@ -18,18 +18,18 @@ public abstract class AEntity implements Comparable<AEntity>, Serializable {
 		this.id = id;
 	}
 
-	public Integer getID() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setID(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	@Override
 	public int compareTo(AEntity arg0) {
 		if (arg0 != null) {
-			return this.id.compareTo(arg0.getID());
+			return this.id.compareTo(arg0.getId());
 		} else {
 			return 1;
 		}

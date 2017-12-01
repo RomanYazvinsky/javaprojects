@@ -1,5 +1,9 @@
 package com.senla.hotel.ui.actions.addition;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -10,11 +14,16 @@ import com.senla.hotel.ui.actions.IAction;
 
 import utilities.DateCreator;
 import utilities.Input;
-import utilities.LogWriter;
 import utilities.Printer;
 
 public class AddServiceAction implements IAction {
-
+	private static Logger logger;
+	
+	static {
+		logger = Logger.getLogger(AddServiceAction.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 	@Override
 	public void execute() throws ActionForceStopException {
 		Printer.println(Messages.ASK_FOR_SERVICE_PARAMS.toString());
@@ -24,7 +33,7 @@ public class AddServiceAction implements IAction {
 					DateCreator.parseString(params[2].trim())));
 		} catch (IncorrectParameterException | IncorrectIDEcxeption | NumberFormatException
 				| ArrayIndexOutOfBoundsException e) {
-			LogWriter.getInstance().log(e, this.getClass().getName());
+			logger.log(Level.SEVERE,  this.getClass().getName());
 			throw new ActionForceStopException();
 
 		}
