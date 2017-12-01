@@ -14,8 +14,8 @@ public class OrderExportAction implements IAction {
 		Order order = SelectOrderAction.getOrder();
 		Facade.getInstance().exportOrder(order);
 		Facade manager = Facade.getInstance();
-		facade.exportClient(manager.getClientByID(order.getClientID()));
-		facade.exportRoom(manager.getRoomByID(order.getRoomID()));
+		facade.exportClient(manager.getClientByID(order.getClientId()));
+		facade.exportRoom(manager.getRoomByID(order.getRoomId()));
 		if (!order.getServiceCount().equals(0)) {
 			for (Service service : order.getServices()) {
 				facade.exportService(service);

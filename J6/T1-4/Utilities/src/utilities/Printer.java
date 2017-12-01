@@ -47,7 +47,7 @@ public class Printer {
 		if (order == null) {
 			System.out.println("No order");
 		} else {
-			System.out.print(order.getID() + " " + order.getRoomID() + " " + order.getClientID() + " ");
+			System.out.print(order.getId() + " " + order.getRoomId() + " " + order.getClientId() + " ");
 			printDate(order.getOrderFrom());
 			System.out.print(" ");
 			printDate(order.getOrderTo());
@@ -104,7 +104,7 @@ public class Printer {
 		if (service == null) {
 			System.out.println("No service");
 		} else {
-			System.out.print(service.getID() + " " + service.getName() + " " + service.getPrice() + " ");
+			System.out.print(service.getId() + " " + service.getName() + " " + service.getPrice() + " ");
 			printDate(service.getDate());
 			System.out.println();
 		}

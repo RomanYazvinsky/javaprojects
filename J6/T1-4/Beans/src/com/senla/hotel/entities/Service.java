@@ -2,20 +2,30 @@ package com.senla.hotel.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class Service extends AEntity implements Serializable {
 	private static final long serialVersionUID = 4634029185600413436L;
+	private static Logger logger;
 	private Integer price;
 	private String name;
 	private Date date;
+	static {
+		logger = Logger.getLogger(Service.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
-	public Service( int price, String name, Date date)
-			throws IncorrectIDEcxeption, IncorrectParameterException {
+	
+	public Service(int price, String name, Date date) throws IncorrectIDEcxeption, IncorrectParameterException {
 		super();
 		if (price <= 0) {
+			logger.log(Level.SEVERE, "incorrect price");
 			throw new IncorrectParameterException();
 		}
 		this.price = price;
@@ -25,17 +35,6 @@ public class Service extends AEntity implements Serializable {
 			this.name = name;
 		}
 		this.date = date;
-	}
-
-	public Service(String data) throws NumberFormatException, ArrayIndexOutOfBoundsException, IncorrectIDEcxeption {
-		super();
-		String[] serviceData = data.split(",");
-		if (serviceData.length == 4) {
-			price = Integer.parseInt(serviceData[1].trim());
-			name = serviceData[2].trim();
-			date = new Date();
-			date.setTime(Long.parseLong(serviceData[3].trim()));
-		}
 	}
 
 	public Date getDate() {
@@ -48,10 +47,11 @@ public class Service extends AEntity implements Serializable {
 
 	public void setPrice(int price) throws IncorrectParameterException {
 		if (price < 0) {
+			logger.log(Level.SEVERE, "setPrice");
 			throw new IncorrectParameterException();
 		}
 		this.price = price;
-		
+
 	}
 
 	public String getName() {

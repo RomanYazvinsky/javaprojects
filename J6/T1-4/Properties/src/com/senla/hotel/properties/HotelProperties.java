@@ -3,7 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.senla.hotel.exceptions.NullException;
+import com.senla.hotel.exceptions.EmptyObjectException;
 public class HotelProperties {
 	private static final String PATH_TO_PROPERTIES = "../Properties/hotel.properties";
 	private Properties properties;
@@ -27,17 +27,13 @@ public class HotelProperties {
 		return properties;
 	}
 	
-	public void setProperty(String key, String value) {
-		properties.setProperty(key, value);
-	}
-	
-	public String getProperty(String key) throws NullException {	
+	public String getProperty(String key) throws EmptyObjectException {	
 		if (properties == null) {
-			throw new NullException();
+			throw new EmptyObjectException();
 		}
 		String result = properties.getProperty(key);
 		if (result == null) {
-			throw new NullException();
+			throw new EmptyObjectException();
 		}
 		return result;
 	}

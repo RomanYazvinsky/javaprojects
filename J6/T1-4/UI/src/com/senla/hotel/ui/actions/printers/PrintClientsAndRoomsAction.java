@@ -18,7 +18,7 @@ public class PrintClientsAndRoomsAction implements IAction {
 		for (Client client : facade.getClients()) {
 			Printer.printClient(client);
 			Room room = facade
-					.getRoomByID(facade.getActualOrder(client, new GregorianCalendar().getTime()).getRoomID());
+					.getRoomByID(facade.getActualOrder(client, new GregorianCalendar().getTime()).getRoomId());
 			if (room != null) {
 				Printer.printRoom(room);
 			} else {

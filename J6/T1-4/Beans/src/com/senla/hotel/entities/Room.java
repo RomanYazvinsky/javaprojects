@@ -3,52 +3,40 @@ package com.senla.hotel.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.exceptions.IncorrectParameterException;
 
 public class Room extends AEntity implements Serializable, Cloneable {
 	private static final long serialVersionUID = 6938497574865077752L;
+	private static Logger logger;
 	private Integer capacity;
 	private Integer star;
 	private RoomStatus status;
 	private Integer pricePerDay;
-	private HashSet<Integer> clientIDs;
+	private HashSet<Integer> clientIds;
+	static {
+		logger = Logger.getLogger(Room.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
+
 
 	public Room(int capacity, int star, RoomStatus status, int pricePerDay) throws IncorrectParameterException {
 		super();
 		if (capacity <= 0 || star <= 0 || pricePerDay <= 0) {
+			logger.log(Level.SEVERE, "incorrect parameters");
 			throw new IncorrectParameterException();
 		}
 		this.capacity = capacity;
 		this.star = star;
 		this.status = status;
 		this.pricePerDay = pricePerDay;
-		clientIDs = new HashSet<>();
-	}
-
-	public Room(String data) throws ArrayIndexOutOfBoundsException, NumberFormatException, IncorrectParameterException {
-		super();
-		String[] roomData = data.split(",");
-		if (roomData.length > 4) {
-			clientIDs = new HashSet<>();
-			capacity = Integer.parseInt(roomData[1].trim());
-			star = Integer.parseInt(roomData[2].trim());
-			status = RoomStatus.valueOf(roomData[3].trim());
-			pricePerDay = Integer.parseInt(roomData[4].trim());
-			if (pricePerDay <= 0) {
-				throw new IncorrectParameterException();
-			}
-			if (roomData.length > 5) {
-				for (int i = 0; i < roomData.length - 5 && i < capacity; i++) {
-					if (roomData[i + 5] != null) {
-						clientIDs.add(Integer.parseInt(roomData[i + 5].trim()));
-					}
-				}
-			}
-		}
-
+		clientIds = new HashSet<>();
 	}
 
 	@Override
@@ -72,14 +60,15 @@ public class Room extends AEntity implements Serializable, Cloneable {
 
 	public Boolean addClient(Integer id) throws IncorrectIDEcxeption {
 		if (id < 0) {
+			logger.log(Level.SEVERE, "addClient");
 			throw new IncorrectIDEcxeption();
 		}
 		if (status == RoomStatus.USED_NOW || status == RoomStatus.ONSERVICE_NOW) {
 			return false;
 		}
-		Boolean result = clientIDs.add(id);
+		Boolean result = clientIds.add(id);
 		if (result) {
-			if (clientIDs.size() == capacity) {
+			if (clientIds.size() == capacity) {
 				status = RoomStatus.USED_NOW;
 			} else {
 				status = RoomStatus.PARTIALLY_FREE_NOW;
@@ -92,9 +81,9 @@ public class Room extends AEntity implements Serializable, Cloneable {
 		if (status == RoomStatus.ONSERVICE_NOW) {
 			return false;
 		}
-		Boolean result = clientIDs.remove(id);
+		Boolean result = clientIds.remove(id);
 		if (result) {
-			if (clientIDs.size() == 0) {
+			if (clientIds.size() == 0) {
 				status = RoomStatus.FREE_NOW;
 			} else {
 				status = RoomStatus.PARTIALLY_FREE_NOW;
@@ -103,11 +92,11 @@ public class Room extends AEntity implements Serializable, Cloneable {
 		return result;
 	}
 
-	public ArrayList<Integer> getClientIDs() {
+	public ArrayList<Integer> getClientIds() {
 		if (status == RoomStatus.ONSERVICE_NOW) {
 			return new ArrayList<Integer>();
 		}
-		return new ArrayList<Integer>(clientIDs);
+		return new ArrayList<Integer>(clientIds);
 	}
 
 	public Integer getPricePerDay() {
@@ -116,6 +105,7 @@ public class Room extends AEntity implements Serializable, Cloneable {
 
 	public void setPricePerDay(int pricePerDay) throws IncorrectParameterException {
 		if (pricePerDay <= 0) {
+			logger.log(Level.SEVERE, "setPricePerDay");
 			throw new IncorrectParameterException();
 		}
 		this.pricePerDay = pricePerDay;
@@ -139,19 +129,19 @@ public class Room extends AEntity implements Serializable, Cloneable {
 	}
 
 	public Integer getClientCount() {
-		return clientIDs.size();
+		return clientIds.size();
 	}
 
 	public Boolean isOnService() {
 		return status.equals(RoomStatus.ONSERVICE_NOW);
 	}
 
-	private String getClientIDString() {
-		if (clientIDs == null) {
+	private String getClientIdString() {
+		if (clientIds == null) {
 			return "";
 		}
 		StringBuilder result = new StringBuilder();
-		for (Integer i : clientIDs) {
+		for (Integer i : clientIds) {
 			result.append(", ").append(i);
 		}
 		return result.toString();
@@ -159,18 +149,16 @@ public class Room extends AEntity implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		return id + ", " + capacity + ", " + star + ", " + status + ", " + pricePerDay + getClientIDString();
+		return id + ", " + capacity + ", " + star + ", " + status + ", " + pricePerDay + getClientIdString();
 	}
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		Room room;
-		try {
-			room = new Room(capacity, star, status, pricePerDay);
-			return room;
-
-		} catch (IncorrectParameterException e) {}
-		return null;
+		room = (Room) super.clone();
+		room.clientIds = new HashSet<>();
+		room.status = RoomStatus.FREE_NOW;
+		return room;
 	}
 
 }

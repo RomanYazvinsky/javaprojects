@@ -1,22 +1,28 @@
 package com.senla.hotel.repositories;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.AEntity;
 import com.senla.hotel.entities.Client;
+import com.senla.hotel.exceptions.EmptyObjectException;
 
 import utilities.CSVWorker;
 import utilities.IDGenerator;
 
 public class ClientRepository implements IEntityRepository {
+	private static Logger logger;
 	private HashSet<Client> clients;
 	private static ClientRepository instance;
+	
+	static {
+		logger = Logger.getLogger(ClientRepository.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	private ClientRepository() {
 		clients = new HashSet<Client>();
@@ -31,11 +37,11 @@ public class ClientRepository implements IEntityRepository {
 
 	@Override
 	public Boolean add(AEntity entity) {
-		entity.setID(IDGenerator.createClientID());
+		entity.setId(IDGenerator.createClientID());
 		Client client = (Client) entity;
 		Boolean result = clients.add(client);
 		if (result) {
-			IDGenerator.addClientID(entity.getID());
+			IDGenerator.addClientID(entity.getId());
 		}
 		return result;
 
@@ -44,7 +50,7 @@ public class ClientRepository implements IEntityRepository {
 	public Boolean addNoIDGenerating(Client client) {
 		Boolean result = clients.add(client);
 		if (result) {
-			IDGenerator.addClientID(client.getID());
+			IDGenerator.addClientID(client.getId());
 		}
 		return result;
 	}
@@ -56,7 +62,7 @@ public class ClientRepository implements IEntityRepository {
 	public Boolean delete(AEntity client) {
 		ArrayList<Client> list = getClients();
 		for (int i = 0; i< list.size(); i++) {
-			if (client.getID().equals(list.get(i).getID())) {
+			if (client.getId().equals(list.get(i).getId())) {
 				return clients.remove(list.get(i));			
 			}
 		}
@@ -66,7 +72,7 @@ public class ClientRepository implements IEntityRepository {
 	@Override
 	public Client getByID(Integer id) {
 		for (Client client : clients) {
-			if (client.getID().equals(id)) {
+			if (client.getId().equals(id)) {
 				return client;
 			}
 		}
@@ -82,25 +88,14 @@ public class ClientRepository implements IEntityRepository {
 		CSVWorker.exportClient(client);
 	}
 
-	@Override
-	public void save(String path) throws IOException {
-		FileOutputStream fileOutputStream;
-		ObjectOutputStream objectOutputStream;
-		fileOutputStream = new FileOutputStream(path);
-		objectOutputStream = new ObjectOutputStream(fileOutputStream);
-		objectOutputStream.writeObject(clients);
-		objectOutputStream.flush();
-		objectOutputStream.close();
-	}
-
-	@Override
-	public void load(String path) throws IOException, ClassNotFoundException {
-		FileInputStream fileInputStream;
-		ObjectInputStream objectInputStream;
-		fileInputStream = new FileInputStream(path);
-		objectInputStream = new ObjectInputStream(fileInputStream);
-		clients = (HashSet<Client>) objectInputStream.readObject();
-		objectInputStream.close();
+	
+	
+	public void setClients(ArrayList<Client> clients) throws EmptyObjectException {
+		if (clients == null) {
+			logger.log(Level.SEVERE, "setClients");
+			throw new EmptyObjectException();
+		}
+		this.clients = new HashSet<>(clients);
 	}
 
 }

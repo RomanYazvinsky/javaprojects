@@ -1,19 +1,29 @@
 package com.senla.hotel.ui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.senla.hotel.constants.Constants;
+
 import utilities.Input;
-import utilities.LogWriter;
 import utilities.Printer;
 
 public class MenuController {
+	private static Logger logger;
 	private Builder builder;
 	private Navigator navigator;
-	private LogWriter log;
 
+	
+	static {
+		logger = Logger.getLogger(MenuController.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
+	
 	public MenuController() {
 		builder = Builder.getInstance();
 		builder.buildMenu();
 		navigator = Navigator.getInstance(builder.getRootMenu());
-		log = LogWriter.getInstance();
 	}
 
 	public void run() {
@@ -27,7 +37,7 @@ public class MenuController {
 				navigator.navigate(index);
 
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
-				log.log(e, this.getClass().getName());
+				logger.log(Level.SEVERE, this.getClass().getName());
 				continue;
 			}
 

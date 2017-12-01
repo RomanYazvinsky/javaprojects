@@ -5,12 +5,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Room;
+import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.repositories.RoomRepository;
 
+import utilities.Loader;
+import utilities.Saver;
+
 public class RoomWorker {
+	private static Logger logger;
 	private RoomRepository roomRepository;
+	static {
+		logger = Logger.getLogger(RoomWorker.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	public RoomWorker() {
 		roomRepository = RoomRepository.getInstance();
@@ -23,13 +36,23 @@ public class RoomWorker {
 	public Boolean addNoIDGenerating(Room room) {
 		return roomRepository.addNoIDGenerating(room);
 	}
-	
-	public void load(String path) throws ClassNotFoundException, IOException {
-		roomRepository.load(path);
+
+	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+		try {
+			roomRepository.setRooms(Loader.loadRooms(path));
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
 
 	public void save(String path) throws IOException {
-		roomRepository.save(path);
+		try {
+			Saver.saveRooms(path, roomRepository.getRooms());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
 
 	public ArrayList<Room> getRooms() {
@@ -59,8 +82,8 @@ public class RoomWorker {
 	public void export(Room room) {
 		roomRepository.export(room);
 	}
-	
-	public Boolean delete (Room room) {
+
+	public Boolean delete(Room room) {
 		return roomRepository.delete(room);
 	}
 }

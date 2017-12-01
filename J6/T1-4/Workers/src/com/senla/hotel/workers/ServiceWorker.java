@@ -5,12 +5,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Service;
+import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.repositories.ServiceRepository;
 
+import utilities.Loader;
+import utilities.Saver;
+
 public class ServiceWorker {
+	private static Logger logger;
 	private ServiceRepository serviceRepository;
+	static {
+		logger = Logger.getLogger(ServiceWorker.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	public ServiceWorker() {
 		serviceRepository = ServiceRepository.getInstance();
@@ -24,7 +37,7 @@ public class ServiceWorker {
 	public Boolean add(Service service) {
 		return serviceRepository.add(service);
 	}
-	
+
 	public Boolean addNoIDGenerating(Service service) {
 		return serviceRepository.addNoIDGenerating(service);
 	}
@@ -59,19 +72,29 @@ public class ServiceWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
-	public void load(String path) throws ClassNotFoundException, IOException {
-		serviceRepository.load(path);
+	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+		try {
+			serviceRepository.setServices(Loader.loadServices(path));
+		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
 
 	public void save(String path) throws IOException {
-		serviceRepository.save(path);
+		try {
+			Saver.saveServices(path, serviceRepository.getServices());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
-	
+
 	public void export(Service service) {
 		serviceRepository.export(service);
 	}
-	
-	public Boolean delete (Service service) {
+
+	public Boolean delete(Service service) {
 		return serviceRepository.delete(service);
 	}
 }

@@ -1,13 +1,24 @@
 package com.senla.hotel.ui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.ActionForceStopException;
 
 import utilities.Printer;
 
 public class Navigator {
-	private Menu currentMenu;
+	private static Logger logger;
 	private static Navigator instance;
+	private Menu currentMenu;
 	private Boolean exit;
+	
+	static {
+		logger = Logger.getLogger(Navigator.class.getName());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(Constants.logFileHandler);
+	}
 
 	private Navigator(Menu rootMenu) {
 		super();
@@ -42,6 +53,7 @@ public class Navigator {
 				menuItem.doAction();
 				currentMenu = menuItem.getNextMenu();
 			} catch (ActionForceStopException e) {
+				logger.log(Level.SEVERE, menuItem.getClass().getName());
 				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		} else {
@@ -53,6 +65,7 @@ public class Navigator {
 					currentMenu = Builder.getInstance().getRootMenu();
 				}
 			} catch (ActionForceStopException e) {
+				logger.log(Level.SEVERE, currentMenu.getClass().getName());
 				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		}
