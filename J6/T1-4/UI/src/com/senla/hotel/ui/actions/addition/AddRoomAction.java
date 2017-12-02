@@ -33,7 +33,7 @@ public class AddRoomAction implements IAction {
 			Facade.getInstance().addRoom(room);
 		} catch (IncorrectParameterException | NumberFormatException
 				| ArrayIndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

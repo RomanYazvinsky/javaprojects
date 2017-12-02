@@ -1,4 +1,4 @@
-package com.senla.hotel.ui.actions;
+package com.senla.hotel.ui.actions.io;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -7,6 +7,7 @@ import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.facade.Facade;
+import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectRoomAction;
 
 

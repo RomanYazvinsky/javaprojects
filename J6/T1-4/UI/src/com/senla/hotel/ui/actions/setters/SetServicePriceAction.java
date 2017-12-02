@@ -24,7 +24,7 @@ public class SetServicePriceAction implements IAction {
 		try {
 			SelectServiceAction.getService().setPrice(Integer.parseInt(Input.userInput()));
 		} catch (NumberFormatException | IncorrectParameterException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

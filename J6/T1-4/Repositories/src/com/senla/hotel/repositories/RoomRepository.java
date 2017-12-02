@@ -10,7 +10,6 @@ import com.senla.hotel.entities.AEntity;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.EmptyObjectException;
 
-import utilities.CSVWorker;
 import utilities.IDGenerator;
 
 public class RoomRepository implements IEntityRepository {
@@ -49,8 +48,9 @@ public class RoomRepository implements IEntityRepository {
 
 	public void setRooms(ArrayList<Room> rooms) throws EmptyObjectException {
 		if (rooms == null) {
-			logger.log(Level.SEVERE, "setRooms");
-			throw new EmptyObjectException();
+			EmptyObjectException e = new EmptyObjectException();
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 		this.rooms = new HashSet<>(rooms);
 	}
@@ -95,10 +95,6 @@ public class RoomRepository implements IEntityRepository {
 			}
 		}
 		return false;
-	}
-
-	public void export(Room room) {
-		CSVWorker.exportRoom(room);
 	}
 
 }

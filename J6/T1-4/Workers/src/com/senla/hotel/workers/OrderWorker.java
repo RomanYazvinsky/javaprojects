@@ -24,6 +24,7 @@ import com.senla.hotel.repositories.OrderRepository;
 import com.senla.hotel.repositories.RoomRepository;
 import com.senla.hotel.repositories.ServiceRepository;
 
+import utilities.CSVWorker;
 import utilities.Loader;
 import utilities.Saver;
 
@@ -228,7 +229,11 @@ public class OrderWorker {
 	}
 
 	public void export(Order order) {
-		orderRepository.export(order);
+		CSVWorker.exportOrder(order);
+	}
+	
+	public void exportAll() {
+		CSVWorker.exportOrders(orderRepository.getOrders());
 	}
 
 	public Boolean delete(Order order) {

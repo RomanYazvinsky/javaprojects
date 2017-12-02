@@ -25,7 +25,7 @@ public class Input {
 				return "1";
 			}
 		} catch (IllegalStateException e) {
-			logger.log(Level.SEVERE,  Input.class.getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			return "Error";
 		}
 

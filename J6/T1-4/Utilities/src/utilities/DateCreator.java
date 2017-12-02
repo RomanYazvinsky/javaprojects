@@ -18,10 +18,10 @@ public class DateCreator {
 	public static Date parseString(String dateString) {
 		String[] dateFields = dateString.split(" ");
 		try {
-		return new GregorianCalendar(Integer.parseInt(dateFields[2]), Integer.parseInt(dateFields[1]) - 1,
-				Integer.parseInt(dateFields[0]), 0, 0, 0).getTime();
-		}catch(ArrayIndexOutOfBoundsException | NumberFormatException e) {
-			logger.log(Level.SEVERE, DateCreator.class.getName());
+			return new GregorianCalendar(Integer.parseInt(dateFields[2]), Integer.parseInt(dateFields[1]) - 1,
+					Integer.parseInt(dateFields[0]), 0, 0, 0).getTime();
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+			logger.log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 	}

@@ -28,7 +28,7 @@ public class AddRoomCloneAction implements IAction {
 		try {
 			Printer.isSuccessful(Facade.getInstance().addRoom((Room) SelectRoomAction.getRoom().clone()));
 		} catch (EmptyObjectException | CloneNotSupportedException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 

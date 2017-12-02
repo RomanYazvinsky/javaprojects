@@ -1,7 +1,8 @@
-package com.senla.hotel.ui.actions;
+package com.senla.hotel.ui.actions.io;
 
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.facade.Facade;
+import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectClientAction;
 
 public class ClientExportAction implements IAction {

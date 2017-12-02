@@ -1,4 +1,4 @@
-package com.senla.hotel.ui.actions;
+package com.senla.hotel.ui.actions.io;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -11,6 +11,7 @@ import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.facade.Facade;
+import com.senla.hotel.ui.actions.IAction;
 
 import utilities.CSVWorker;
 import utilities.Input;
@@ -28,7 +29,7 @@ public class OrderImportAction implements IAction {
 	@Override
 	public void execute() throws ActionForceStopException {
 		try {
-			ArrayList<Order> orders = CSVWorker.importOrder();
+			ArrayList<Order> orders = CSVWorker.importOrders();
 			Facade facade = Facade.getInstance();
 			Integer i = 1;
 			for (Order order : orders) {
@@ -39,13 +40,13 @@ public class OrderImportAction implements IAction {
 			Order order = orders.get(i);
 			facade.deleteOrder(order);
 			facade.addOrderWithID(order);
-			for (Client client : CSVWorker.importClient()) {
+			for (Client client : CSVWorker.importClients()) {
 				if (client.getId().equals(order.getClientId())) {
 					facade.addClientWithID(client);
 					break;
 				}
 			}
-			for (Room room : CSVWorker.importRoom()) {
+			for (Room room : CSVWorker.importRooms()) {
 				if (room.getId().equals(order.getRoomId())) {
 					facade.addRoomWithID(room);
 					break;
@@ -55,7 +56,7 @@ public class OrderImportAction implements IAction {
 				facade.addServiceWithID(service);
 			}
 		} catch (ActionForceStopException e) {
-			logger.log(Level.SEVERE, this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}

@@ -12,7 +12,6 @@ import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.EmptyObjectException;
 
-import utilities.CSVWorker;
 import utilities.IDGenerator;
 
 public class OrderRepository implements IEntityRepository {
@@ -108,14 +107,11 @@ public class OrderRepository implements IEntityRepository {
 	
 	public void setOrders(ArrayList<Order> orders) throws EmptyObjectException {
 		if (orders == null) {
-			logger.log(Level.SEVERE, "setOrders");
-			throw new EmptyObjectException();
+			EmptyObjectException e = new EmptyObjectException();
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 		this.orders = new HashSet<>(orders);
-	}
-
-	public void export(Order order) {
-		CSVWorker.exportOrder(order);
 	}
 
 }

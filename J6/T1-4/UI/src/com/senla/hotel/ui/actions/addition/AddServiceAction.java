@@ -33,7 +33,7 @@ public class AddServiceAction implements IAction {
 					DateCreator.parseString(params[2].trim())));
 		} catch (IncorrectParameterException | IncorrectIDEcxeption | NumberFormatException
 				| ArrayIndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 
 		}

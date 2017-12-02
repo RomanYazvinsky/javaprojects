@@ -30,7 +30,7 @@ public class SelectClientAction implements IAction {
 			}
 			Printer.printClient(client);
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 
 		}

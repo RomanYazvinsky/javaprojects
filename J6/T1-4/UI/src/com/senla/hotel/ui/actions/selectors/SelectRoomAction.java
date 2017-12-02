@@ -28,7 +28,7 @@ public class SelectRoomAction implements IAction {
 			room = Facade.getInstance().getRoomByID(Integer.parseInt(Input.userInput()));
 			Printer.printRoom(room);		
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE, this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}	
 	}

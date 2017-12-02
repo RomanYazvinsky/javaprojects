@@ -53,7 +53,7 @@ public class Navigator {
 				menuItem.doAction();
 				currentMenu = menuItem.getNextMenu();
 			} catch (ActionForceStopException e) {
-				logger.log(Level.SEVERE, menuItem.getClass().getName());
+				logger.log(Level.SEVERE, e.getMessage());
 				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		} else {
@@ -65,7 +65,7 @@ public class Navigator {
 					currentMenu = Builder.getInstance().getRootMenu();
 				}
 			} catch (ActionForceStopException e) {
-				logger.log(Level.SEVERE, currentMenu.getClass().getName());
+				logger.log(Level.SEVERE, e.getMessage());
 				currentMenu = Builder.getInstance().getRootMenu();
 			}
 		}

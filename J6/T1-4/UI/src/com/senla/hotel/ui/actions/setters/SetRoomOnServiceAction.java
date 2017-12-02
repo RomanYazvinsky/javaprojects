@@ -29,7 +29,7 @@ public class SetRoomOnServiceAction implements IAction {
 			}
 
 		} catch (EmptyObjectException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

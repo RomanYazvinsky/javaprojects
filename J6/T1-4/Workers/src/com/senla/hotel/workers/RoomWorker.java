@@ -13,6 +13,7 @@ import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.repositories.RoomRepository;
 
+import utilities.CSVWorker;
 import utilities.Loader;
 import utilities.Saver;
 
@@ -80,7 +81,11 @@ public class RoomWorker {
 	}
 
 	public void export(Room room) {
-		roomRepository.export(room);
+		CSVWorker.exportRoom(room);
+	}
+	
+	public void exportAll() {
+		CSVWorker.exportRooms(roomRepository.getRooms());
 	}
 
 	public Boolean delete(Room room) {

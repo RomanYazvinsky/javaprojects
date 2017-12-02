@@ -25,7 +25,7 @@ public class SetRoomPriceAction implements IAction {
 		try {
 			SelectRoomAction.getRoom().setPricePerDay(Integer.parseInt(Input.userInput()));
 		} catch (NumberFormatException | IncorrectParameterException | EmptyObjectException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

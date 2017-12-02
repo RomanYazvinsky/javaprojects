@@ -1,4 +1,4 @@
-package com.senla.hotel.ui.actions;
+package com.senla.hotel.ui.actions.io;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -8,6 +8,7 @@ import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.facade.Facade;
+import com.senla.hotel.ui.actions.IAction;
 
 import utilities.CSVWorker;
 import utilities.Input;
@@ -25,7 +26,7 @@ public class ServiceImportAction implements IAction {
 	@Override
 	public void execute() throws ActionForceStopException {
 		try {
-			ArrayList<Service> services = CSVWorker.importService();
+			ArrayList<Service> services = CSVWorker.importServices();
 			Integer i = 1;
 			for (Service service : services) {
 				Printer.println(i.toString() + ") " + service.toString());
@@ -37,7 +38,7 @@ public class ServiceImportAction implements IAction {
 			Facade.getInstance().deleteService(service);
 			Facade.getInstance().addServiceWithID(service);
 		} catch (ActionForceStopException e) {
-			logger.log(Level.SEVERE, this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}

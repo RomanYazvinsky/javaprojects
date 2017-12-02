@@ -29,7 +29,7 @@ public class AddClientAction implements IAction {
 		try {
 			Facade.getInstance().addClient(new Client(userInput));
 		} catch (NumberFormatException | NullPointerException | IncorrectNameException  e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

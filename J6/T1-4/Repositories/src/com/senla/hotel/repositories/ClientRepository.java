@@ -10,7 +10,6 @@ import com.senla.hotel.entities.AEntity;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.EmptyObjectException;
 
-import utilities.CSVWorker;
 import utilities.IDGenerator;
 
 public class ClientRepository implements IEntityRepository {
@@ -84,16 +83,13 @@ public class ClientRepository implements IEntityRepository {
 		return clients.size();
 	}
 
-	public void export(Client client) {
-		CSVWorker.exportClient(client);
-	}
-
 	
 	
 	public void setClients(ArrayList<Client> clients) throws EmptyObjectException {
 		if (clients == null) {
-			logger.log(Level.SEVERE, "setClients");
-			throw new EmptyObjectException();
+			EmptyObjectException e = new EmptyObjectException();
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 		this.clients = new HashSet<>(clients);
 	}

@@ -29,7 +29,7 @@ public class Saver {
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "saveClients");
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
@@ -42,7 +42,7 @@ public class Saver {
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "saveOrders");
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
@@ -55,7 +55,7 @@ public class Saver {
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "saveRooms");
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
@@ -68,7 +68,7 @@ public class Saver {
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "saveServices");
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
