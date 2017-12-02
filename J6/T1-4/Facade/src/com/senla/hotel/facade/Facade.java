@@ -38,7 +38,7 @@ public class Facade {
 	private OrderWorker orderWorker;
 	private HotelProperties properties;
 	private static Facade instance;
-	
+
 	static {
 		logger = Logger.getLogger(Facade.class.getName());
 		logger.setUseParentHandlers(false);
@@ -75,7 +75,7 @@ public class Facade {
 			result = orderWorker.add(order, date);
 			return result;
 		} catch (IncorrectIDEcxeption e) {
-			logger.log(Level.SEVERE, "addOrder");
+			logger.log(Level.SEVERE, e.getMessage());
 			return false;
 		}
 	}
@@ -173,7 +173,7 @@ public class Facade {
 			return orders;
 
 		} catch (NumberFormatException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "getLastOrdersOfRoom");
+			logger.log(Level.SEVERE, e.getMessage());
 			return new ArrayList<Order>();
 		}
 	}
@@ -226,7 +226,7 @@ public class Facade {
 		try {
 			serviceWorker.load(properties.getProperty(PropertyNames.SERVICE_FILENAME.toString()));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadServices");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -234,7 +234,7 @@ public class Facade {
 		try {
 			roomWorker.load(properties.getProperty(PropertyNames.ROOM_FILENAME.toString()));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadRooms");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -242,7 +242,7 @@ public class Facade {
 		try {
 			clientWorker.load(properties.getProperty(PropertyNames.CLIENT_FILENAME.toString()));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadClient");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -250,7 +250,7 @@ public class Facade {
 		try {
 			orderWorker.load(properties.getProperty(PropertyNames.ORDER_FILENAME.toString()));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadOrders");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -265,7 +265,7 @@ public class Facade {
 		try {
 			orderWorker.save(properties.getProperty(PropertyNames.ORDER_FILENAME.toString()));
 		} catch (IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadOrders");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -273,7 +273,7 @@ public class Facade {
 		try {
 			clientWorker.save(properties.getProperty(PropertyNames.CLIENT_FILENAME.toString()));
 		} catch (IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE,"loadClient");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -281,7 +281,7 @@ public class Facade {
 		try {
 			roomWorker.save(properties.getProperty(PropertyNames.ROOM_FILENAME.toString()));
 		} catch (IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadRooms");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -289,7 +289,7 @@ public class Facade {
 		try {
 			serviceWorker.save(properties.getProperty(PropertyNames.SERVICE_FILENAME.toString()));
 		} catch (IOException | EmptyObjectException e) {
-			logger.log(Level.SEVERE, "loadServices");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -310,7 +310,7 @@ public class Facade {
 				return false;
 			}
 		} catch (EmptyObjectException e) {
-			logger.log(Level.SEVERE, "setRoomStatus");
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 		room.setStatus(status);
 		return false;
@@ -332,16 +332,34 @@ public class Facade {
 		serviceWorker.export(service);
 	}
 
+	public void exportClients() {
+		clientWorker.exportAll();
+	}
+
+	public void exportOrders() {
+		orderWorker.exportAll();
+	}
+
+	public void exportRooms() {
+		roomWorker.exportAll();
+	}
+
+	public void exportServices() {
+		serviceWorker.exportAll();
+	}
+
 	public Boolean deleteClient(Client client) {
 		return clientWorker.delete(client);
 	}
-	
+
 	public Boolean deleteOrder(Order order) {
 		return orderWorker.delete(order);
 	}
+
 	public Boolean deleteRoom(Room room) {
 		return roomWorker.delete(room);
 	}
+
 	public Boolean deleteService(Service service) {
 		return serviceWorker.delete(service);
 	}

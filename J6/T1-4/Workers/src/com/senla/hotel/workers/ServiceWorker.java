@@ -13,6 +13,7 @@ import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.repositories.ServiceRepository;
 
+import utilities.CSVWorker;
 import utilities.Loader;
 import utilities.Saver;
 
@@ -91,7 +92,11 @@ public class ServiceWorker {
 	}
 
 	public void export(Service service) {
-		serviceRepository.export(service);
+		CSVWorker.exportService(service);
+	}
+	
+	public void exportAll() {
+		CSVWorker.exportServices(serviceRepository.getServices());
 	}
 
 	public Boolean delete(Service service) {

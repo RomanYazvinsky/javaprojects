@@ -12,6 +12,7 @@ import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.repositories.ClientRepository;
 
+import utilities.CSVWorker;
 import utilities.Loader;
 import utilities.Saver;
 
@@ -79,9 +80,13 @@ public class ClientWorker {
 	}
 
 	public void export(Client client) {
-		clientRepository.export(client);
+		CSVWorker.exportClient(client);
 	}
 
+	public void exportAll() {
+		CSVWorker.exportClients(clientRepository.getClients());
+	}
+	
 	public Boolean delete(Client client) {
 		return clientRepository.delete(client);
 	}

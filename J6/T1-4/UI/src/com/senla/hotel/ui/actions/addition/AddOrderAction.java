@@ -40,7 +40,7 @@ public class AddOrderAction implements IAction {
 							new GregorianCalendar().getTime());
 		} catch (IncorrectParameterException | IncorrectIDEcxeption | NumberFormatException | EmptyObjectException
 				| ArrayIndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

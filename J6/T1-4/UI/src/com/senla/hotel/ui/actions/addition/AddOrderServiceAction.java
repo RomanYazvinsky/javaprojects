@@ -22,7 +22,7 @@ public class AddOrderServiceAction implements IAction {
 		try {
 			SelectOrderAction.getOrder().addService(SelectServiceAction.getService());
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 
 		}

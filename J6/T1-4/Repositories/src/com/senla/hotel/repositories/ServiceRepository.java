@@ -10,7 +10,6 @@ import com.senla.hotel.entities.AEntity;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.EmptyObjectException;
 
-import utilities.CSVWorker;
 import utilities.IDGenerator;
 
 public class ServiceRepository implements IEntityRepository {
@@ -96,13 +95,10 @@ public class ServiceRepository implements IEntityRepository {
 
 	public void setServices(ArrayList<Service> services) throws EmptyObjectException {
 		if (services == null) {
-			logger.log(Level.SEVERE, "setServices");
-			throw new EmptyObjectException();
+			EmptyObjectException e = new EmptyObjectException();
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 		this.services = new HashSet<>(services);
-	}
-
-	public void export(Service service) {
-		CSVWorker.exportService(service);
 	}
 }

@@ -28,7 +28,7 @@ public class SelectOrderAction implements IAction {
 			order = Facade.getInstance().getOrderByID(Integer.parseInt(Input.userInput()));
 			Printer.printOrder(order);		
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}	
 	}

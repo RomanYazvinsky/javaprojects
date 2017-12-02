@@ -37,7 +37,7 @@ public class MenuController {
 				navigator.navigate(index);
 
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
-				logger.log(Level.SEVERE, this.getClass().getName());
+				logger.log(Level.SEVERE, e.getMessage());
 				continue;
 			}
 

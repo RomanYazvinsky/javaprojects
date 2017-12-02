@@ -27,7 +27,7 @@ public class SelectServiceAction implements IAction {
 			service = Facade.getInstance().getServiceByID(Integer.parseInt(Input.userInput()));
 			Printer.printService(service);;		
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  this.getClass().getName());
+			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}	
 	}

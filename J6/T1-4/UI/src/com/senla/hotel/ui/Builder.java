@@ -1,22 +1,26 @@
 package com.senla.hotel.ui;
 
 import com.senla.hotel.facade.Facade;
-import com.senla.hotel.ui.actions.ClientExportAction;
-import com.senla.hotel.ui.actions.ClientImportAction;
 import com.senla.hotel.ui.actions.IAction;
-import com.senla.hotel.ui.actions.LoadAction;
-import com.senla.hotel.ui.actions.OrderExportAction;
-import com.senla.hotel.ui.actions.OrderImportAction;
-import com.senla.hotel.ui.actions.RoomExportAction;
-import com.senla.hotel.ui.actions.RoomImportAction;
-import com.senla.hotel.ui.actions.ServiceExportAction;
-import com.senla.hotel.ui.actions.ServiceImportAction;
 import com.senla.hotel.ui.actions.addition.AddClientAction;
 import com.senla.hotel.ui.actions.addition.AddOrderAction;
 import com.senla.hotel.ui.actions.addition.AddOrderServiceAction;
 import com.senla.hotel.ui.actions.addition.AddRoomAction;
 import com.senla.hotel.ui.actions.addition.AddRoomCloneAction;
 import com.senla.hotel.ui.actions.addition.AddServiceAction;
+import com.senla.hotel.ui.actions.io.ClientExportAction;
+import com.senla.hotel.ui.actions.io.ClientImportAction;
+import com.senla.hotel.ui.actions.io.ClientsExportAction;
+import com.senla.hotel.ui.actions.io.LoadAction;
+import com.senla.hotel.ui.actions.io.OrderExportAction;
+import com.senla.hotel.ui.actions.io.OrderImportAction;
+import com.senla.hotel.ui.actions.io.OrdersExportAction;
+import com.senla.hotel.ui.actions.io.RoomExportAction;
+import com.senla.hotel.ui.actions.io.RoomImportAction;
+import com.senla.hotel.ui.actions.io.RoomsExportAction;
+import com.senla.hotel.ui.actions.io.ServiceExportAction;
+import com.senla.hotel.ui.actions.io.ServiceImportAction;
+import com.senla.hotel.ui.actions.io.ServicesExportAction;
 import com.senla.hotel.ui.actions.printers.PrintActualClientsAction;
 import com.senla.hotel.ui.actions.printers.PrintClientServicesAction;
 import com.senla.hotel.ui.actions.printers.PrintClientsAction;
@@ -145,9 +149,11 @@ public class Builder {
 		MenuItem addOrderService = new MenuItem("--Add service", new AddOrderServiceAction());
 		MenuItem printPriceForOrder = new MenuItem("--Print price for order", new PrintPriceForOrderAction());
 		MenuItem exportOrder = new MenuItem("--Export", new OrderExportAction());
+		MenuItem exportOrders = new MenuItem("--Export all", new OrdersExportAction());
 
 		MenuItem setServicePrice = new MenuItem("--Set price", new SetServicePriceAction());
 		MenuItem exportService = new MenuItem("--Export", new ServiceExportAction());
+		MenuItem exportServices = new MenuItem("--Export", new ServicesExportAction());
 
 		MenuItem setRoomOnService = new MenuItem("--Set room on service", new SetRoomOnServiceAction());
 		MenuItem setRoomUsable = new MenuItem("--Set room usable", new SetRoomUsableAction());
@@ -155,10 +161,14 @@ public class Builder {
 		MenuItem printRoomLastOrders = new MenuItem("--Print last 3 orders", new PrintLastRoomOrdersAction());
 		MenuItem addRoomClone = new MenuItem("--Add clone", new AddRoomCloneAction());
 		MenuItem exportRoom = new MenuItem("--Export", new RoomExportAction());
+		MenuItem exportRooms = new MenuItem("--Export", new RoomsExportAction());
+
 
 		MenuItem printRoomsToAddOrder = new MenuItem("--Add order", new PrintRoomsAction());
 		MenuItem printClientServices = new MenuItem("--Print client's services", new PrintClientServicesAction());
 		MenuItem exportClient = new MenuItem("--Export", new ClientExportAction());
+		MenuItem exportClients = new MenuItem("--Export", new ClientsExportAction());
+
 		
 		MenuItem importRoom = new MenuItem("--Import room", new RoomImportAction());
 		MenuItem importOrder = new MenuItem("--Import order", new OrderImportAction());
@@ -259,6 +269,7 @@ public class Builder {
 
 		afterPrintRoomSubMenu.addMenuItem(upToRoot);
 		afterPrintRoomSubMenu.addMenuItem(selectRoom);
+		afterPrintRoomSubMenu.addMenuItem(exportRooms);
 
 		afterPrintFreeRoomSubMenu.addMenuItem(upToRoot);
 		afterPrintFreeRoomSubMenu.addMenuItem(selectRoom);
@@ -291,6 +302,7 @@ public class Builder {
 
 		afterPrintClientSubMenu.addMenuItem(upToRoot);
 		afterPrintClientSubMenu.addMenuItem(selectClient);
+		afterPrintClientSubMenu.addMenuItem(exportClients);
 
 		sortOrderSubMenu.addMenuItem(upToRoot);
 		sortOrderSubMenu.addMenuItem(printOrders);
@@ -298,6 +310,7 @@ public class Builder {
 
 		afterPrintOrderSubMenu.addMenuItem(upToRoot);
 		afterPrintOrderSubMenu.addMenuItem(selectOrder);
+		afterPrintOrderSubMenu.addMenuItem(exportOrders);
 
 		orderSubMenu.addMenuItem(upToRoot);
 		orderSubMenu.addMenuItem(printAvailableServices);
@@ -317,6 +330,7 @@ public class Builder {
 
 		afterPrintServiceSubMenu.addMenuItem(upToRoot);
 		afterPrintServiceSubMenu.addMenuItem(selectService);
+		afterPrintServiceSubMenu.addMenuItem(exportServices);
 
 		serviceSubMenu.addMenuItem(upToRoot);
 		serviceSubMenu.addMenuItem(setServicePrice);

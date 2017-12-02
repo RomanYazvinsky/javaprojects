@@ -42,7 +42,7 @@ public class MenuItem {
 		try {
 			action.execute();
 		} catch (ActionForceStopException e) {
-			logger.log(Level.SEVERE, action.getClass().getName());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
