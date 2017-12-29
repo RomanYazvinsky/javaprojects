@@ -17,7 +17,7 @@ public class MenuItem {
 	static {
 		logger = Logger.getLogger(MenuItem.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public MenuItem(String title) {

@@ -19,20 +19,20 @@ public class SelectRoomAction implements IAction {
 	static {
 		logger = Logger.getLogger(SelectRoomAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override
-	public void execute() throws ActionForceStopException {	
+	public void execute() throws ActionForceStopException {
 		try {
 			room = Facade.getInstance().getRoomByID(Integer.parseInt(Input.userInput()));
-			Printer.printRoom(room);		
+			Printer.printRoom(room);
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE,  e.getMessage());
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
-		}	
+		}
 	}
-	
+
 	public static Room getRoom() throws EmptyObjectException {
 		if (room == null) {
 			throw new EmptyObjectException();

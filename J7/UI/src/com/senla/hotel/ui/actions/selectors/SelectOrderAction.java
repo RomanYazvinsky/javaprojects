@@ -19,7 +19,7 @@ public class SelectOrderAction implements IAction {
 	static {
 		logger = Logger.getLogger(SelectOrderAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override

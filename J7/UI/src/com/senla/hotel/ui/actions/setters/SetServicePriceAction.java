@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.ActionForceStopException;
-import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectServiceAction;
 
@@ -16,15 +15,15 @@ public class SetServicePriceAction implements IAction {
 	static {
 		logger = Logger.getLogger(SetServicePriceAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override
 	public void execute() throws ActionForceStopException {
 		try {
 			SelectServiceAction.getService().setPrice(Integer.parseInt(Input.userInput()));
-		} catch (NumberFormatException | IncorrectParameterException e) {
-			logger.log(Level.SEVERE,  e.getMessage());
+		} catch (NumberFormatException e) {
+			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();
 		}
 	}

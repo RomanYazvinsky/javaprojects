@@ -20,7 +20,7 @@ public class AddRoomCloneAction implements IAction {
 	static {
 		logger = Logger.getLogger(AddRoomCloneAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override

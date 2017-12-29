@@ -1,8 +1,9 @@
 package com.senla.hotel.entities;
 
-import static com.senla.hotel.constants.Constants.logFileHandler;
+import static com.senla.hotel.constants.Constants.LOGFILE_HANDLER;
 import static com.senla.hotel.constants.Constants.roomExportFile;
 import static com.senla.hotel.constants.Constants.roomHeaderCSV;
+import static com.senla.hotel.constants.EntityColumnOrder.*;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -12,46 +13,36 @@ import com.senla.hotel.annotations.CsvEntity;
 import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
 import com.senla.hotel.constants.RoomStatus;
-import com.senla.hotel.exceptions.IncorrectParameterException;
 
 @CsvEntity(csvHeader = roomHeaderCSV, filename = roomExportFile, valueSeparator = ",", entityId = "id")
 public class Room implements IEntity, Serializable, Cloneable {
 	private static final long serialVersionUID = 6938497574865077752L;
-	private static final int idColumn = 0;
-	private static final int numberColumn = 1;
-	private static final int capacityColumn = 2;
-	private static final int starColumn = 3;
-	private static final int statusColumn = 4;
-	private static final int pricePerDayColumn = 5;
+
 	private static Logger logger;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = idColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ID)
 	private Integer id;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = numberColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ROOM_NUMBER)
 	private Integer number;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = capacityColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ROOM_CAPACITY)
 	private Integer capacity;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = starColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ROOM_STAR)
 	private Integer star;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = statusColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ROOM_STATUS)
 	private RoomStatus status;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = pricePerDayColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ROOM_PRICE)
 	private Integer pricePerDay;
 	static {
 		logger = Logger.getLogger(Room.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(logFileHandler);
+		logger.addHandler(LOGFILE_HANDLER);
 	}
 
 	public Room() {
 
 	}
 
-	public Room(int number, int capacity, int star, int pricePerDay) throws IncorrectParameterException {
+	public Room(int number, int capacity, int star, int pricePerDay) {
 		super();
-		if (number < 1 || capacity <= 0 || star <= 0 || pricePerDay <= 0) {
-			logger.log(Level.SEVERE, "incorrect parameters");
-			throw new IncorrectParameterException();
-		}
 		this.number = number;
 		this.capacity = capacity;
 		this.star = star;
@@ -92,35 +83,22 @@ public class Room implements IEntity, Serializable, Cloneable {
 		return true;
 	}
 
-	public Room(String data) {
-		String[] roomData = data.split(",");
-		try {
-			id = Integer.parseInt(roomData[idColumn]);
-			star = Integer.parseInt(roomData[starColumn]);
-			capacity = Integer.parseInt(roomData[capacityColumn]);
-			status = RoomStatus.valueOf(roomData[statusColumn]);
-			pricePerDay = Integer.parseInt(roomData[pricePerDayColumn]);
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		}
-
-	}
-
 	public Integer getPricePerDay() {
 		return pricePerDay;
 	}
 
-	public void setPricePerDay(int pricePerDay) throws IncorrectParameterException {
-		if (pricePerDay <= 0) {
-			logger.log(Level.SEVERE, "setPricePerDay");
-			throw new IncorrectParameterException();
-		}
+	public void setPricePerDay(int pricePerDay) {
 		this.pricePerDay = pricePerDay;
 
 	}
 
 	public Integer getCapacity() {
 		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+
 	}
 
 	public RoomStatus getStatus() {
@@ -133,6 +111,11 @@ public class Room implements IEntity, Serializable, Cloneable {
 
 	public Integer getStar() {
 		return star;
+	}
+
+	public void setStar(int star) {
+		this.star = star;
+
 	}
 
 	public Boolean isOnService() {
@@ -148,7 +131,6 @@ public class Room implements IEntity, Serializable, Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		Room room;
 		room = (Room) super.clone();
-		room.status = RoomStatus.FREE_NOW;
 		return room;
 	}
 
@@ -160,6 +142,14 @@ public class Room implements IEntity, Serializable, Cloneable {
 	@Override
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public void setId(String id) {
+		try {
+			this.id = Integer.valueOf(id);
+		} catch (NumberFormatException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 	}
 
 }

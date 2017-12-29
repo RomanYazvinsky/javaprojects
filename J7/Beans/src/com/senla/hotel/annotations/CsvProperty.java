@@ -1,6 +1,9 @@
 package com.senla.hotel.annotations;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import com.senla.hotel.constants.PropertyType;
 
@@ -12,4 +15,8 @@ public @interface CsvProperty {
 	public int columnNumber();
 
 	public String getterMethod() default "";
+	
+	public String setterMethod() default "valueOf";
+
+	public String storagingClass() default "";
 }

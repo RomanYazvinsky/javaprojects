@@ -19,35 +19,26 @@ import java.util.logging.Logger;
 import com.senla.hotel.annotations.CsvEntity;
 import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.Constants;
+import com.senla.hotel.constants.PropertyType;
 import com.senla.hotel.entities.IEntity;
+
+import utilities.EntityParser;
 
 public class CSVModule {
 	private static Logger logger;
 	static {
 		logger = Logger.getLogger(CSVModule.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	private static CsvEntity defineCsvEntity(Object obj) {
-		Annotation[] objAnnotations = obj.getClass().getAnnotations();
-		for (Annotation annotation : objAnnotations) {
-			if (annotation.annotationType().equals(CsvEntity.class)) {
-				return (CsvEntity) annotation;
-			}
-		}
-		return null;
+		return (CsvEntity) obj.getClass().getAnnotation(CsvEntity.class);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static CsvEntity defineCsvEntity(Class csvClass) {
-		Annotation[] objAnnotations = csvClass.getAnnotations();
-		for (Annotation annotation : objAnnotations) {
-			if (annotation.annotationType().equals(CsvEntity.class)) {
-				return (CsvEntity) annotation;
-			}
-		}
-		return null;
+		return (CsvEntity) csvClass.getAnnotation(CsvEntity.class);
 	}
 
 	private static void write(String path, String output) {
@@ -120,7 +111,7 @@ public class CSVModule {
 						break;
 					}
 					case COLLECTION_PROPERTY: {
-						fieldOrder[csvProperty.columnNumber()] = defineCollection(iEntity, csvEntity.valueSeparator(),
+						fieldOrder[csvProperty.columnNumber()] = defineCollection(field.get(entity), csvEntity.valueSeparator(),
 								csvProperty.getterMethod());
 						break;
 					}
@@ -141,18 +132,71 @@ public class CSVModule {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private static Object fillFields(Object entity, String data) {
+		Field[] fields = entity.getClass().getDeclaredFields();
+		String[] values = data.split(",");
+		try {
+			for (int i = 0; i < fields.length; i++) {
+				fields[i].setAccessible(true);
+				CsvProperty csvProperty = fields[i].getAnnotation(CsvProperty.class);
+				if (csvProperty != null) {
+					Class fieldClass = fields[i].getType();
+
+					if (csvProperty.propertyType() == PropertyType.SIMPLE_PROPERTY) {
+						fields[i].set(entity, EntityParser.defineField(fieldClass, values[csvProperty.columnNumber()]));
+					}
+					if (csvProperty.propertyType() == PropertyType.COMPOSITE_PROPERTY) {
+						Object field;
+						field = EntityParser.defineField(fieldClass, values[csvProperty.columnNumber()]);
+						if (field == null) {
+							field = fieldClass.newInstance();
+							fieldClass.getMethod(csvProperty.setterMethod(), String.class).invoke(field,
+									values[csvProperty.columnNumber()]);
+						}
+						fields[i].set(entity, field);
+
+					}
+
+					if (csvProperty.propertyType() == PropertyType.COLLECTION_PROPERTY) {
+						List field = (List) fieldClass.newInstance();
+						Class storagingType = Class.forName(csvProperty.storagingClass());
+						Method setter = storagingType.getDeclaredMethod(csvProperty.setterMethod(), String.class);
+						for(int k = csvProperty.columnNumber(); k < values.length; k++) {
+							Object storagingEntity = storagingType.newInstance();
+							 setter.invoke(storagingEntity, values[k]);
+							 field.add(storagingEntity);
+						}
+						fields[i].set(entity, field);
+					}
+				}
+			}
+			return entity;
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException | ClassNotFoundException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			return null;
+		}
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static ArrayList<Object> importAll(Class csvClass) {
 		CsvEntity csvEntity = defineCsvEntity(csvClass);
+		if (csvEntity == null) {
+			return null;
+		}
 		ArrayList<Object> entities = new ArrayList<>();
 		try {
 			List<String> entityParameter = Files.readAllLines(Paths.get(csvEntity.filename()), StandardCharsets.UTF_8);
 			for (int i = 1; i < entityParameter.size(); i++) {
-				entities.add(csvClass.getDeclaredConstructor(String.class).newInstance(entityParameter.get(i)));
+				// Object entity = EntityParser.parse(csvClass, entityParameter.get(i));
+				Object entity = fillFields(csvClass.newInstance(), entityParameter.get(i));
+				if (entity != null) {
+					entities.add(entity);
+				}
 			}
 			return entities;
-		} catch (IOException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			return null;
 		}

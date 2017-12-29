@@ -1,9 +1,14 @@
 package com.senla.hotel.entities;
 
-import static com.senla.hotel.constants.Constants.logFileHandler;
-import static com.senla.hotel.constants.Constants.orderDataDir;
+import static com.senla.hotel.constants.Constants.LOGFILE_HANDLER;
 import static com.senla.hotel.constants.Constants.orderExportFile;
 import static com.senla.hotel.constants.Constants.orderHeaderCSV;
+import static com.senla.hotel.constants.EntityColumnOrder.ID;
+import static com.senla.hotel.constants.EntityColumnOrder.ORDER_CLIENT;
+import static com.senla.hotel.constants.EntityColumnOrder.ORDER_FROM;
+import static com.senla.hotel.constants.EntityColumnOrder.ORDER_ROOM;
+import static com.senla.hotel.constants.EntityColumnOrder.ORDER_SERVICES;
+import static com.senla.hotel.constants.EntityColumnOrder.ORDER_TO;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,58 +19,41 @@ import java.util.logging.Logger;
 import com.senla.hotel.annotations.CsvEntity;
 import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
-import com.senla.hotel.exceptions.IncorrectParameterException;
 
-@CsvEntity(csvHeader = orderHeaderCSV, filename = orderDataDir + orderExportFile, valueSeparator = ",", entityId = "id")
+@CsvEntity(csvHeader = orderHeaderCSV, filename = orderExportFile, valueSeparator = ",", entityId = "id")
 
 public class Order implements Serializable, IEntity {
 	private static final long serialVersionUID = -4420394137579611748L;
-	private static final int idColumn = 0;
-	private static final int roomIdColumn = 1;
-	private static final int clientIdColumn = 2;
-	private static final int orderFromColumn = 3;
-	private static final int orderToColumn = 4;
-	private static final int servicesIdColumn = 5;
+
 	private static Logger logger;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = idColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ID)
 	private Integer id;
-	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = roomIdColumn)
+	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = ORDER_ROOM, setterMethod = "setId", getterMethod = "getId")
 	private Room room;
-	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = clientIdColumn)
+	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = ORDER_CLIENT, setterMethod = "setId", getterMethod = "getId")
 	private Client client;
-	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, getterMethod = "getTime", columnNumber = orderFromColumn)
+	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, getterMethod = "getTime", setterMethod = "setTime", columnNumber = ORDER_FROM)
 	private Date orderFrom;
-	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, getterMethod = "getTime", columnNumber = orderToColumn)
+	@CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, getterMethod = "getTime", setterMethod = "setTime", columnNumber = ORDER_TO)
 	private Date orderTo;
-	@CsvProperty(propertyType = PropertyType.COLLECTION_PROPERTY, getterMethod = "getId", columnNumber = servicesIdColumn)
+	@CsvProperty(propertyType = PropertyType.COLLECTION_PROPERTY, setterMethod = "setId", getterMethod = "getId", columnNumber = ORDER_SERVICES, storagingClass = "com.senla.hotel.entities.Service")
 	private ArrayList<Service> services;
 	static {
 		logger = Logger.getLogger(Order.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(logFileHandler);
+		logger.addHandler(LOGFILE_HANDLER);
 	}
 
 	public Order() {
 
 	}
 
-	public Order(Room room, Client client, Date orderFrom, Date orderTo, ArrayList<Service> services)
-			throws IncorrectIDEcxeption, IncorrectParameterException {
+	public Order(Room room, Client client, Date orderFrom, Date orderTo, ArrayList<Service> services) {
 		super();
-		if (room == null || client == null || orderFrom == null || orderTo == null) {
-			logger.log(Level.SEVERE, "incorrect parameters");
-			throw new IncorrectParameterException();
-		}
 		this.room = room;
 		this.client = client;
-		if (orderFrom.before(orderTo)) {
-			this.orderFrom = orderFrom;
-			this.orderTo = orderTo;
-		} else {
-			this.orderFrom = orderTo;
-			this.orderTo = orderFrom;
-		}
+		this.orderFrom = orderFrom;
+		this.orderTo = orderTo;
 		if (services == null) {
 			this.services = new ArrayList<>();
 		} else {
@@ -73,31 +61,16 @@ public class Order implements Serializable, IEntity {
 		}
 	}
 
-	public Order(String data) {
-		super();
-		String[] orderData = data.split(",");
-		if (orderData.length > 4) {
-			services = new ArrayList<>();
-			room = new Room();
-			client = new Client();
-			try {
-				id = Integer.parseInt(orderData[idColumn]);
-				room.setId(Integer.parseInt(orderData[roomIdColumn]));
-				client.setId(Integer.parseInt(orderData[clientIdColumn]));
-				orderFrom = new Date(Long.parseLong(orderData[orderFromColumn]));
-				orderTo = new Date(Long.parseLong(orderData[orderToColumn]));
-				for (int i = servicesIdColumn; i < orderData.length; i++) {
-					Service service = new Service();
-					services.add(service);
-					service.setId(Integer.parseInt(orderData[i]));
-				}
-
-			} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-		} else {
-			logger.log(Level.SEVERE, "Incorrect data");
+	private String getServicesString() {
+		if (services == null) {
+			return "";
 		}
+		StringBuilder result = new StringBuilder();
+		for (Service service : services) {
+			if (service != null)
+				result.append(", ").append(service.toString());
+		}
+		return result.toString();
 	}
 
 	public void setRoom(Room room) {
@@ -141,9 +114,7 @@ public class Order implements Serializable, IEntity {
 	}
 
 	public void setOrderTo(Date orderTo) {
-		if (orderFrom.before(orderTo)) {
-			this.orderTo = orderTo;
-		}
+		this.orderTo = orderTo;
 	}
 
 	public Boolean isActive(Date now) {
@@ -199,18 +170,6 @@ public class Order implements Serializable, IEntity {
 		return true;
 	}
 
-	private String getServicesString() {
-		if (services == null) {
-			return "";
-		}
-		StringBuilder result = new StringBuilder();
-		for (Service service : services) {
-			if (service != null)
-				result.append(", ").append(service.toString());
-		}
-		return result.toString();
-	}
-
 	@Override
 	public String toString() {
 		return id + ", " + room.getId() + ", " + client.getId() + ", " + orderFrom.getTime() + ", " + orderTo.getTime()
@@ -225,6 +184,14 @@ public class Order implements Serializable, IEntity {
 	@Override
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public void setId(String id) {
+		try {
+			this.id = Integer.valueOf(id);
+		} catch (NumberFormatException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 	}
 
 }
