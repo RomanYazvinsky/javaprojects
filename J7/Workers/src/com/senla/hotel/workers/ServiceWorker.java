@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.IServiceWorker;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.EmptyObjectException;
@@ -18,28 +19,40 @@ import com.senla.hotel.utilities.CSVModule;
 import utilities.Loader;
 import utilities.Saver;
 
-public class ServiceWorker {
+public class ServiceWorker implements IServiceWorker {
 	private static Logger logger;
 	private ServiceRepository serviceRepository;
 	static {
 		logger = Logger.getLogger(ServiceWorker.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public ServiceWorker() {
 		serviceRepository = ServiceRepository.getInstance();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#sort(java.util.ArrayList, java.util.Comparator)
+	 */
+	@Override
 	public ArrayList<Service> sort(ArrayList<Service> services, Comparator<Service> comparator) {
 		Collections.sort(services, comparator);
 		return services;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#add(com.senla.hotel.entities.Service, boolean)
+	 */
+	@Override
 	public Boolean add(Service service, boolean addId) {
 		return serviceRepository.add(service, addId);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#getPriceForServices(java.util.ArrayList)
+	 */
+	@Override
 	public Integer getPriceForServices(ArrayList<Service> services) {
 		if (services == null || services.size() == 0) {
 			return 0;
@@ -51,6 +64,10 @@ public class ServiceWorker {
 		return price;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#getServiceByID(java.lang.Integer)
+	 */
+	@Override
 	public Service getServiceByID(Integer serviceID) {
 		if (serviceID == null) {
 			return null;
@@ -58,10 +75,18 @@ public class ServiceWorker {
 		return serviceRepository.getByID(serviceID);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#getServices()
+	 */
+	@Override
 	public ArrayList<Service> getServices() {
 		return serviceRepository.get();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#toStringArray(java.util.ArrayList)
+	 */
+	@Override
 	public String[] toStringArray(ArrayList<Service> services) {
 		List<String> result = new ArrayList<>();
 		for (Service service : services) {
@@ -70,6 +95,10 @@ public class ServiceWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#load(java.lang.String)
+	 */
+	@Override
 	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
 			serviceRepository.set(Loader.loadServices(path));
@@ -79,6 +108,10 @@ public class ServiceWorker {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#save(java.lang.String)
+	 */
+	@Override
 	public void save(String path) throws IOException {
 		try {
 			Saver.saveServices(path, serviceRepository.get());
@@ -87,6 +120,10 @@ public class ServiceWorker {
 			throw e;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#importAll()
+	 */
+	@Override
 	public ArrayList<Service> importAll() throws EmptyObjectException {
 		ArrayList<Service> clients = new ArrayList<>();
 		CSVModule.importAll(Service.class).forEach(new Consumer<Object>() {
@@ -99,10 +136,18 @@ public class ServiceWorker {
 		return clients;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#exportAll()
+	 */
+	@Override
 	public void exportAll() {
 		CSVModule.exportAll(getServices());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IServiceWorker#delete(com.senla.hotel.entities.Service)
+	 */
+	@Override
 	public Boolean delete(Service service) {
 		return serviceRepository.delete(service);
 	}

@@ -12,7 +12,6 @@ public class OrdersExportAction implements IAction {
 		Facade.getInstance().exportClients();
 		Facade.getInstance().exportRooms();
 		Facade.getInstance().exportServices();
-
 	}
 
 }

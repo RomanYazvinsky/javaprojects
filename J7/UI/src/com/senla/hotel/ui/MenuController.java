@@ -17,7 +17,7 @@ public class MenuController {
 	static {
 		logger = Logger.getLogger(MenuController.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public MenuController() {

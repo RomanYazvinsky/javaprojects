@@ -1,8 +1,10 @@
 package com.senla.hotel.entities;
 
+import static com.senla.hotel.constants.Constants.LOGFILE_HANDLER;
 import static com.senla.hotel.constants.Constants.clientExportFile;
 import static com.senla.hotel.constants.Constants.clientHeaderCSV;
-import static com.senla.hotel.constants.Constants.logFileHandler;
+import static com.senla.hotel.constants.EntityColumnOrder.ID;
+import static com.senla.hotel.constants.EntityColumnOrder.NAME;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -11,22 +13,19 @@ import java.util.logging.Logger;
 import com.senla.hotel.annotations.CsvEntity;
 import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
-import com.senla.hotel.exceptions.IncorrectNameException;
 
 @CsvEntity(csvHeader = clientHeaderCSV, filename = clientExportFile, valueSeparator = ",", entityId = "getId")
 public class Client implements Serializable, IEntity {
 	private static final long serialVersionUID = 1676886118386345127L;
-	private static final int idColumn = 0;
-	private static final int nameColumn = 1;
 	private static Logger logger;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = idColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = ID)
 	private Integer id;
-	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = nameColumn)
+	@CsvProperty(propertyType = PropertyType.SIMPLE_PROPERTY, columnNumber = NAME)
 	private String name;
 	static {
 		logger = Logger.getLogger(Client.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(logFileHandler);
+		logger.addHandler(LOGFILE_HANDLER);
 	}
 
 	public Client() {
@@ -35,32 +34,14 @@ public class Client implements Serializable, IEntity {
 
 	public Client(String name) {
 		super();
-		if (name == null || name.isEmpty()) {
-			logger.log(Level.SEVERE, "incorrect name");
-		} else {
-			String[] params = name.split(",");
-			if (params.length > 1) {
-				try {
-					this.id = Integer.parseInt(params[idColumn]);
-					this.name = params[nameColumn].trim();
-				} catch (SecurityException | NumberFormatException e) {
-					logger.log(Level.SEVERE, "incorrect name");
-				}
-			} else {
-				this.name = name;
-			}
-		}
+		this.name = name;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) throws IncorrectNameException {
-		if (name == null || name.isEmpty()) {
-			logger.log(Level.SEVERE, "incorrect name");
-			throw new IncorrectNameException();
-		}
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -91,7 +72,7 @@ public class Client implements Serializable, IEntity {
 
 	@Override
 	public String toString() {
-		return id + "," + name;
+		return id + ", " + name;
 	}
 
 	@Override
@@ -102,6 +83,14 @@ public class Client implements Serializable, IEntity {
 	@Override
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public void setId(String id) {
+		try {
+			this.id = Integer.valueOf(id);
+		} catch (NumberFormatException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 	}
 
 }

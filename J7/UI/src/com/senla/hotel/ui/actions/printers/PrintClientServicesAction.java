@@ -22,7 +22,7 @@ public class PrintClientServicesAction implements IAction {
 	static {
 		logger = Logger.getLogger(ServiceImportAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 	@Override
 	public void execute() throws ActionForceStopException {

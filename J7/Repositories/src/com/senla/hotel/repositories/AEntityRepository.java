@@ -15,7 +15,7 @@ public abstract class AEntityRepository<T extends IEntity> {
 	static {
 		logger = Logger.getLogger(AEntityRepository.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	protected AEntityRepository() {

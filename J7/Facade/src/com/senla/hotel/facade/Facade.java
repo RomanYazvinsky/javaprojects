@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.IClientWorker;
+import com.senla.hotel.api.IOrderWorker;
+import com.senla.hotel.api.IRoomWorker;
+import com.senla.hotel.api.IServiceWorker;
 import com.senla.hotel.comparators.client.ClientNameComparator;
 import com.senla.hotel.comparators.order.OrderClientNameComparator;
 import com.senla.hotel.comparators.order.OrderDateComparator;
@@ -25,33 +29,31 @@ import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
 import com.senla.hotel.properties.HotelProperties;
-import com.senla.hotel.workers.ClientWorker;
-import com.senla.hotel.workers.OrderWorker;
-import com.senla.hotel.workers.RoomWorker;
-import com.senla.hotel.workers.ServiceWorker;
+
+import utilities.DependencyInjector;
 
 public class Facade {
 	private static Logger logger;
-	private RoomWorker roomWorker;
-	private ClientWorker clientWorker;
-	private ServiceWorker serviceWorker;
-	private OrderWorker orderWorker;
+	private IRoomWorker roomWorker;
+	private IClientWorker clientWorker;
+	private IServiceWorker serviceWorker;
+	private IOrderWorker orderWorker;
 	private HotelProperties properties;
 	private static Facade instance;
 
 	static {
 		logger = Logger.getLogger(Facade.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	private Facade() {
-		roomWorker = new RoomWorker();
-		clientWorker = new ClientWorker();
-		serviceWorker = new ServiceWorker();
-		orderWorker = new OrderWorker();
+		roomWorker = (IRoomWorker) DependencyInjector.newInstance(IRoomWorker.class);
+		clientWorker = (IClientWorker) DependencyInjector.newInstance(IClientWorker.class);
+		serviceWorker = (IServiceWorker) DependencyInjector.newInstance(IServiceWorker.class);
+		orderWorker = (IOrderWorker)DependencyInjector.newInstance(IOrderWorker.class);
 		try {
-			properties = HotelProperties.getInstance();
+			properties = HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}

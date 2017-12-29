@@ -11,7 +11,7 @@ public class Input {
 	static {
 		logger = Logger.getLogger(Input.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public static Scanner input = new Scanner(System.in);

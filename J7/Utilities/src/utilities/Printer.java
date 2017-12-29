@@ -5,8 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.senla.hotel.entities.IEntity;
 import com.senla.hotel.entities.Client;
+import com.senla.hotel.entities.IEntity;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;

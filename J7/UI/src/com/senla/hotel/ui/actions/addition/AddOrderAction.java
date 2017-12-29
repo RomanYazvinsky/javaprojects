@@ -9,8 +9,6 @@ import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
-import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.facade.Facade;
 import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectClientAction;
@@ -26,7 +24,7 @@ public class AddOrderAction implements IAction {
 	static {
 		logger = Logger.getLogger(AddOrderAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override
@@ -38,7 +36,7 @@ public class AddOrderAction implements IAction {
 					.addOrder(new Order(SelectRoomAction.getRoom(), SelectClientAction.getClient(),
 							DateCreator.parseString(params[0].trim()), DateCreator.parseString(params[1].trim()), null),
 							new GregorianCalendar().getTime());
-		} catch (IncorrectParameterException | IncorrectIDEcxeption | NumberFormatException | EmptyObjectException
+		} catch ( NumberFormatException | EmptyObjectException
 				| ArrayIndexOutOfBoundsException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();

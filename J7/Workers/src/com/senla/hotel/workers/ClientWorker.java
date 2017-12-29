@@ -8,33 +8,38 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.IClientWorker;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.EmptyObjectException;
+import com.senla.hotel.repositories.AEntityRepository;
 import com.senla.hotel.repositories.ClientRepository;
 import com.senla.hotel.utilities.CSVModule;
-import com.senla.hotel.repositories.AEntityRepository;
 
 import utilities.Loader;
 import utilities.Saver;
 
-public class ClientWorker {
+public class ClientWorker implements IClientWorker {
 	private static Logger logger;
 	private AEntityRepository<Client> clientRepository;
 	static {
 		logger = Logger.getLogger(ClientWorker.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public ClientWorker() {
 		clientRepository = ClientRepository.getInstance();
 	}
 
+
+	
 	public Boolean add(Client client, boolean addId) {
 		return clientRepository.add(client, addId);
 	}
 
+
+	
 	public Client getClientByID(Integer clientID) {
 		if (clientID == null) {
 			return null;
@@ -42,15 +47,19 @@ public class ClientWorker {
 		return clientRepository.getByID(clientID);
 	}
 
+
+	
 	public ArrayList<Client> sort(ArrayList<Client> clients, Comparator<Client> comparator) {
 		Collections.sort(clients, comparator);
 		return clients;
 	}
 
+	
 	public ArrayList<Client> getClients() {
 		return new ArrayList<>(clientRepository.get());
 	}
 
+	
 	public String[] toStringArray(ArrayList<Client> clients) {
 		ArrayList<String> result = new ArrayList<>();
 		clients.forEach((Client client) -> {
@@ -59,6 +68,10 @@ public class ClientWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IClientWorker#load(java.lang.String)
+	 */
+	
 	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
 			clientRepository.set(Loader.loadClients(path));
@@ -68,6 +81,10 @@ public class ClientWorker {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IClientWorker#save(java.lang.String)
+	 */
+	
 	public void save(String path) throws IOException {
 		try {
 			Saver.saveClients(path, clientRepository.get());
@@ -77,6 +94,10 @@ public class ClientWorker {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IClientWorker#importAll()
+	 */
+	
 	public ArrayList<Client> importAll() throws EmptyObjectException {
 		ArrayList<Client> clients = new ArrayList<>();
 		CSVModule.importAll(Client.class).forEach(new Consumer<Object>() {
@@ -89,10 +110,18 @@ public class ClientWorker {
 		return clients;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IClientWorker#exportAll()
+	 */
+	
 	public void exportAll() {
 		CSVModule.exportAll(getClients());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.senla.hotel.workers.IClientWorker#delete(com.senla.hotel.entities.Client)
+	 */
+	
 	public Boolean delete(Client client) {
 		return clientRepository.delete(client);
 	}

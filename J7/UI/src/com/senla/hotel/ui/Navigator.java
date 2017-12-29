@@ -17,7 +17,7 @@ public class Navigator {
 	static {
 		logger = Logger.getLogger(Navigator.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	private Navigator(Menu rootMenu) {

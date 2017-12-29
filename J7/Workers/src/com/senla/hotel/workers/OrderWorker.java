@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.IOrderWorker;
 import com.senla.hotel.comparators.order.OrderDateComparator;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.RoomStatus;
@@ -20,6 +21,7 @@ import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.repositories.AEntityRepository;
 import com.senla.hotel.repositories.ClientRepository;
 import com.senla.hotel.repositories.OrderRepository;
 import com.senla.hotel.repositories.RoomRepository;
@@ -29,16 +31,16 @@ import com.senla.hotel.utilities.CSVModule;
 import utilities.Loader;
 import utilities.Saver;
 
-public class OrderWorker {
+public class OrderWorker implements IOrderWorker {
 	private static Logger logger;
-	private OrderRepository orderRepository;
-	private ClientRepository clientRepository;
-	private RoomRepository roomRepository;
-	private ServiceRepository serviceRepository;
+	private AEntityRepository<Order> orderRepository;
+	private AEntityRepository<Client> clientRepository;
+	private AEntityRepository<Room> roomRepository;
+	private AEntityRepository<Service> serviceRepository;
 	static {
 		logger = Logger.getLogger(OrderWorker.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public OrderWorker() {
@@ -64,6 +66,7 @@ public class OrderWorker {
 		return rooms;
 	}
 
+	@Override
 	public ArrayList<Order> selectByClient(Client client) {
 		ArrayList<Order> result = new ArrayList<>();
 		for (Order order : orderRepository.get()) {
@@ -74,6 +77,7 @@ public class OrderWorker {
 		return result;
 	}
 
+	@Override
 	public ArrayList<Order> selectByRoom(Room room) {
 		ArrayList<Order> result = new ArrayList<>();
 		for (Order order : orderRepository.get()) {
@@ -84,11 +88,13 @@ public class OrderWorker {
 		return result;
 	}
 
+	@Override
 	public ArrayList<Order> sort(ArrayList<Order> list, Comparator<Order> comparator) {
 		Collections.sort(list, comparator);
 		return list;
 	}
 
+	@Override
 	public ArrayList<Order> getLastClientsOfRoom(Room room, int clientCount) {
 		ArrayList<Order> lastOrders = new ArrayList<>();
 		for (Order order : sort(selectByRoom(room), new OrderDateComparator())) {
@@ -99,6 +105,7 @@ public class OrderWorker {
 		return lastOrders;
 	}
 
+	@Override
 	public Order getActualOrder(Client client, Date now) {
 		for (Order order : selectByClient(client)) {
 			if (order.isActive(now)) {
@@ -108,6 +115,12 @@ public class OrderWorker {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#getOrderByID(java.lang.Integer)
+	 */
+	@Override
 	public Order getOrderByID(Integer orderID) {
 		if (orderID == null) {
 			return null;
@@ -115,6 +128,12 @@ public class OrderWorker {
 		return (Order) orderRepository.getByID(orderID);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#getActualOrders(java.util.Date)
+	 */
+	@Override
 	public ArrayList<Order> getActualOrders(Date now) {
 		ArrayList<Order> actualOrders = new ArrayList<Order>(orderRepository.get());
 		for (Iterator<Order> i = actualOrders.iterator(); i.hasNext();) {
@@ -126,14 +145,33 @@ public class OrderWorker {
 		return actualOrders;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#getActualClients(java.util.Date)
+	 */
+	@Override
 	public ArrayList<Client> getActualClients(Date now) {
 		return makeClientList(getActualOrders(now));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.senla.hotel.workers.IOrderWorker#getActualClientCount(java.util.Date)
+	 */
+	@Override
 	public Integer getActualClientCount(Date now) {
 		return getActualClients(now).size();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#getFreeRooms(java.util.Date)
+	 */
+	@Override
 	public ArrayList<Room> getFreeRooms(Date date) {
 		ArrayList<Room> usedRooms = makeRoomList(getActualOrders(date));
 		ArrayList<Room> freeRooms = new ArrayList<Room>(roomRepository.get());
@@ -146,6 +184,7 @@ public class OrderWorker {
 		return freeRooms;
 	}
 
+	@Override
 	public Integer getPriceForRoom(Order order) {
 		if (order == null)
 			return 0;
@@ -164,9 +203,10 @@ public class OrderWorker {
 		return clientCount < order.getRoom().getCapacity();
 	}
 
+	@Override
 	public Boolean add(Order order, Date date) throws IncorrectIDEcxeption {
 		if (order.getRoom() == null || order.getRoom().getStatus().equals(RoomStatus.ONSERVICE_NOW)
-				|| order.getClient() == null || !serviceRepository.checkServices(order.getServices())
+				|| order.getClient() == null || !((ServiceRepository)serviceRepository).checkServices(order.getServices())
 				|| !isRoomAvailable(order) || !clientRepository.get().contains(order.getClient())
 				|| !roomRepository.get().contains(order.getRoom())) {
 			return false;
@@ -174,10 +214,18 @@ public class OrderWorker {
 		return orderRepository.add(order, true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#add(com.senla.hotel.entities.Order,
+	 * boolean)
+	 */
+	@Override
 	public Boolean add(Order order, boolean addId) {
 		return orderRepository.add(order, addId);
 	}
 
+	@Override
 	public ArrayList<Service> getServicesOfClient(Client client) {
 		ArrayList<Service> result = new ArrayList<Service>();
 		for (Order order : selectByClient(client)) {
@@ -186,19 +234,28 @@ public class OrderWorker {
 		return result;
 	}
 
+	@Override
 	public Order getOrderById(Integer id) {
 		return (Order) orderRepository.getByID(id);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#getOrders()
+	 */
+	@Override
 	public ArrayList<Order> getOrders() {
 		return orderRepository.get();
 	}
 
+	@Override
 	public Boolean closeOrder(Order order, Date now) {
 		order.setOrderTo(now);
 		return true;
 	}
 
+	@Override
 	public Integer getPriceForServices(Order order) {
 		Integer price = 0;
 		if (order != null) {
@@ -209,6 +266,12 @@ public class OrderWorker {
 		return price;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#toStringArray(java.util.ArrayList)
+	 */
+	@Override
 	public String[] toStringArray(ArrayList<Order> orders) {
 		List<String> result = new ArrayList<>();
 		for (Order order : orders) {
@@ -217,6 +280,12 @@ public class OrderWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#load(java.lang.String)
+	 */
+	@Override
 	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
 			orderRepository.set(Loader.loadOrders(path));
@@ -226,6 +295,12 @@ public class OrderWorker {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#save(java.lang.String)
+	 */
+	@Override
 	public void save(String path) throws IOException {
 		try {
 			Saver.saveOrders(path, orderRepository.get());
@@ -234,30 +309,38 @@ public class OrderWorker {
 			throw e;
 		}
 	}
-	public ArrayList<Order>  importAll() throws EmptyObjectException {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#importAll()
+	 */
+	@Override
+	public ArrayList<Order> importAll() throws EmptyObjectException {
 		ArrayList<Order> orders = new ArrayList<>();
-		
+
 		CSVModule.importAll(Order.class).forEach(new Consumer<Object>() {
 
 			@Override
 			public void accept(Object arg0) {
 				Order order = (Order) arg0;
-				ArrayList<Service> services = new ArrayList<>();
-				order.setClient(clientRepository.getByID(order.getClient().getId()));
-				order.setRoom(roomRepository.getByID(order.getRoom().getId()));
-				for (int i = 0; i < order.getServices().size(); i++) {
-					services.add(serviceRepository.getByID(order.getServices().get(i).getId()));
-				}
-				order.setServices(services);
 				orders.add(order);
 			}
 		});
 		return orders;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.senla.hotel.workers.IOrderWorker#exportAll()
+	 */
+	@Override
 	public void exportAll() {
 		CSVModule.exportAll(getOrders());
 	}
 
+	@Override
 	public Boolean delete(Order order) {
 		return orderRepository.delete(order);
 	}

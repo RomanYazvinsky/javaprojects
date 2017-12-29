@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.exceptions.IncorrectParameterException;
 import com.senla.hotel.ui.actions.IAction;
 import com.senla.hotel.ui.actions.selectors.SelectRoomAction;
 
@@ -17,14 +16,14 @@ public class SetRoomPriceAction implements IAction {
 	static {
 		logger = Logger.getLogger(SetRoomPriceAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override
 	public void execute() throws ActionForceStopException {
 		try {
 			SelectRoomAction.getRoom().setPricePerDay(Integer.parseInt(Input.userInput()));
-		} catch (NumberFormatException | IncorrectParameterException | EmptyObjectException e) {
+		} catch (NumberFormatException | EmptyObjectException e) {
 			logger.log(Level.SEVERE,  e.getMessage());
 			throw new ActionForceStopException();
 		}

@@ -18,7 +18,7 @@ public class Saver {
 	static {
 		logger = Logger.getLogger(Saver.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public static void saveClients(String path, ArrayList<Client> clients) throws IOException {

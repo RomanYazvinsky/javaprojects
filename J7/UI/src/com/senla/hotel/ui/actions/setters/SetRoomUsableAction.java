@@ -19,7 +19,7 @@ public class SetRoomUsableAction implements IAction {
 	static {
 		logger = Logger.getLogger(SetRoomUsableAction.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	@Override

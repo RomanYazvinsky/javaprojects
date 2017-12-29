@@ -12,7 +12,7 @@ public class DateCreator {
 	static {
 		logger = Logger.getLogger(DateCreator.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
 	public static Date parseString(String dateString) {

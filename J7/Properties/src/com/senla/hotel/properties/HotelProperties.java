@@ -10,27 +10,26 @@ import com.senla.hotel.constants.Constants;
 import com.senla.hotel.exceptions.EmptyObjectException;
 
 public class HotelProperties {
-	private static final String PATH_TO_PROPERTIES = "../Properties/hotel.properties";
 	private static HotelProperties instance;
 	private static Logger logger;
 	private Properties properties;
-	private FileInputStream read;
 	static {
 		logger = Logger.getLogger(HotelProperties.class.getName());
 		logger.setUseParentHandlers(false);
-		logger.addHandler(Constants.logFileHandler);
+		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
-	private HotelProperties() throws IOException {
+	private HotelProperties(String path) throws IOException {
+		FileInputStream read = new FileInputStream(path);
 		properties = new Properties();
-		read = new FileInputStream(PATH_TO_PROPERTIES);
 		properties.load(read);
+		read.close();
 	}
 
-	public static HotelProperties getInstance() throws IOException {
+	public static HotelProperties getInstance(String path) throws IOException {
 		try {
 			if (instance == null) {
-				instance = new HotelProperties();
+				instance = new HotelProperties(path);
 			}
 			return instance;
 		} catch (IOException e) {
@@ -55,4 +54,5 @@ public class HotelProperties {
 		}
 		return result;
 	}
+
 }
