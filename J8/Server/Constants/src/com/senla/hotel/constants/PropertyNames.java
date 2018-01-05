@@ -1,0 +1,6 @@
+package com.senla.hotel.constants;
+
+public enum PropertyNames {
+	CLIENT_FILENAME, ORDER_FILENAME, SERVICE_FILENAME, ROOM_FILENAME, CHANGE_ROOMSTATUS_ABILITY, ROOM_HISTORY_LENGTH, PORT, IP;
+
+}
