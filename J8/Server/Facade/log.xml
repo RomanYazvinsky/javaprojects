@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="windows-1251" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2018-01-05T08:30:42</date>
+  <millis>1515130242057</millis>
+  <sequence>0</sequence>
+  <logger>com.senla.hotel.server.Session</logger>
+  <level>SEVERE</level>
+  <class>com.senla.hotel.server.Session</class>
+  <method>run</method>
+  <thread>11</thread>
+</record>
