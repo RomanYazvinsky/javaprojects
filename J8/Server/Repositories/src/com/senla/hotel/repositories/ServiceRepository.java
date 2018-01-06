@@ -20,7 +20,7 @@ public class ServiceRepository extends AEntityRepository<Service> implements ISe
 		return instance;
 	}
 	
-	public synchronized Boolean add(Service entity, boolean addId) {
+	public Boolean add(Service entity, boolean addId) {
 		if (addId) {
 			entity.setId(IDGenerator.createClientID());
 		}
@@ -32,7 +32,7 @@ public class ServiceRepository extends AEntityRepository<Service> implements ISe
 	}
 
 	@Override
-	public synchronized boolean checkServices(ArrayList<Service> services) {
+	public boolean checkServices(ArrayList<Service> services) {
 		for (Service service : services) {
 			if (!entities.contains(service)) {
 				return false;

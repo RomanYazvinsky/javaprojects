@@ -1,10 +1,10 @@
-package runner;
+package com.senla.hotel.client;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +13,6 @@ import com.senla.hotel.api.internal.IMenuController;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.message.Message;
 import com.senla.hotel.properties.HotelProperties;
 
 import utilities.DependencyInjector;
@@ -21,8 +20,14 @@ import utilities.DependencyInjector;
 public class Client implements Runnable {
 
 	public static void main(String[] args) {
-		Client client = new Client();
-		client.run();
+		Client client;
+		try {
+			client = new Client();
+			client.run();
+		} catch (ConnectException e) {
+			System.out.println("Server is offline");
+		}
+		
 	}
 
 	private static Logger logger;
@@ -37,7 +42,7 @@ public class Client implements Runnable {
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
-	public Client() {
+	public Client() throws ConnectException {
 		try {
 			port = Integer.parseInt(HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES)
 					.getProperty(PropertyNames.PORT.toString()));
@@ -46,14 +51,12 @@ public class Client implements Runnable {
 					port);
 			menuController = (IMenuController) DependencyInjector.newInstance(IMenuController.class);
 			writer = new ObjectOutputStream(socket.getOutputStream());
-			Message message = new Message("LUL");
-		//	writer.writeObject(message);
-		//	writer.flush();
 			InputStream inputStream = socket.getInputStream();
 			reader = new ObjectInputStream(inputStream);
-			//reader.readObject();
-			
 
+		} catch (ConnectException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		} catch (IOException | EmptyObjectException | NumberFormatException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
@@ -66,10 +69,8 @@ public class Client implements Runnable {
 			menuController.run();
 			writer.close();
 			reader.close();
-		}catch(
-
-	IOException e)
-	{
-		logger.log(Level.SEVERE, e.getMessage());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 	}
-}}
+}

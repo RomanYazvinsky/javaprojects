@@ -75,6 +75,11 @@ public class Room implements IEntity, Serializable, Cloneable {
 		if (getClass() != obj.getClass())
 			return false;
 		Room other = (Room) obj;
+		if (id != null && other.id != null) {
+			if (id.equals(other.id)) {
+				return true;
+			}
+		}
 		if (number == null) {
 			if (other.number != null)
 				return false;
@@ -131,6 +136,8 @@ public class Room implements IEntity, Serializable, Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		Room room;
 		room = (Room) super.clone();
+		room.id = null;
+		room.number = null;
 		return room;
 	}
 

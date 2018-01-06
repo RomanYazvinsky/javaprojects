@@ -20,10 +20,15 @@ public class HotelProperties {
 	}
 
 	private HotelProperties(String path) throws IOException {
-		FileInputStream read = new FileInputStream(path);
-		properties = new Properties();
-		properties.load(read);
-		read.close();
+		try {
+			FileInputStream read = new FileInputStream(path);
+			properties = new Properties();
+			properties.load(read);
+			read.close();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
+		}
 	}
 
 	public static HotelProperties getInstance(String path) throws IOException {

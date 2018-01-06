@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Room;
@@ -29,9 +30,15 @@ public class AddRoomCloneAction implements IAction {
 	@Override
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 		try {
+			Printer.print("Enter the room number");
+			Integer number = Integer.parseInt(Input.userInput());
+			if (number < 1) {
+				Printer.print("Incorrect number");
+				throw new ActionForceStopException();
+			}
 			Room room = (Room) SelectRoomAction.getRoom().clone();
-			room.setId(Integer.parseInt(Input.userInput()));
-			Message request = new Message("addRoom", new Object[] { room });
+			room.setNumber(number);
+			Message request = new Message(PublicAPI.ADD_ROOM, new Object[] { room });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 			Boolean result = (Boolean) response.getData()[0];

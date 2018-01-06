@@ -204,9 +204,10 @@ public class OrderWorker implements IOrderWorker {
 	}
 
 	@Override
-	public Boolean add(Order order, Date date) throws IncorrectIDEcxeption {
+	public synchronized Boolean add(Order order, Date date) throws IncorrectIDEcxeption {
 		if (order.getRoom() == null || order.getRoom().getStatus().equals(RoomStatus.ONSERVICE_NOW)
-				|| order.getClient() == null || !((IServiceRepository)serviceRepository).checkServices(order.getServices())
+				|| order.getClient() == null
+				|| !((IServiceRepository) serviceRepository).checkServices(order.getServices())
 				|| !isRoomAvailable(order) || !clientRepository.get().contains(order.getClient())
 				|| !roomRepository.get().contains(order.getRoom())) {
 			return false;
@@ -221,7 +222,7 @@ public class OrderWorker implements IOrderWorker {
 	 * boolean)
 	 */
 	@Override
-	public Boolean add(Order order, boolean addId) {
+	public synchronized Boolean add(Order order, boolean addId) {
 		return orderRepository.add(order, addId);
 	}
 
@@ -285,10 +286,11 @@ public class OrderWorker implements IOrderWorker {
 	 * 
 	 * @see com.senla.hotel.workers.IOrderWorker#load(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+	public synchronized void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
-			orderRepository.set(Loader.loadOrders(path));
+			orderRepository.set((ArrayList<Order>) Loader.load(path));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -301,9 +303,9 @@ public class OrderWorker implements IOrderWorker {
 	 * @see com.senla.hotel.workers.IOrderWorker#save(java.lang.String)
 	 */
 	@Override
-	public void save(String path) throws IOException {
+	public synchronized void save(String path) throws IOException {
 		try {
-			Saver.saveOrders(path, orderRepository.get());
+			Saver.save(path, orderRepository.get());
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -316,7 +318,7 @@ public class OrderWorker implements IOrderWorker {
 	 * @see com.senla.hotel.workers.IOrderWorker#importAll()
 	 */
 	@Override
-	public ArrayList<Order> importAll() throws EmptyObjectException {
+	public synchronized ArrayList<Order> importAll() throws EmptyObjectException {
 		ArrayList<Order> orders = new ArrayList<>();
 
 		CSVModule.importAll(Order.class).forEach(new Consumer<Object>() {
@@ -336,12 +338,12 @@ public class OrderWorker implements IOrderWorker {
 	 * @see com.senla.hotel.workers.IOrderWorker#exportAll()
 	 */
 	@Override
-	public void exportAll() {
+	public synchronized void exportAll() {
 		CSVModule.exportAll(getOrders());
 	}
 
 	@Override
-	public Boolean delete(Order order) {
+	public synchronized Boolean delete(Order order) {
 		return orderRepository.delete(order);
 	}
 }

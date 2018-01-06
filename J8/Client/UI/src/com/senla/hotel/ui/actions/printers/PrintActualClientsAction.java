@@ -8,13 +8,13 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.message.Message;
-import com.senla.hotel.ui.actions.io.ServiceImportAction;
 
 import utilities.Printer;
 
@@ -22,7 +22,7 @@ public class PrintActualClientsAction implements IAction {
 	private static Logger logger;
 
 	static {
-		logger = Logger.getLogger(ServiceImportAction.class.getName());
+		logger = Logger.getLogger(PrintActualClientsAction.class.getName());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
@@ -31,7 +31,7 @@ public class PrintActualClientsAction implements IAction {
 	@Override
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 		try {
-			Message request = new Message("getActualClients", new Object[] { new GregorianCalendar().getTime() });
+			Message request = new Message(PublicAPI.GET_ACTUAL_CLIENTS, new Object[] { new GregorianCalendar().getTime() });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 
@@ -42,7 +42,8 @@ public class PrintActualClientsAction implements IAction {
 			}
 			Printer.printEntities(clients);
 		} catch (ClassNotFoundException | IOException e) {
-
+			logger.log(Level.SEVERE, e.getMessage());
+			throw new ActionForceStopException();
 		}
 
 	}

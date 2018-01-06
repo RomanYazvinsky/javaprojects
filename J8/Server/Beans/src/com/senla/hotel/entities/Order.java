@@ -154,6 +154,11 @@ public class Order implements Serializable, IEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		Order other = (Order) obj;
+		if (id != null && other.id != null) {
+			if (id.equals(other.id)) {
+				return true;
+			}
+		}
 		if (client == null) {
 			if (other.client != null)
 				return false;

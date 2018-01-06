@@ -2,14 +2,12 @@ package com.senla.hotel.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.facade.Facade;
 import com.senla.hotel.properties.HotelProperties;
 
 import utilities.Printer;
@@ -24,28 +22,37 @@ public class Server {
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
 
-	public Server() {
+	public Server() throws Exception {
 		try {
-			port = Integer.parseInt(HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES).getProperty(PropertyNames.PORT.toString()));
+			port = Integer.parseInt(HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES)
+					.getProperty(PropertyNames.PORT.toString()));
 			serverSocket = new ServerSocket(port);
 			Printer.print("Server is working");
 		} catch (IOException | NumberFormatException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 	}
 
 	public void run() {
-		while (true) {
-			try {
+		try {
+			while (true) {
 				new Session(serverSocket.accept()).start();
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			};
+			}
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} finally {
+			System.out.println("Server is stopping");
 		}
 	}
-	
+
 	public static void main(String[] args) {
-		new Server().run();
+		try {
+			new Server().run();
+		} catch (Exception e) {
+
+			System.out.println("Error");
+		}
 	}
 
 }

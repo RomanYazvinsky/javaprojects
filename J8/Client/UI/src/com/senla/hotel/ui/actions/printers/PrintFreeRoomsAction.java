@@ -8,13 +8,13 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.message.Message;
-import com.senla.hotel.ui.actions.io.ServiceImportAction;
 
 import utilities.Printer;
 
@@ -22,7 +22,7 @@ public class PrintFreeRoomsAction implements IAction {
 	private static Logger logger;
 
 	static {
-		logger = Logger.getLogger(ServiceImportAction.class.getName());
+		logger = Logger.getLogger(PrintFreeRoomsAction.class.getName());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
@@ -32,7 +32,7 @@ public class PrintFreeRoomsAction implements IAction {
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 
 		try {
-			Message request = new Message("getFreeRooms", new Object[] { new GregorianCalendar().getTime() });
+			Message request = new Message(PublicAPI.GET_FREE_ROOMS, new Object[] { new GregorianCalendar().getTime() });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 
@@ -44,7 +44,8 @@ public class PrintFreeRoomsAction implements IAction {
 			}
 			Printer.printEntities(rooms);
 		} catch (ClassNotFoundException | IOException e) {
-
+			logger.log(Level.SEVERE, e.getMessage());
+			throw new ActionForceStopException();
 		}
 	}
 

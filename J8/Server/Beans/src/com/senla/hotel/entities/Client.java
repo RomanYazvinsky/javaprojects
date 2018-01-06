@@ -62,11 +62,17 @@ public class Client implements Serializable, IEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
+		if (id != null && other.id != null) {
+			if (id.equals(other.id)) {
+				return true;
+			}
+		}
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+
 		return true;
 	}
 

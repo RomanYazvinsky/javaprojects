@@ -2,7 +2,6 @@ package com.senla.hotel.api.internal;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 import com.senla.hotel.exceptions.ActionForceStopException;
 
