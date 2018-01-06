@@ -19,7 +19,7 @@ public class RoomRepository extends AEntityRepository<Room> implements IRoomRepo
 		return instance;
 	}
 
-	public synchronized Boolean add(Room entity, boolean addId) {
+	public Boolean add(Room entity, boolean addId) {
 		if (addId) {
 			entity.setId(IDGenerator.createRoomID());
 		}

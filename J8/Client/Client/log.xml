@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="windows-1251" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2018-01-06T20:59:06</date>
+  <millis>1515261546409</millis>
+  <sequence>0</sequence>
+  <logger>com.senla.hotel.ui.actions.printers.PrintClientsAction</logger>
+  <level>SEVERE</level>
+  <class>com.senla.hotel.ui.actions.printers.PrintClientsAction</class>
+  <method>execute</method>
+  <thread>1</thread>
+  <message>Some var is null</message>
+</record>
+<record>
+  <date>2018-01-06T20:59:06</date>
+  <millis>1515261546417</millis>
+  <sequence>1</sequence>
+  <logger>com.senla.hotel.ui.MenuItem</logger>
+  <level>SEVERE</level>
+  <class>com.senla.hotel.ui.MenuItem</class>
+  <method>doAction</method>
+  <thread>1</thread>
+  <message>Action force stop</message>
+</record>
+<record>
+  <date>2018-01-06T20:59:06</date>
+  <millis>1515261546417</millis>
+  <sequence>2</sequence>
+  <logger>com.senla.hotel.ui.Navigator</logger>
+  <level>SEVERE</level>
+  <class>com.senla.hotel.ui.Navigator</class>
+  <method>navigate</method>
+  <thread>1</thread>
+  <message>Action force stop</message>
+</record>
+</log>

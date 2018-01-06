@@ -45,7 +45,7 @@ public class ServiceWorker implements IServiceWorker {
 	 * @see com.senla.hotel.workers.IServiceWorker#add(com.senla.hotel.entities.Service, boolean)
 	 */
 	@Override
-	public Boolean add(Service service, boolean addId) {
+	public synchronized Boolean add(Service service, boolean addId) {
 		return serviceRepository.add(service, addId);
 	}
 
@@ -98,10 +98,11 @@ public class ServiceWorker implements IServiceWorker {
 	/* (non-Javadoc)
 	 * @see com.senla.hotel.workers.IServiceWorker#load(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+	public synchronized void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
-			serviceRepository.set(Loader.loadServices(path));
+			serviceRepository.set((ArrayList<Service>) Loader.load(path));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -112,9 +113,9 @@ public class ServiceWorker implements IServiceWorker {
 	 * @see com.senla.hotel.workers.IServiceWorker#save(java.lang.String)
 	 */
 	@Override
-	public void save(String path) throws IOException {
+	public synchronized void save(String path) throws IOException {
 		try {
-			Saver.saveServices(path, serviceRepository.get());
+			Saver.save(path, serviceRepository.get());
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -124,7 +125,7 @@ public class ServiceWorker implements IServiceWorker {
 	 * @see com.senla.hotel.workers.IServiceWorker#importAll()
 	 */
 	@Override
-	public ArrayList<Service> importAll() throws EmptyObjectException {
+	public synchronized ArrayList<Service> importAll() throws EmptyObjectException {
 		ArrayList<Service> clients = new ArrayList<>();
 		CSVModule.importAll(Service.class).forEach(new Consumer<Object>() {
 
@@ -140,7 +141,7 @@ public class ServiceWorker implements IServiceWorker {
 	 * @see com.senla.hotel.workers.IServiceWorker#exportAll()
 	 */
 	@Override
-	public void exportAll() {
+	public synchronized void exportAll() {
 		CSVModule.exportAll(getServices());
 	}
 
@@ -148,7 +149,7 @@ public class ServiceWorker implements IServiceWorker {
 	 * @see com.senla.hotel.workers.IServiceWorker#delete(com.senla.hotel.entities.Service)
 	 */
 	@Override
-	public Boolean delete(Service service) {
+	public synchronized Boolean delete(Service service) {
 		return serviceRepository.delete(service);
 	}
 }

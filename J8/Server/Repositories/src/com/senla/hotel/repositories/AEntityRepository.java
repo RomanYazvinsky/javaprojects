@@ -11,7 +11,7 @@ import com.senla.hotel.exceptions.EmptyObjectException;
 
 public abstract class AEntityRepository<T extends IEntity> {
 	private static Logger logger;
-	protected volatile HashSet<T> entities;
+	protected HashSet<T> entities;
 	static {
 		logger = Logger.getLogger(AEntityRepository.class.getName());
 		logger.setUseParentHandlers(false);
@@ -28,11 +28,11 @@ public abstract class AEntityRepository<T extends IEntity> {
 
 	public abstract Boolean add(T entity, boolean addId);
 
-	public synchronized Boolean delete(T entity) {
+	public Boolean delete(T entity) {
 		return entities.remove(entity);
 	}
 
-	public synchronized T getByID(Integer id) {
+	public T getByID(Integer id) {
 		for (T entity : entities) {
 			if (entity.getId().equals(id)) {
 				return entity;
@@ -41,7 +41,7 @@ public abstract class AEntityRepository<T extends IEntity> {
 		return null;
 	}
 
-	public synchronized int getCount() {
+	public int getCount() {
 		return entities.size();
 	}
 
@@ -51,6 +51,6 @@ public abstract class AEntityRepository<T extends IEntity> {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
-		this.entities = new HashSet<>(entities);
+		this.entities.addAll(entities);
 	}
 }

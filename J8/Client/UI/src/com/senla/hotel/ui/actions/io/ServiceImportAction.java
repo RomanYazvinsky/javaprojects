@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Service;
@@ -29,7 +31,7 @@ public class ServiceImportAction implements IAction {
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 
 		try {
-			Message request = new Message("importServices", null);
+			Message request = new Message(PublicAPI.IMPORT_SERVICES, null);
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 			ArrayList<Service> services = (ArrayList<Service>) response.getData()[0];
@@ -41,15 +43,16 @@ public class ServiceImportAction implements IAction {
 			i = Integer.parseInt(Input.userInput()) - 1;
 			Service service = services.get(i);
 
-			request = new Message("deleteService", new Object[] { service });
+			request = new Message(PublicAPI.DELETE_SERVICE, new Object[] { service });
 			writer.writeObject(request);
 			reader.readObject();
-			request = new Message("addServiceWithID", new Object[] { service });
+			request = new Message(PublicAPI.ADD_SERVICE_WITH_ID, new Object[] { service });
 			writer.writeObject(request);
 			reader.readObject();
 
 		} catch (ClassNotFoundException | IOException e) {
-
+			logger.log(Level.SEVERE, e.getMessage());
+			throw new ActionForceStopException();
 		}
 
 	}

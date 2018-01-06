@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.Messages;
@@ -33,9 +34,9 @@ public class AddServiceAction implements IAction {
 		try  {
 			Service service = new Service(Integer.parseInt(params[0].trim()), params[1].trim(),
 					DateCreator.parseString(params[2].trim()));
-			Message request = new Message("addService", new Object[] { service });
+			Message request = new Message(PublicAPI.ADD_SERVICE, new Object[] { service });
 			writer.writeObject(request);
-			Message response = (Message)reader.readObject();
+			reader.readObject();
 		} catch (NumberFormatException | ArrayIndexOutOfBoundsException | IOException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw new ActionForceStopException();

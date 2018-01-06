@@ -2,8 +2,8 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2018-01-05T08:30:42</date>
-  <millis>1515130242057</millis>
+  <date>2018-01-06T20:59:13</date>
+  <millis>1515261553592</millis>
   <sequence>0</sequence>
   <logger>com.senla.hotel.server.Session</logger>
   <level>SEVERE</level>

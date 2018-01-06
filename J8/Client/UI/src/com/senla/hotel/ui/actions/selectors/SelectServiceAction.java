@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Service;
@@ -27,7 +28,7 @@ public class SelectServiceAction implements IAction {
 	@Override
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 		try {
-			Message request = new Message("getServiceByID", new Object[] { Integer.parseInt(Input.userInput()) });
+			Message request = new Message(PublicAPI.GET_SERVICE_BY_ID, new Object[] { Integer.parseInt(Input.userInput()) });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 

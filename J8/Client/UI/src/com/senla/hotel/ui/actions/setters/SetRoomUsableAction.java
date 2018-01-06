@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.RoomStatus;
@@ -31,7 +32,7 @@ public class SetRoomUsableAction implements IAction {
 		try {
 			room = SelectRoomAction.getRoom();
 			if (room.isOnService()) {
-				Message request = new Message("setRoomStatus",
+				Message request = new Message(PublicAPI.SET_ROOM_STATUS,
 						new Object[] { SelectRoomAction.getRoom(), RoomStatus.FREE_NOW });
 				writer.writeObject(request);
 				Message response = (Message) reader.readObject();

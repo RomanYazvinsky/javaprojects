@@ -36,17 +36,18 @@ public class RoomWorker implements IRoomWorker   {
 	 * @see com.senla.hotel.workers.IRoomWorker#add(com.senla.hotel.entities.Room, boolean)
 	 */
 	@Override
-	public Boolean add(Room room, boolean addId) {
+	public synchronized Boolean add(Room room, boolean addId) {
 		return roomRepository.add(room, addId);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.senla.hotel.workers.IRoomWorker#load(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+	public synchronized void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
-			roomRepository.set(Loader.loadRooms(path));
+			roomRepository.set((ArrayList<Room>) Loader.load(path));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -57,9 +58,9 @@ public class RoomWorker implements IRoomWorker   {
 	 * @see com.senla.hotel.workers.IRoomWorker#save(java.lang.String)
 	 */
 	@Override
-	public void save(String path) throws IOException {
+	public synchronized void save(String path) throws IOException {
 		try {
-			Saver.saveRooms(path, roomRepository.get());
+			Saver.save(path, roomRepository.get());
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
@@ -110,7 +111,7 @@ public class RoomWorker implements IRoomWorker   {
 	 * @see com.senla.hotel.workers.IRoomWorker#importAll()
 	 */
 	@Override
-	public ArrayList<Room> importAll() throws EmptyObjectException {
+	public synchronized ArrayList<Room> importAll() throws EmptyObjectException {
 		ArrayList<Room> rooms = new ArrayList<>();
 		CSVModule.importAll(Room.class).forEach(new Consumer<Object>() {
 
@@ -126,7 +127,7 @@ public class RoomWorker implements IRoomWorker   {
 	 * @see com.senla.hotel.workers.IRoomWorker#exportAll()
 	 */
 	@Override
-	public void exportAll() {
+	public synchronized void exportAll() {
 		CSVModule.exportAll(getRooms());
 	}
 
@@ -134,7 +135,7 @@ public class RoomWorker implements IRoomWorker   {
 	 * @see com.senla.hotel.workers.IRoomWorker#delete(com.senla.hotel.entities.Room)
 	 */
 	@Override
-	public Boolean delete(Room room) {
+	public synchronized Boolean delete(Room room) {
 		return roomRepository.delete(room);
 	}
 }

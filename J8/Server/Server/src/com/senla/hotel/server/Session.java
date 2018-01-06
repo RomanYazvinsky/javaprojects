@@ -28,7 +28,6 @@ public class Session extends Thread {
 	}
 
 	public void run() {
-		System.out.println("eee\n");
 		try {
 			InputStream inputStream = socket.getInputStream();
 			OutputStream outputStream = socket.getOutputStream();

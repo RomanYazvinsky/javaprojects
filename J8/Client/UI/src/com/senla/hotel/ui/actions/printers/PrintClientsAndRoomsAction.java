@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Client;
@@ -16,7 +17,6 @@ import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.message.Message;
-import com.senla.hotel.ui.actions.io.ServiceImportAction;
 
 import utilities.Printer;
 
@@ -24,7 +24,7 @@ public class PrintClientsAndRoomsAction implements IAction {
 	private static Logger logger;
 
 	static {
-		logger = Logger.getLogger(ServiceImportAction.class.getName());
+		logger = Logger.getLogger(PrintClientsAndRoomsAction.class.getName());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
@@ -34,14 +34,14 @@ public class PrintClientsAndRoomsAction implements IAction {
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 		
 		try {
-			Message request = new Message("getClients");
+			Message request = new Message(PublicAPI.GET_CLIENTS);
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 
 			ArrayList<Client> clients = (ArrayList<Client>) response.getData()[0];
 			for (Client client : clients) {
 				Printer.printClient(client);
-				request = new Message("getActualOrder", new Object[] {client, new GregorianCalendar().getTime()});
+				request = new Message(PublicAPI.GET_ACTUAL_ORDER, new Object[] {client, new GregorianCalendar().getTime()});
 				writer.writeObject(request);
 				response = (Message) reader.readObject();
 				Order order = (Order) response.getData()[0];
@@ -54,7 +54,8 @@ public class PrintClientsAndRoomsAction implements IAction {
 				}
 			}
 		} catch (ClassNotFoundException | IOException e) {
-
+			logger.log(Level.SEVERE, e.getMessage());
+			throw new ActionForceStopException();
 		}
 	}
 

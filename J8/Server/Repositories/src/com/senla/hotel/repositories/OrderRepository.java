@@ -19,7 +19,7 @@ public class OrderRepository extends AEntityRepository<Order> implements IOrderR
 	}
 
 
-	public synchronized Boolean add(Order entity, boolean addId) {
+	public Boolean add(Order entity, boolean addId) {
 		if (addId) {
 			entity.setId(IDGenerator.createOrderID());
 		}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Order;
@@ -31,7 +32,7 @@ public class PrintLastRoomOrdersAction implements IAction {
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 
 		try {
-			Message request = new Message("getLastOrdersOfRoom", new Object[] { SelectRoomAction.getRoom() });
+			Message request = new Message(PublicAPI.GET_LAST_ORDERS_OF_ROOM, new Object[] { SelectRoomAction.getRoom() });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 
@@ -43,7 +44,7 @@ public class PrintLastRoomOrdersAction implements IAction {
 			Printer.printOrders(orders);
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
-
+			throw new ActionForceStopException();
 		}
 	}
 

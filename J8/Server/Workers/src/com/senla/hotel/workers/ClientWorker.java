@@ -32,14 +32,10 @@ public class ClientWorker implements IClientWorker {
 		clientRepository = (IClientRepository) DependencyInjector.newInstance(IClientRepository.class);
 	}
 
-
-	
-	public Boolean add(Client client, boolean addId) {
+	public synchronized Boolean add(Client client, boolean addId) {
 		return clientRepository.add(client, addId);
 	}
 
-
-	
 	public Client getClientByID(Integer clientID) {
 		if (clientID == null) {
 			return null;
@@ -47,19 +43,15 @@ public class ClientWorker implements IClientWorker {
 		return clientRepository.getByID(clientID);
 	}
 
-
-	
 	public ArrayList<Client> sort(ArrayList<Client> clients, Comparator<Client> comparator) {
 		Collections.sort(clients, comparator);
 		return clients;
 	}
 
-	
-	public ArrayList<Client> getClients() {
+	public synchronized ArrayList<Client> getClients() {
 		return new ArrayList<>(clientRepository.get());
 	}
 
-	
 	public String[] toStringArray(ArrayList<Client> clients) {
 		ArrayList<String> result = new ArrayList<>();
 		clients.forEach((Client client) -> {
@@ -68,36 +60,44 @@ public class ClientWorker implements IClientWorker {
 		return result.toArray(new String[result.size()]);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.senla.hotel.workers.IClientWorker#load(java.lang.String)
 	 */
-	
-	public void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
+
+	@SuppressWarnings("unchecked")
+	public synchronized void load(String path) throws ClassNotFoundException, IOException, EmptyObjectException {
 		try {
-			clientRepository.set(Loader.loadClients(path));
+
+			clientRepository.set((ArrayList<Client>) Loader.load(path));
 		} catch (ClassNotFoundException | IOException | EmptyObjectException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.senla.hotel.workers.IClientWorker#save(java.lang.String)
 	 */
-	
-	public void save(String path) throws IOException {
+
+	public synchronized void save(String path) throws IOException {
 		try {
-			Saver.saveClients(path, clientRepository.get());
+			Saver.save(path, clientRepository.get());
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.senla.hotel.workers.IClientWorker#importAll()
 	 */
-	
+
 	public ArrayList<Client> importAll() throws EmptyObjectException {
 		ArrayList<Client> clients = new ArrayList<>();
 		CSVModule.importAll(Client.class).forEach(new Consumer<Object>() {
@@ -110,19 +110,24 @@ public class ClientWorker implements IClientWorker {
 		return clients;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.senla.hotel.workers.IClientWorker#exportAll()
 	 */
-	
-	public void exportAll() {
+
+	public synchronized void exportAll() {
 		CSVModule.exportAll(getClients());
 	}
 
-	/* (non-Javadoc)
-	 * @see com.senla.hotel.workers.IClientWorker#delete(com.senla.hotel.entities.Client)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.senla.hotel.workers.IClientWorker#delete(com.senla.hotel.entities.Client)
 	 */
-	
-	public Boolean delete(Client client) {
+
+	public synchronized Boolean delete(Client client) {
 		return clientRepository.delete(client);
 	}
 }

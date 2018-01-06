@@ -18,12 +18,8 @@ public class ClientRepository extends AEntityRepository<Client> implements IClie
 		return instance;
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see com.senla.hotel.repositories.IClientRepository#add(com.senla.hotel.entities.Client, boolean)
-	 */
 	@Override
-	public synchronized Boolean add(Client entity, boolean addId) {
+	public Boolean add(Client entity, boolean addId) {
 		if (addId) {
 			entity.setId(IDGenerator.createClientID());
 		}

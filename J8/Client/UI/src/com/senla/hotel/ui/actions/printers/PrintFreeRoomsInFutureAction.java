@@ -8,13 +8,13 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.senla.hotel.api.PublicAPI;
 import com.senla.hotel.api.internal.IAction;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.message.Message;
-import com.senla.hotel.ui.actions.io.ServiceImportAction;
 
 import utilities.DateCreator;
 import utilities.Input;
@@ -24,7 +24,7 @@ public class PrintFreeRoomsInFutureAction implements IAction {
 	private static Logger logger;
 
 	static {
-		logger = Logger.getLogger(ServiceImportAction.class.getName());
+		logger = Logger.getLogger(PrintFreeRoomsInFutureAction.class.getName());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(Constants.LOGFILE_HANDLER);
 	}
@@ -35,7 +35,7 @@ public class PrintFreeRoomsInFutureAction implements IAction {
 		Printer.println("<>Enter the date");
 		Date date = DateCreator.parseString(Input.userInput());
 		try {
-			Message request = new Message("getFreeRooms", new Object[] { date });
+			Message request = new Message(PublicAPI.GET_FREE_ROOMS, new Object[] { date });
 			writer.writeObject(request);
 			Message response = (Message) reader.readObject();
 
@@ -46,7 +46,8 @@ public class PrintFreeRoomsInFutureAction implements IAction {
 			}
 			Printer.printEntities(rooms);
 		} catch (ClassNotFoundException | IOException e) {
-
+			logger.log(Level.SEVERE, e.getMessage());
+			throw new ActionForceStopException();
 		}
 	}
 
