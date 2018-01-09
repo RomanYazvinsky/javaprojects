@@ -20,7 +20,7 @@ public class HotelProperties {
 	}
 
 	private HotelProperties(String path) throws IOException {
-		try (FileInputStream read = new FileInputStream(path);){
+		try (FileInputStream read = new FileInputStream(path)){
 			properties = new Properties();
 			properties.load(read);
 		} catch (IOException e) {
