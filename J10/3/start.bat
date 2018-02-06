@@ -1,2 +1,3 @@
-"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe" -uroot -p < hotel.sql
+mysql -uroot -p < hotel.sql 
+mysql -uroot -p -D hotel < db_filler.sql 
 pause

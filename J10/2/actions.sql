@@ -1,15 +1,13 @@
 -- 1
 select model, speed, hd from pc where price<500;
 -- 2
-select maker from product where type = 'Printer';
--- 2 alt
-select maker from product right join printer using (model); 
+select distinct maker from product right join printer using (model); 
 -- 3
 select model, ram, screen from laptop where price > 1000;
 -- 4
 select * from printer where color ='y';
 -- 5
-select model, speed, hd from pc where (cd = '12x' or cd = '24x') or price < 600;
+select model, speed, hd from pc where (cd = '12x' or cd = '24x') and price < 600;
 -- 6
 select distinct maker, speed from laptop left join product using (model) where hd >= 10;
 -- 7
@@ -21,7 +19,7 @@ select distinct maker from (select * from product where type = 'PC') list left j
 -- 9
 select distinct maker from product right join pc using (model) where speed >= 450;
 -- 10
-select model, price from printer where price is not null order by price desc;
+select model, price from printer where price = (select max(price) from printer);
 -- 11
 select avg(speed) from pc;
 -- 12
@@ -47,8 +45,8 @@ select maker, max(price) from product right join pc using (model) group by maker
 -- 22
 select distinct speed, avg(price) from pc where speed > 600 group by speed;
 -- 23
-select distinct maker from product right join laptop using (model) where speed > 750 and maker in (select maker from product right join pc using (model) where speed > 750);
+select distinct maker from product right join laptop using (model) where speed > 750 and maker in (select maker from product right join pc using (model) where speed > 750) and maker not in (select maker from product right join pc using (model) where speed <= 750) and maker not in (select maker from product right join laptop using (model) where speed <= 750);
 -- 24
 select model from ((select model, price from pc ) union (select model, price from laptop ) union (select model, price from printer)) tbl where price = (select max(price) from ((select price from pc) union (select price from laptop) union (select price from printer)) prc);
 -- 25
-select distinct maker from product right join pc using (model) where speed = (select max(speed) from (select * from pc where ram = (select min(ram) from pc)) tbl ) and maker in (select maker from pc where type = 'Printer');
+select distinct maker from product right join (select * from pc where ram = (select min(ram) from pc)) pctbl using (model) where speed = (select max(speed) from (select * from pc where ram = (select min(ram) from pc))tb1) and maker in (select distinct maker from product where type = 'Printer');
