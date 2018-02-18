@@ -3,6 +3,8 @@ package com.senla.hotel.dao;
 import com.senla.hotel.annotations.Table;
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.entities.Client;
+import com.senla.hotel.entities.Order;
+import com.senla.hotel.entities.ServiceRecord;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +68,30 @@ public class ClientDao extends AEntityDAO<Client> {
 
     public ArrayList<Client> getAll(SortType sortType) {
         return getAll(Client.class, sortType);
+    }
+
+    @Override
+    public void delete(Client client) {
+        try {
+            connection.setAutoCommit(false);
+            String s = "DELETE FROM " + AEntityDAO.getTableName(Order.class) + " WHERE client_id = " + client.getId()+";";
+            connection.createStatement().execute(s);
+            super.delete(client);
+        } catch (SQLException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                logger.log(Level.DEBUG, e.getMessage());
+            }
+        }
+        finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                logger.log(Level.DEBUG, e.getMessage());
+            }
+        }
     }
 
 }

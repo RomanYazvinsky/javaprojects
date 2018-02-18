@@ -3,7 +3,9 @@ package com.senla.hotel.dao;
 import com.senla.hotel.annotations.Table;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.constants.SortType;
+import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
+import com.senla.hotel.entities.ServiceRecord;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,5 +72,29 @@ public class RoomDao extends AEntityDAO<Room> {
 
     public ArrayList<Room> getAll(SortType sortType) {
         return getAll(Room.class, sortType);
+    }
+
+    @Override
+    public void delete(Room room) {
+        try {
+            connection.setAutoCommit(false);
+            String s = "DELETE FROM " + AEntityDAO.getTableName(Order.class) + " WHERE room_id = " +  room.getId()+";";
+            connection.createStatement().execute(s);
+            super.delete(room);
+        } catch (SQLException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                logger.log(Level.DEBUG, e.getMessage());
+            }
+        }
+        finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                logger.log(Level.DEBUG, e.getMessage());
+            }
+        }
     }
 }
