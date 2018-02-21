@@ -5,9 +5,9 @@ import com.senla.hotel.api.internal.IMenuController;
 import com.senla.hotel.api.internal.INavigator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import utilities.DependencyInjector;
-import utilities.Input;
-import utilities.Printer;
+import utilities.injection.DependencyInjector;
+import utilities.ui.Input;
+import utilities.ui.Printer;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

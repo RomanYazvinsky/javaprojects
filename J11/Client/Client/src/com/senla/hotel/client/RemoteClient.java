@@ -17,7 +17,7 @@ import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.properties.HotelProperties;
 
-import utilities.DependencyInjector;
+import utilities.injection.DependencyInjector;
 
 public class RemoteClient {
 	private static Logger logger = LogManager.getLogger(RemoteClient.class);

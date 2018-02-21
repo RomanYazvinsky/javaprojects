@@ -12,7 +12,7 @@ import java.io.Serializable;
 import static com.senla.hotel.constants.Constants.serviceExportFile;
 import static com.senla.hotel.constants.Constants.serviceHeaderCSV;
 import static com.senla.hotel.constants.EntityColumnOrder.*;
-@Table(tableName = "services")
+@Table(tableName = "managers")
 @CsvEntity(csvHeader = serviceHeaderCSV, filename = serviceExportFile, valueSeparator = ",", entityId = "id")
 public class Service implements IEntity, Serializable {
     private static final long serialVersionUID = 4634029185600413436L;

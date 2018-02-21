@@ -10,7 +10,7 @@ import com.senla.hotel.ui.actions.selectors.SelectOrderAction;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utilities.Printer;
+import utilities.ui.Printer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

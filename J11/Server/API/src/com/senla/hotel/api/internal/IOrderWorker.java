@@ -9,52 +9,47 @@ import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.*;
 
 public interface IOrderWorker {
 
-	ArrayList<Order> selectByClient(Client client);
+    ArrayList<Order> selectByClient(Client client) throws QueryFailureException;
 
-	ArrayList<Order> selectByRoom(Room room);
-
-	ArrayList<Order> sort(ArrayList<Order> list, Comparator<Order> comparator);
+    ArrayList<Order> selectByRoom(Room room) throws QueryFailureException;
 
 
-	Order getActualOrder(Client client, Date now);
+    Order getActualOrder(Client client, Date now) throws QueryFailureException;
 
-	Order getOrderByID(Integer orderID);
+    Order getOrderByID(Integer orderID) throws AnalysisException, QueryFailureException;
 
-	ArrayList<Order> getActualOrders(Date now);
+    ArrayList<Order> getActualOrders(Date now) throws QueryFailureException;
 
-	ArrayList<Client> getActualClients(Date now);
+    ArrayList<Client> getActualClients(Date now) throws QueryFailureException;
 
-	Integer getActualClientCount(Date now);
+    Integer getActualClientCount(Date now) throws QueryFailureException;
 
-	ArrayList<Room> getFreeRooms(Date date);
+    ArrayList<Room> getFreeRooms(Date date);
 
-	Integer getPriceForRoom(Order order);
+    Integer getPriceForRoom(Order order);
 
-	Boolean add(Order order, Date date) throws IncorrectIDEcxeption;
+    Boolean add(Order order, Date date) throws IncorrectIDEcxeption, QueryFailureException, UnexpectedValueException, AnalysisException;
 
-	Boolean add(Order order, boolean addId);
+    Boolean add(Order order, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException;
 
-	ArrayList<Service> getServicesOfClient(Client client);
 
-	Order getOrderById(Integer id);
+    Order getOrderById(Integer id) throws AnalysisException, QueryFailureException;
 
-	ArrayList<Order> getOrders();
+    ArrayList<Order> getOrders() throws QueryFailureException;
 
-	Boolean closeOrder(Order order, Date now);
+    Boolean closeOrder(Order order, Date now);
 
-	Integer getPriceForServices(Order order);
 
-	String[] toStringArray(ArrayList<Order> orders);
+    String[] toStringArray(ArrayList<Order> orders);
 
-	ArrayList<Order> importAll() throws EmptyObjectException;
+    ArrayList<Order> importAll() throws EmptyObjectException;
 
-	void exportAll();
+    void exportAll() throws QueryFailureException;
 
-	Boolean delete(Order order);
+    Boolean delete(Order order) throws QueryFailureException, AnalysisException;
 
 }

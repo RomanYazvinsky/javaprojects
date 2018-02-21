@@ -1,46 +1,57 @@
 package com.senla.hotel.dao;
 
 import com.senla.hotel.annotations.Table;
+import com.senla.hotel.api.internal.IOrderDao;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.constants.SortType;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
-import com.senla.hotel.entities.ServiceRecord;
+import com.senla.hotel.exceptions.AnalysisException;
+import com.senla.hotel.exceptions.DatabaseConnectException;
+import com.senla.hotel.exceptions.QueryFailureException;
+import com.senla.hotel.exceptions.UnexpectedValueException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class OrderDao extends AEntityDAO<Order> {
+public class OrderDao extends GenericDao<Order> implements IOrderDao<Order> {
     private static Logger logger = LogManager.getLogger(OrderDao.class);
 
-    public OrderDao(Connection connection) {
-        super(connection);
+    public OrderDao() throws DatabaseConnectException {
+        super(DBConnector.getInstance().getConnection());
     }
 
-    public Order getById(int id) {
-        return read(id, Order.class);
-    }
 
-    public Boolean add(Order order) {
+    @Override
+    public Order getById(int id) throws QueryFailureException, AnalysisException, UnexpectedValueException {
         try {
-            create(order);
-            return true;
-        } catch (SQLException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return read(id, Order.class);
+        } catch (QueryFailureException | AnalysisException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            return false;
+            throw e;
         }
     }
 
     @Override
-    protected Order parseResult(ResultSet resultSet) {
+    public Boolean add(Order order) throws QueryFailureException, UnexpectedValueException, AnalysisException {
+        try {
+            create(order);
+            return true;
+        } catch (QueryFailureException | AnalysisException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    protected Order parseResult(ResultSet resultSet) throws UnexpectedValueException {
         Order order = new Order();
         try {
             order.setId(resultSet.getInt("id"));
@@ -65,51 +76,40 @@ public class OrderDao extends AEntityDAO<Order> {
 
         } catch (SQLException e) {
             logger.log(Level.DEBUG, e.getMessage());
+            throw new UnexpectedValueException();
         }
 
         return order;
     }
 
     @Override
-    protected String getTableName() {
+    protected String getTableName() throws AnalysisException {
         Table table = Order.class.getAnnotation(Table.class);
+        if (table == null) {
+            throw new AnalysisException();
+        }
         return table.tableName();
     }
 
-    public ArrayList<Order> getAll() {
+    @Override
+    public ArrayList<Order> getAll() throws QueryFailureException, UnexpectedValueException {
         try {
             return getAll(Order.class);
-        } catch (SQLException e) {
-            logger.log(Level.DEBUG, e.getMessage());
-            return null;
-        }
-    }
 
-    public ArrayList<Order> getAll(SortType sortType) {
-        return getAll(Order.class, sortType);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public void delete(Order order) {
+    public ArrayList<Order> getAll(SortType sortType) throws QueryFailureException, UnexpectedValueException {
         try {
-            connection.setAutoCommit(false);
-            String s = "DELETE FROM " + AEntityDAO.getTableName(ServiceRecord.class) + " WHERE order_id = " + order.getId()+";";
-            connection.createStatement().execute(s);
-            super.delete(order);
-        } catch (SQLException e) {
+            return getAll(Order.class, sortType);
+        } catch (QueryFailureException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
-        }
-        finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
+            throw e;
         }
     }
+
 }

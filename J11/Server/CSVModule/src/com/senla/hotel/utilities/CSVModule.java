@@ -22,7 +22,7 @@ import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
 import com.senla.hotel.entities.IEntity;
 
-import utilities.EntityParser;
+import utilities.parsers.EntityParser;
 
 public class CSVModule {
 	private static Logger logger = LogManager.getLogger(CSVModule.class);

@@ -8,7 +8,7 @@ import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.message.Message;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import utilities.Printer;
+import utilities.ui.Printer;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;

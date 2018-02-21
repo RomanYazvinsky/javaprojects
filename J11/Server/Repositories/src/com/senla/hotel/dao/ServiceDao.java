@@ -2,42 +2,50 @@ package com.senla.hotel.dao;
 
 import com.senla.hotel.annotations.Table;
 import com.senla.hotel.constants.SortType;
-import com.senla.hotel.entities.Order;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.entities.ServiceRecord;
+import com.senla.hotel.exceptions.AnalysisException;
+import com.senla.hotel.exceptions.DatabaseConnectException;
+import com.senla.hotel.exceptions.QueryFailureException;
+import com.senla.hotel.exceptions.UnexpectedValueException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ServiceDao extends AEntityDAO<Service> {
+public class ServiceDao extends GenericDao<Service> implements com.senla.hotel.api.internal.IServiceDao<Service> {
     private static Logger logger = LogManager.getLogger(ServiceDao.class);
 
-    public ServiceDao(Connection connection) {
-        super(connection);
+    public ServiceDao() throws DatabaseConnectException {
+        super(DBConnector.getInstance().getConnection());
     }
 
-    public Service getById(int id) {
-        return read(id, Service.class);
-    }
-
-    public Boolean add(Service service) {
+    @Override
+    public Service getById(int id) throws QueryFailureException, AnalysisException, UnexpectedValueException {
         try {
-            create(service);
-            return true;
-        } catch (SQLException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return read(id, Service.class);
+        } catch (QueryFailureException | AnalysisException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            return false;
+            throw e;
         }
     }
 
     @Override
-    protected Service parseResult(ResultSet resultSet) {
+    public Boolean add(Service service) throws QueryFailureException, UnexpectedValueException, AnalysisException {
+        try {
+            create(service);
+            return true;
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    protected Service parseResult(ResultSet resultSet) throws UnexpectedValueException {
         Service service = new Service();
         try {
             service.setId(resultSet.getInt("id"));
@@ -45,51 +53,41 @@ public class ServiceDao extends AEntityDAO<Service> {
             service.setName(resultSet.getString("service_name"));
         } catch (SQLException e) {
             logger.log(Level.DEBUG, e.getMessage());
+            throw new UnexpectedValueException();
         }
 
         return service;
     }
 
     @Override
-    protected String getTableName() {
+    protected String getTableName() throws AnalysisException {
         Table table = Service.class.getAnnotation(Table.class);
+        if (table == null) {
+            throw new AnalysisException();
+        }
         return table.tableName();
     }
 
-    public ArrayList<Service> getAll() {
+    @Override
+    public ArrayList<Service> getAll() throws QueryFailureException, UnexpectedValueException {
         try {
             return getAll(Service.class);
-        } catch (SQLException e) {
+        } catch (QueryFailureException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            return null;
+            throw e;
         }
-    }
-
-    public ArrayList<Service> getAll(SortType sortType) {
-        return getAll(Service.class, sortType);
     }
 
     @Override
-    public void delete(Service service) {
+    public ArrayList<Service> getAll(SortType sortType) throws QueryFailureException, UnexpectedValueException {
         try {
-            connection.setAutoCommit(false);
-            String s = "DELETE FROM " + AEntityDAO.getTableName(ServiceRecord.class) + " WHERE service_id = " + service.getId()+";";
-            connection.createStatement().execute(s);
-            super.delete(service);
-        } catch (SQLException e) {
+            return getAll(Service.class, sortType);
+        } catch (QueryFailureException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
-        }
-        finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
+            throw e;
+
         }
     }
+
+
 }

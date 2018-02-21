@@ -12,8 +12,8 @@ import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.properties.HotelProperties;
 
-import utilities.DBConnector;
-import utilities.Printer;
+import com.senla.hotel.dao.com.senla.hotel.dao.connector.DBConnector;
+import utilities.ui.Printer;
 
 public class Server {
 	private static Logger logger = LogManager.getLogger(Server.class);

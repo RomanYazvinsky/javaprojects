@@ -1,23 +1,35 @@
 package com.senla.hotel.entities;
 
 import com.senla.hotel.annotations.*;
+import com.senla.hotel.constants.PropertyType;
 
 import java.util.Date;
+
+import static com.senla.hotel.constants.Constants.serviceRecordExportFile;
+import static com.senla.hotel.constants.Constants.serviceRecordHeaderCSV;
+import static com.senla.hotel.constants.EntityColumnOrder.ID;
+import static com.senla.hotel.constants.EntityColumnOrder.SERVICE_DATE;
+
 @Table(tableName = "ord_serv")
+@CsvEntity(csvHeader = serviceRecordHeaderCSV, entityId = "id", filename = serviceRecordExportFile, valueSeparator = ",")
 public class ServiceRecord implements IEntity{
     @Id
     @Column(fieldName = "id")
+    @CsvProperty(columnNumber = ID, propertyType = PropertyType.SIMPLE_PROPERTY)
     private Integer id;
     @Column(fieldName = "order_id")
     @Getter(getter = "getId")
+    @CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = 2, getterMethod = "getId", setterMethod = "setId")
     @ForeignKey(tableName = "orders", internalName = "order_id", externalName = "id")
     private Order order;
     @Column(fieldName = "service_id")
     @Getter(getter = "getId")
-    @ForeignKey(tableName = "services", internalName = "service_id", externalName = "id")
+    @CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = 3, getterMethod = "getId", setterMethod = "setId")
+    @ForeignKey(tableName = "managers", internalName = "service_id", externalName = "id")
     private Service service;
     @Column(fieldName = "date", isString = true)
     @Parseable(methodName = "parseDate")
+    @CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = SERVICE_DATE, getterMethod = "getTime")
     private Date date;
 
     public ServiceRecord() {

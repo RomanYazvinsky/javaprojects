@@ -1,17 +1,6 @@
 package com.senla.hotel.facade;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.senla.hotel.api.internal.IClientWorker;
-import com.senla.hotel.api.internal.IOrderWorker;
-import com.senla.hotel.api.internal.IRoomWorker;
-import com.senla.hotel.api.internal.IServiceWorker;
+import com.senla.hotel.api.internal.*;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.constants.RoomStatus;
@@ -19,299 +8,399 @@ import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.entities.Service;
-import com.senla.hotel.exceptions.EmptyObjectException;
-import com.senla.hotel.exceptions.IncorrectIDEcxeption;
+import com.senla.hotel.exceptions.*;
 import com.senla.hotel.properties.HotelProperties;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import utilities.injection.DependencyInjector;
 
-import utilities.DependencyInjector;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class Facade {
-	private static Logger logger = LogManager.getLogger(Facade.class);
-	private IRoomWorker roomWorker;
-	private IClientWorker clientWorker;
-	private IServiceWorker serviceWorker;
-	private IOrderWorker orderWorker;
-	private HotelProperties properties;
-	private static Facade instance;
+    private static Logger logger = LogManager.getLogger(Facade.class);
+    private static Facade instance;
+    private IRoomManager roomManager;
+    private IClientManager clientManager;
+    private IServiceManager serviceManager;
+    private IOrderManager orderManager;
+    private IServiceRecordManager serviceRecordManager;
+    private HotelProperties properties;
 
-	private Facade() {
-		roomWorker = (IRoomWorker) DependencyInjector.newInstance(IRoomWorker.class);
-		clientWorker = (IClientWorker) DependencyInjector.newInstance(IClientWorker.class);
-		serviceWorker = (IServiceWorker) DependencyInjector.newInstance(IServiceWorker.class);
-		orderWorker = (IOrderWorker)DependencyInjector.newInstance(IOrderWorker.class);
-		try {
-			properties = HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES);
-		} catch (IOException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-	}
+    private Facade() {
+        roomManager = (IRoomManager) DependencyInjector.newInstance(IRoomManager.class);
+        clientManager = (IClientManager) DependencyInjector.newInstance(IClientManager.class);
+        serviceManager = (IServiceManager) DependencyInjector.newInstance(IServiceManager.class);
+        orderManager = (IOrderManager) DependencyInjector.newInstance(IOrderManager.class);
+        serviceRecordManager = (IServiceRecordManager) DependencyInjector.newInstance(IServiceRecordManager.class);
+        try {
+            properties = HotelProperties.getInstance(Constants.PATH_TO_PROPERTIES);
+        } catch (IOException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+        }
+    }
 
-	public static Facade getInstance() {
-		if (instance == null) {
-			instance = new Facade();
-		}
-		return instance;
-	}
+    public static Facade getInstance() {
+        if (instance == null) {
+            instance = new Facade();
+        }
+        return instance;
+    }
 
-	public Boolean addClient(Client client) {
-		Boolean result = clientWorker.add(client, true);
-		return result;
-	}
+    public Boolean addClient(Client client) throws InternalErrorException {
+        Boolean result;
+        try {
+            result = clientManager.add(client, true);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return result;
+    }
 
-	public Boolean addOrder(Order order, Date date) {
-		Boolean result;
-		try {
-			result = orderWorker.add(order, date);
-			return result;
-		} catch (IncorrectIDEcxeption e) {
-			logger.log(Level.DEBUG, e.getMessage());
-			return false;
-		}
-	}
+    public Boolean addOrder(Order order, Date date) throws InternalErrorException {
+        Boolean result;
+        try {
+            result = orderManager.add(order, date);
+            return result;
+        } catch (IncorrectIDEcxeption | QueryFailureException | AnalysisException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
 
-	public Boolean addRoom(Room room) {
-		Boolean result = roomWorker.add(room, true);
-		return result;
-	}
+        }
+    }
 
-	public Boolean addService(Service service) {
-		Boolean result = serviceWorker.add(service, true);
-		return result;
-	}
+    public Boolean addRoom(Room room) throws InternalErrorException {
+        Boolean result = null;
+        try {
+            result = roomManager.add(room, true);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
 
-	public Room getRoomByID(Integer roomID) {
-		Room room = roomWorker.getRoomByID(roomID);
-		return room;
-	}
+        }
+        return result;
+    }
 
-	public Client getClientByID(Integer clientID) {
-		Client client = clientWorker.getClientByID(clientID);
-		return client;
-	}
+    public Boolean addService(Service service) throws InternalErrorException {
+        Boolean result = null;
+        try {
+            result = serviceManager.add(service, true);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return result;
+    }
 
-	public Order getOrderByID(Integer orderID) {
-		Order order = orderWorker.getOrderByID(orderID);
-		return order;
-	}
+    public Room getRoomByID(Integer roomID) throws InternalErrorException {
+        Room room = null;
+        try {
+            room = roomManager.getRoomByID(roomID);
+        } catch (AnalysisException | QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return room;
+    }
 
-	public Service getServiceByID(Integer serviceID) {
-		Service service = serviceWorker.getServiceByID(serviceID);
-		return service;
-	}
+    public Client getClientByID(Integer clientID) throws UnexpectedValueException, InternalErrorException {
+        Client client = null;
+        try {
+            client = clientManager.getClientByID(clientID);
+        } catch (QueryFailureException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return client;
+    }
 
-	public ArrayList<Room> getRooms() {
-		return roomWorker.getRooms();
-	}
+    public Order getOrderByID(Integer orderID) throws UnexpectedValueException, InternalErrorException {
+        Order order = null;
+        try {
+            order = orderManager.getOrderByID(orderID);
+        } catch (AnalysisException | QueryFailureException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return order;
+    }
 
-/*
-	public ArrayList<Room> sortRoomsByCapacity(ArrayList<Room> rooms) {
-		return roomWorker.sort(rooms, new RoomCapacityComparator());
-	}
+    public Service getServiceByID(Integer serviceID) throws InternalErrorException {
+        Service service = null;
+        try {
+            service = serviceManager.getServiceByID(serviceID);
+        } catch (AnalysisException | QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return service;
+    }
 
-	public ArrayList<Room> sortRoomsByPrice(ArrayList<Room> rooms) {
-		return roomWorker.sort(rooms, new RoomPriceComparator());
-	}
+    public ArrayList<Room> getRooms() throws InternalErrorException {
+        try {
+            return roomManager.getRooms();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Room> sortRoomsByStar(ArrayList<Room> rooms) {
-		return roomWorker.sort(rooms, new RoomStarComparator());
-	}
-*/
 
-	public ArrayList<Order> getOrders() {
-		return orderWorker.getOrders();
-	}
+    public ArrayList<Order> getOrders() throws InternalErrorException {
+        try {
+            return orderManager.getOrders();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Order> getActualOrders(Date date) {
-		return orderWorker.getActualOrders(date);
-	}
+    public ArrayList<Order> getActualOrders(Date date) throws InternalErrorException {
+        try {
+            return orderManager.getActualOrders(date);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-/*	public ArrayList<Order> sortOrdersByDate(ArrayList<Order> orders) {
-		return orderWorker.sort(orders, new OrderDateComparator());
-	}
+    public ArrayList<Client> getClients() throws InternalErrorException {
+        try {
+            return clientManager.getClients();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
 
-	public ArrayList<Order> sortOrdersByName(ArrayList<Order> orders) {
-		return orderWorker.sort(orders, new OrderClientNameComparator());
-	}*/
+    }
 
-	public ArrayList<Client> getClients() {
-		return clientWorker.getClients();
-	}
+    public Integer getFreeRoomsCount(Date date) {
+        Integer result = orderManager.getFreeRooms(date).size();
+        return result;
+    }
 
-	public Integer getFreeRoomsCount(Date date) {
-		Integer result = orderWorker.getFreeRooms(date).size();
-		return result;
-	}
+    public Integer getActualClientCount(Date date) throws InternalErrorException {
+        Integer result = null;
+        try {
+            result = orderManager.getActualClientCount(date);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return result;
+    }
 
-	public Integer getActualClientCount(Date date) {
-		Integer result = orderWorker.getActualClientCount(date);
-		return result;
-	}
+    public ArrayList<Room> getFreeRooms(Date date) {
+        ArrayList<Room> rooms = orderManager.getFreeRooms(date);
+        return rooms;
+    }
 
-	public ArrayList<Room> getFreeRooms(Date date) {
-		ArrayList<Room> rooms = orderWorker.getFreeRooms(date);
-		return rooms;
-	}
+    public Integer getPriceForRoom(Order order) {
+        Integer result = orderManager.getPriceForRoom(order);
+        return result;
+    }
 
-	public Integer getPriceForRoom(Order order) {
-		Integer result = orderWorker.getPriceForRoom(order);
-		return result;
-	}
+    public Integer getPriceForServices(ArrayList<Service> services) {
+        return serviceManager.getPriceForServices(services);
+    }
 
-/*	public ArrayList<Order> getLastOrdersOfRoom(Room room) {
-		try {
-			ArrayList<Order> orders = orderWorker.getLastClientsOfRoom(room,
-					Integer.parseInt(properties.getProperty(PropertyNames.ROOM_HISTORY_LENGTH.toString())));
-			return orders;
 
-		} catch (NumberFormatException | EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-			return new ArrayList<Order>();
-		}
-	}*/
+    public ArrayList<Service> getServices() throws InternalErrorException {
+        ArrayList<Service> services = null;
+        try {
+            services = serviceManager.getServices();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return services;
+    }
 
-	public Integer getPriceForServices(ArrayList<Service> services) {
-		return serviceWorker.getPriceForServices(services);
-	}
+    public Boolean closeOrder(Order order, Date now) {
+        Boolean result = orderManager.closeOrder(order, now);
+        return result;
+    }
 
-	public ArrayList<Service> getServicesOfClient(Client client) {
-		return orderWorker.getServicesOfClient(client);
-	}
 
-/*	public ArrayList<Service> sortServicesByDate(ArrayList<Service> services) {
-		return serviceWorker.sort(services, new ServiceDateComparator());
-	}
+    public Order getActualOrder(Client client, Date now) throws InternalErrorException {
+        Order order = null;
+        try {
+            order = orderManager.getActualOrder(client, now);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        return order;
+    }
 
-	public ArrayList<Service> sortServicesByName(ArrayList<Service> services) {
-		return serviceWorker.sort(services, new ServiceNameComparator());
-	}
+    public ArrayList<Client> getActualClients(Date date) throws InternalErrorException {
+        try {
+            return orderManager.getActualClients(date);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Service> sortServicesByPrice(ArrayList<Service> services) {
-		return serviceWorker.sort(services, new ServicePriceComparator());
-	}
+    public Boolean setRoomStatus(Room room, RoomStatus status) throws InternalErrorException {
+        try {
+            if (properties.getProperty(PropertyNames.CHANGE_ROOMSTATUS_ABILITY.toString()).equals("0")) {
+                return false;
+            }
+        } catch (EmptyObjectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+        room.setStatus(status);
+        return false;
+    }
 
-	public ArrayList<Client> sortClientsByName(ArrayList<Client> clients) {
-		return clientWorker.sort(clients, new ClientNameComparator());
-	}*/
+    public ArrayList<Client> importClients() throws InternalErrorException {
+        try {
+            return clientManager.importAll();
+        } catch (EmptyObjectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Service> getServices() {
-		ArrayList<Service> services = serviceWorker.getServices();
-		return services;
-	}
+    public ArrayList<Order> importOrders() throws InternalErrorException {
+        try {
+            return orderManager.importAll();
+        } catch (EmptyObjectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public Boolean closeOrder(Order order, Date now) {
-		Boolean result = orderWorker.closeOrder(order, now);
-		return result;
-	}
+    public ArrayList<Room> importRooms() throws InternalErrorException {
+        try {
+            return roomManager.importAll();
+        } catch (EmptyObjectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public Integer getPriceForServices(Order order) {
-		Integer result = orderWorker.getPriceForServices(order);
-		return result;
-	}
+    public ArrayList<Service> importServices() throws InternalErrorException {
+        try {
+            return serviceManager.importAll();
+        } catch (EmptyObjectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public Order getActualOrder(Client client, Date now) {
-		Order order = orderWorker.getActualOrder(client, now);
-		return order;
-	}
+    public void exportClients() throws InternalErrorException {
+        try {
+            clientManager.exportAll();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Client> getActualClients(Date date) {
-		return orderWorker.getActualClients(date);
-	}
+    public void exportOrders() throws InternalErrorException {
+        try {
+            orderManager.exportAll();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public Boolean setRoomStatus(Room room, RoomStatus status) {
-		try {
-			if (properties.getProperty(PropertyNames.CHANGE_ROOMSTATUS_ABILITY.toString()).equals("0")) {
-				return false;
-			}
-		} catch (EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-		room.setStatus(status);
-		return false;
-	}
+    public void exportRooms() throws InternalErrorException {
+        try {
+            roomManager.exportAll();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Client> importClients() {
-		try {
-			return clientWorker.importAll();
-		} catch (EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-		return null;
-	}
+    public void exportServices() throws InternalErrorException {
+        try {
+            serviceManager.exportAll();
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Order> importOrders() {
-		try {
-			return orderWorker.importAll();
-		} catch (EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-		return null;
-	}
+    public Boolean deleteClient(Client client) throws InternalErrorException {
+        try {
+            return clientManager.delete(client);
+        } catch (QueryFailureException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Room> importRooms() {
-		try {
-			return roomWorker.importAll();
-		} catch (EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-		return null;
-	}
+    public Boolean deleteOrder(Order order) throws InternalErrorException {
+        try {
+            return orderManager.delete(order);
+        } catch (QueryFailureException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public ArrayList<Service> importServices() {
-		try {
-			return serviceWorker.importAll();
-		} catch (EmptyObjectException e) {
-			logger.log(Level.DEBUG, e.getMessage());
-		}
-		return null;
-	}
+    public Boolean deleteRoom(Room room) throws InternalErrorException {
+        try {
+            return roomManager.delete(room);
+        } catch (QueryFailureException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public void exportClients() {
-		clientWorker.exportAll();
-	}
+    public Boolean deleteService(Service service) throws InternalErrorException {
+        try {
+            return serviceManager.delete(service);
+        } catch (QueryFailureException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public void exportOrders() {
-		orderWorker.exportAll();
-	}
+    public Boolean addClientWithID(Client client) throws InternalErrorException {
+        try {
+            return clientManager.add(client, false);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public void exportRooms() {
-		roomWorker.exportAll();
-	}
+    public Boolean addRoomWithID(Room room) throws AnalysisException, InternalErrorException {
+        try {
+            return roomManager.add(room, false);
+        } catch (QueryFailureException | UnexpectedValueException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public void exportServices() {
-		serviceWorker.exportAll();
-	}
+    public Boolean addOrderWithID(Order order) throws InternalErrorException {
+        try {
+            return orderManager.add(order, false);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
-	public Boolean deleteClient(Client client) {
-		return clientWorker.delete(client);
-	}
-
-	public Boolean deleteOrder(Order order) {
-		return orderWorker.delete(order);
-	}
-
-	public Boolean deleteRoom(Room room) {
-		return roomWorker.delete(room);
-	}
-
-	public Boolean deleteService(Service service) {
-		return serviceWorker.delete(service);
-	}
-
-	public Boolean addClientWithID(Client client) {
-		return clientWorker.add(client, false);
-	}
-
-	public Boolean addRoomWithID(Room room) {
-		return roomWorker.add(room, false);
-	}
-
-	public Boolean addOrderWithID(Order order) {
-		return orderWorker.add(order, false);
-	}
-
-	public Boolean addServiceWithID(Service service) {
-		return serviceWorker.add(service, false);
-	}
+    public Boolean addServiceWithID(Service service) throws InternalErrorException {
+        try {
+            return serviceManager.add(service, false);
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
+    }
 
 
 }

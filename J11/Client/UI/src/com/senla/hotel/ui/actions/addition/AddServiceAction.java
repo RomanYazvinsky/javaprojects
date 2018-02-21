@@ -9,9 +9,8 @@ import com.senla.hotel.message.Message;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utilities.DateCreator;
-import utilities.Input;
-import utilities.Printer;
+import utilities.ui.Input;
+import utilities.ui.Printer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

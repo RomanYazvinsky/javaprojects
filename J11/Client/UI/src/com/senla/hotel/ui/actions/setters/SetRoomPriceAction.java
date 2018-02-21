@@ -7,7 +7,7 @@ import com.senla.hotel.ui.actions.selectors.SelectRoomAction;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import utilities.Input;
+import utilities.ui.Input;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

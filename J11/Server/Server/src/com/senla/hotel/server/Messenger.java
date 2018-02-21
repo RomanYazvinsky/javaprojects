@@ -35,10 +35,9 @@ public class Messenger {
 				response = new Message("OK", new Object[] { data });
 				return response;
 			}
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
+		} catch (Exception e) {
 			logger.debug(e);
-			return new Message("Error", null);
+			return new Message("Error", true);
 		}
 	}
 }

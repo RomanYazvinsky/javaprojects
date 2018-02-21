@@ -1,7 +1,7 @@
 package com.senla.hotel.server;
 
-import utilities.Input;
-import utilities.Printer;
+import utilities.ui.Input;
+import utilities.ui.Printer;
 
 public class ServerControl extends  Thread {
     private  Server server;

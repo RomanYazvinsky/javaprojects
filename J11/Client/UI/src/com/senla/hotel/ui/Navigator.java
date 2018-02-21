@@ -6,7 +6,7 @@ import com.senla.hotel.api.internal.INavigator;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import utilities.Printer;
+import utilities.ui.Printer;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

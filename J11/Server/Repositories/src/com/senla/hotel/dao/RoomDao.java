@@ -1,44 +1,53 @@
 package com.senla.hotel.dao;
 
 import com.senla.hotel.annotations.Table;
+import com.senla.hotel.api.internal.IRoomDao;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.constants.SortType;
-import com.senla.hotel.entities.Order;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Room;
-import com.senla.hotel.entities.ServiceRecord;
+import com.senla.hotel.exceptions.AnalysisException;
+import com.senla.hotel.exceptions.DatabaseConnectException;
+import com.senla.hotel.exceptions.QueryFailureException;
+import com.senla.hotel.exceptions.UnexpectedValueException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class RoomDao extends AEntityDAO<Room> {
+public class RoomDao extends GenericDao<Room> implements IRoomDao<Room> {
     private static Logger logger = LogManager.getLogger(RoomDao.class);
 
-    public RoomDao(Connection connection) {
-        super(connection);
+    public RoomDao() throws DatabaseConnectException {
+        super(DBConnector.getInstance().getConnection());
     }
 
-    public Room getById(int id) {
-        return read(id, Room.class);
-    }
-
-    public Boolean add(Room room) {
+    @Override
+    public Room getById(int id) throws QueryFailureException, AnalysisException, UnexpectedValueException {
         try {
-            create(room);
-            return true;
-        } catch (SQLException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return read(id, Room.class);
+        } catch (QueryFailureException | AnalysisException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            return false;
+            throw e;
         }
     }
 
     @Override
-    protected Room parseResult(ResultSet resultSet) {
+    public Boolean add(Room room) throws QueryFailureException, UnexpectedValueException, AnalysisException {
+        try {
+            create(room);
+            return true;
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    protected Room parseResult(ResultSet resultSet) throws UnexpectedValueException {
         Room room = new Room();
         try {
             room.setId(resultSet.getInt("id"));
@@ -50,51 +59,40 @@ public class RoomDao extends AEntityDAO<Room> {
 
         } catch (SQLException e) {
             logger.log(Level.DEBUG, e.getMessage());
+            throw new UnexpectedValueException();
         }
 
         return room;
     }
 
     @Override
-    protected String getTableName() {
+    protected String getTableName() throws AnalysisException {
         Table table = Room.class.getAnnotation(Table.class);
+        if (table == null) {
+            throw new AnalysisException();
+        }
         return table.tableName();
     }
 
-    public ArrayList<Room> getAll() {
+    @Override
+    public ArrayList<Room> getAll() throws QueryFailureException, UnexpectedValueException {
         try {
             return getAll(Room.class);
-        } catch (SQLException e) {
+        } catch (QueryFailureException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            return null;
+            throw e;
         }
-    }
-
-    public ArrayList<Room> getAll(SortType sortType) {
-        return getAll(Room.class, sortType);
     }
 
     @Override
-    public void delete(Room room) {
+    public ArrayList<Room> getAll(SortType sortType) throws QueryFailureException, UnexpectedValueException {
         try {
-            connection.setAutoCommit(false);
-            String s = "DELETE FROM " + AEntityDAO.getTableName(Order.class) + " WHERE room_id = " +  room.getId()+";";
-            connection.createStatement().execute(s);
-            super.delete(room);
-        } catch (SQLException e) {
+            return getAll(Room.class, sortType);
+        } catch (QueryFailureException | UnexpectedValueException e) {
             logger.log(Level.DEBUG, e.getMessage());
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
-        }
-        finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.log(Level.DEBUG, e.getMessage());
-            }
+            throw e;
         }
     }
+
+
 }

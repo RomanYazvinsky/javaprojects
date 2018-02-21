@@ -102,7 +102,7 @@ public class Builder implements IBuilder {
 		IMenu selectServiceToAddSubMenu = new Menu();
 		IMenu addOrderSubMenu = new Menu();
 
-		// services
+		// managers
 		IMenu sortServicesSubMenu = new Menu();
 		IMenu serviceSubMenu = new Menu();
 		IMenu afterPrintServiceSubMenu = new Menu();
@@ -128,7 +128,7 @@ public class Builder implements IBuilder {
 		MenuItem chooseOrderSortType = new MenuItem("--Print orders");
 		MenuItem chooseServiceSortType = new MenuItem("--Print sevices");
 
-		MenuItem printServices = new MenuItem("--Print services", new PrintServicesAction());
+		MenuItem printServices = new MenuItem("--Print managers", new PrintServicesAction());
 		MenuItem sortServicesByPrice = new MenuItem("--By price", new SortServicesByPriceAction());
 		MenuItem sortServicesByName = new MenuItem("--By name", new SortServiceByNameAction());
 
@@ -167,7 +167,7 @@ public class Builder implements IBuilder {
 
 
 		MenuItem printRoomsToAddOrder = new MenuItem("--Add order", new PrintRoomsAction());
-		MenuItem printClientServices = new MenuItem("--Print client's services", new PrintClientServicesAction());
+		MenuItem printClientServices = new MenuItem("--Print client's managers", new PrintClientServicesAction());
 		MenuItem exportClients = new MenuItem("--Export", new ClientsExportAction());
 
 		
