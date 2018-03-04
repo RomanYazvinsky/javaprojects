@@ -1,0 +1,36 @@
+02-03-2018 01:56:46 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 01:58:01 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 01:59:01 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 01:59:39 [DEBUG][RemoteClient        ] [<init>              :54] - Connection refused: connect
+02-03-2018 01:59:39 [DEBUG][RemoteClient        ] [main                :30] - Connection refused: connect
+02-03-2018 02:01:59 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 02:07:15 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 02:08:04 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 02:10:03 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+02-03-2018 02:21:28 [DEBUG][HotelProperties     ] [<init>              :23] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:21:28 [DEBUG][HotelProperties     ] [getInstance         :35] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:21:28 [DEBUG][RemoteClient        ] [<init>              :57] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:24:42 [DEBUG][HotelProperties     ] [<init>              :23] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:24:42 [DEBUG][HotelProperties     ] [getInstance         :35] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:24:42 [DEBUG][RemoteClient        ] [<init>              :57] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:25:09 [DEBUG][HotelProperties     ] [<init>              :23] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:25:09 [DEBUG][HotelProperties     ] [getInstance         :35] - ..\Properties\hotel.properties (The system cannot find the path specified)
+02-03-2018 02:25:09 [DEBUG][RemoteClient        ] [<init>              :57] - ..\Properties\hotel.properties (The system cannot find the path specified)
+04-03-2018 12:46:03 [DEBUG][PrintOrdersAction   ] [execute             :32] - Some var is null
+04-03-2018 12:46:03 [DEBUG][MenuItem            ] [doAction            :51] - Action force stop
+04-03-2018 12:46:03 [DEBUG][Navigator           ] [navigate            :70] - Action force stop
+04-03-2018 12:46:10 [DEBUG][PrintRoomsAction    ] [execute             :35] - Some var is null
+04-03-2018 12:46:10 [DEBUG][MenuItem            ] [doAction            :51] - Action force stop
+04-03-2018 12:46:10 [DEBUG][Navigator           ] [navigate            :70] - Action force stop
+04-03-2018 12:48:05 [DEBUG][PrintRoomsAction    ] [execute             :35] - Some var is null
+04-03-2018 12:48:05 [DEBUG][MenuItem            ] [doAction            :51] - Action force stop
+04-03-2018 12:48:05 [DEBUG][Navigator           ] [navigate            :70] - Action force stop
+04-03-2018 16:21:50 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+04-03-2018 16:35:17 [DEBUG][PrintRoomsAction    ] [execute             :35] - Some var is null
+04-03-2018 16:35:17 [DEBUG][MenuItem            ] [doAction            :51] - Action force stop
+04-03-2018 16:35:17 [DEBUG][Navigator           ] [navigate            :70] - Action force stop
+04-03-2018 16:42:36 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+04-03-2018 16:45:27 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
+04-03-2018 16:45:32 [DEBUG][RemoteClient        ] [<init>              :54] - Connection refused: connect
+04-03-2018 16:45:32 [DEBUG][RemoteClient        ] [main                :30] - Connection refused: connect
+04-03-2018 16:50:22 [DEBUG][PrintRoomsAction    ] [execute             :31] - java.lang.reflect.InvocationTargetException
