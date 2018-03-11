@@ -2,6 +2,7 @@ package com.senla.hotel.managers;
 
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.dao.ClientDao;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.DatabaseConnectException;
 import com.senla.hotel.exceptions.EmptyObjectException;
@@ -11,6 +12,8 @@ import com.senla.hotel.utilities.CSVModule;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.ArrayList;
 
@@ -28,44 +31,75 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
     }
 
     @Override
-    public synchronized Boolean add(Client client, boolean addId) throws QueryFailureException {
+    public synchronized Boolean add(Client client, boolean addId) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            return clientDao.add(client);
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Boolean result = clientDao.add(client);
+            transaction.commit();
+            return result;
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public Client getClientByID(Integer id) throws QueryFailureException, UnexpectedValueException {
-
+    public Client getClientByID(Integer id) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            if (id == null) {
-                throw new UnexpectedValueException();
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Client result = clientDao.getById(id);
+            transaction.commit();
+            return result;
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public ArrayList<Client> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            ArrayList result = clientDao.getAll(sortType);
+            transaction.commit();
+            return result;
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public synchronized ArrayList<Client> getClients() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            ArrayList<Client> clients = clientDao.getAll();
+            transaction.commit();
+            return clients;
+        } catch (QueryFailureException | DatabaseConnectException e) {
+            if (transaction != null) {
+                transaction.rollback();
             }
-            return clientDao.getById(id);
-        } catch (QueryFailureException | UnexpectedValueException e) {
-            logger.log(Level.DEBUG, e);
-            throw e;
-        }
-    }
-
-    @Override
-    public ArrayList<Client> sort(SortType sortType) throws QueryFailureException {
-        try {
-            return clientDao.getAll(sortType);
-        } catch (QueryFailureException e) {
-            logger.log(Level.DEBUG, e);
-            throw e;
-        }
-    }
-
-    @Override
-    public synchronized ArrayList<Client> getClients() throws QueryFailureException {
-        try {
-            return clientDao.getAll();
-        } catch (QueryFailureException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
@@ -81,39 +115,65 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
     }
 
     @Override
-    public ArrayList<Client> importAll()  {
+    public ArrayList<Client> importAll() {
         ArrayList<Client> clients = new ArrayList<>();
         CSVModule.importAll(Client.class).forEach(arg0 -> clients.add((Client) arg0));
         return clients;
     }
 
     @Override
-    public synchronized void updateByImport() throws QueryFailureException {
+    public synchronized void updateByImport() throws QueryFailureException, DatabaseConnectException {
+        Session session = null;
+        Transaction transaction = null;
         try {
-            clientDao.batchCreateOrUpdate(importAll());
-        } catch ( QueryFailureException e) {
+            session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            for (Client client : importAll()) {
+                clientDao.createOrUpdate(client);
+            }
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
-
     }
 
     @Override
-    public synchronized void exportAll() throws QueryFailureException {
+    public synchronized void exportAll() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            CSVModule.exportAll(getClients());
-        } catch (QueryFailureException  e) {
-            logger.log(Level.DEBUG, e.getMessage());
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            CSVModule.exportAll(clientDao.getAll());
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
 
     @Override
-    public synchronized Boolean delete(Client client) throws QueryFailureException {
+    public synchronized Boolean delete(Client client) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
             clientDao.delete(client);
-        } catch ( QueryFailureException e) {
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }

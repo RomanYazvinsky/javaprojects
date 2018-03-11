@@ -104,7 +104,7 @@ public class Printer {
 		if (service == null) {
 			System.out.println("No service");
 		} else {
-			System.out.print(service.getId() + " " + service.getName() + " " + service.getPrice() + " ");
+			System.out.println(service.getId() + " " + service.getName() + " " + service.getPrice() + " ");
 		}
 	}
 }

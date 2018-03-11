@@ -7,13 +7,13 @@ import com.senla.hotel.exceptions.*;
 import java.util.ArrayList;
 
 public interface IRoomManager {
-    Boolean add(Room room, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException;
+    Boolean add(Room room, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
-    ArrayList<Room> getRooms() throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Room> getRooms() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Room getRoomByID(Integer roomID) throws AnalysisException, QueryFailureException, UnexpectedValueException;
+    Room getRoomByID(Integer roomID) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Room> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Room> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     String[] toStringArray(ArrayList<Room> rooms);
 
@@ -21,7 +21,7 @@ public interface IRoomManager {
 
     ArrayList<Room> importAll() throws EmptyObjectException;
 
-    void exportAll() throws QueryFailureException, UnexpectedValueException;
+    void exportAll() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Boolean delete(Room room) throws QueryFailureException, AnalysisException;
+    Boolean delete(Room room) throws QueryFailureException, AnalysisException, DatabaseConnectException;
 }

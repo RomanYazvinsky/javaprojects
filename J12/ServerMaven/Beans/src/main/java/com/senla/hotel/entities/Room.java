@@ -44,11 +44,12 @@ public class Room implements IEntity, Serializable, Cloneable {
 	@CsvProperty(propertyType = SIMPLE_PROPERTY, columnNumber = ROOM_CAPACITY)
 	private Integer capacity;
 
-	@Column(name = "stars")
+	@Column(name = "star")
 	@CsvProperty(propertyType = SIMPLE_PROPERTY, columnNumber = ROOM_STAR)
 	private Integer star;
 
 	@Column(name = "status")
+	@Enumerated(EnumType.STRING)
 	@CsvProperty(propertyType = SIMPLE_PROPERTY, columnNumber = ROOM_STATUS)
 	private RoomStatus status;
 

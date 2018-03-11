@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -52,6 +53,15 @@ public class DBConnector {
             throw e;
         }
         return sessionFactory;
+    }
+
+    public Session openSession() throws DatabaseConnectException {
+        try {
+            return getSessionFactory().openSession();
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw e;
+        }
     }
 
     public void close() throws DatabaseConnectException {

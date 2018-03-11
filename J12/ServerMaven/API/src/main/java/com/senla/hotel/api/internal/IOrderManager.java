@@ -10,33 +10,31 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public interface IOrderManager {
-    ArrayList<Order> selectByClient(Client client) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Order> selectByClient(Client client) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> selectByRoom(Room room) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Order> selectByRoom(Room room) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Order> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Order getActualOrder(Client client, Date now) throws QueryFailureException, UnexpectedValueException;
+    Order getActualOrder(Client client, Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Order getOrderByID(Integer orderID) throws AnalysisException, QueryFailureException, UnexpectedValueException;
+    Order getOrderByID(Integer orderID) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> getActualOrders(Date now) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Order> getActualOrders(Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Client> getActualClients(Date now) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Client> getActualClients(Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Integer getActualClientCount(Date now) throws QueryFailureException, UnexpectedValueException;
-
-    ArrayList<Room> getFreeRooms(Date date);
+    ArrayList<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException;
 
     Integer getPriceForRoom(Order order);
 
-    Boolean add(Order order, Date date) throws IncorrectIDEcxeption, QueryFailureException, UnexpectedValueException, AnalysisException;
+    Boolean add(Order order) throws IncorrectIDEcxeption, QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
-    Boolean add(Order order, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException;
+    Boolean add(Order order, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
-    Order getOrderById(Integer id) throws AnalysisException, QueryFailureException, UnexpectedValueException;
+    Order getOrderById(Integer id) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> getOrders() throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Order> getOrders() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     Boolean closeOrder(Order order, Date now);
 
@@ -46,7 +44,7 @@ public interface IOrderManager {
 
     ArrayList<Order> importAll() throws EmptyObjectException;
 
-    void exportAll() throws QueryFailureException, UnexpectedValueException;
+    void exportAll() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Boolean delete(Order order) throws QueryFailureException, AnalysisException;
+    Boolean delete(Order order) throws QueryFailureException, AnalysisException, DatabaseConnectException;
 }

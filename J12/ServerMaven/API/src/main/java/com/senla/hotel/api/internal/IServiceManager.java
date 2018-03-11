@@ -7,15 +7,15 @@ import com.senla.hotel.exceptions.*;
 import java.util.ArrayList;
 
 public interface IServiceManager {
-    ArrayList<Service> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Service> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Boolean add(Service service, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException;
+    Boolean add(Service service, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
     Integer getPriceForServices(ArrayList<Service> services);
 
-    Service getServiceByID(Integer serviceID) throws AnalysisException, QueryFailureException, UnexpectedValueException;
+    Service getServiceByID(Integer serviceID) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Service> getServices() throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Service> getServices() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     String[] toStringArray(ArrayList<Service> services);
 
@@ -23,7 +23,7 @@ public interface IServiceManager {
 
     void updateByImport() throws EmptyObjectException, QueryFailureException, AnalysisException, UnexpectedValueException, DatabaseConnectException;
 
-    void exportAll() throws QueryFailureException, UnexpectedValueException;
+    void exportAll() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Boolean delete(Service service) throws QueryFailureException, AnalysisException;
+    Boolean delete(Service service) throws QueryFailureException, AnalysisException, DatabaseConnectException;
 }

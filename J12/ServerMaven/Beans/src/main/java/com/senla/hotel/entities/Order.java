@@ -93,22 +93,8 @@ public class Order implements Serializable, IEntity {
     }
 
 
-    public Boolean isActive(Date now) {
-        if (orderFrom.before(now) && orderTo.after(now)) {
-            return true;
-        }
-        return false;
-    }
 
-    public Integer compareDates(Order other) {
-        if (orderTo.before(other.getOrderFrom())) {
-            return -1;
-        }
-        if (orderFrom.after(other.getOrderTo())) {
-            return 1;
-        }
-        return 0;
-    }
+
 
     @Override
     public int hashCode() {
@@ -140,9 +126,6 @@ public class Order implements Serializable, IEntity {
                 return false;
         } else if (!client.equals(other.client))
             return false;
-        if (compareDates((Order) obj) != 0) {
-            return false;
-        }
         if (room == null) {
             if (other.room != null)
                 return false;

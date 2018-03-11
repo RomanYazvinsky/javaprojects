@@ -7,13 +7,13 @@ import com.senla.hotel.exceptions.*;
 import java.util.ArrayList;
 
 public interface IClientManager {
-    Boolean add(Client client, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException;
+    Boolean add(Client client, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
-    Client getClientByID(Integer id) throws QueryFailureException, AnalysisException, UnexpectedValueException;
+    Client getClientByID(Integer id) throws QueryFailureException, AnalysisException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Client> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Client> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Client> getClients() throws QueryFailureException, UnexpectedValueException;
+    ArrayList<Client> getClients() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     String[] toStringArray(ArrayList<Client> clients);
 
@@ -21,7 +21,7 @@ public interface IClientManager {
 
     void updateByImport() throws EmptyObjectException, QueryFailureException, AnalysisException, UnexpectedValueException, DatabaseConnectException;
 
-    void exportAll() throws QueryFailureException, UnexpectedValueException;
+    void exportAll() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    Boolean delete(Client client) throws QueryFailureException, AnalysisException;
+    Boolean delete(Client client) throws QueryFailureException, AnalysisException, DatabaseConnectException;
 }

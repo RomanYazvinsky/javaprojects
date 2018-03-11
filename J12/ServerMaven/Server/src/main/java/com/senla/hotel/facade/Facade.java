@@ -52,7 +52,7 @@ public class Facade {
         Boolean result;
         try {
             result = clientManager.add(client, true);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -62,9 +62,9 @@ public class Facade {
     public Boolean addOrder(Order order, Date date) throws InternalErrorException {
         Boolean result;
         try {
-            result = orderManager.add(order, date);
+            result = orderManager.add(order);
             return result;
-        } catch (IncorrectIDEcxeption | QueryFailureException | AnalysisException | UnexpectedValueException e) {
+        } catch (IncorrectIDEcxeption | QueryFailureException | AnalysisException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
 
@@ -75,10 +75,9 @@ public class Facade {
         Boolean result = null;
         try {
             result = roomManager.add(room, true);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
-
         }
         return result;
     }
@@ -87,7 +86,7 @@ public class Facade {
         Boolean result = null;
         try {
             result = serviceManager.add(service, true);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -98,7 +97,7 @@ public class Facade {
         Room room = null;
         try {
             room = roomManager.getRoomByID(roomID);
-        } catch (AnalysisException | QueryFailureException | UnexpectedValueException e) {
+        } catch (AnalysisException | QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -109,7 +108,7 @@ public class Facade {
         Client client = null;
         try {
             client = clientManager.getClientByID(clientID);
-        } catch (QueryFailureException | AnalysisException e) {
+        } catch (QueryFailureException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -120,7 +119,7 @@ public class Facade {
         Order order = null;
         try {
             order = orderManager.getOrderByID(orderID);
-        } catch (AnalysisException | QueryFailureException e) {
+        } catch (AnalysisException | QueryFailureException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -131,7 +130,7 @@ public class Facade {
         Service service = null;
         try {
             service = serviceManager.getServiceByID(serviceID);
-        } catch (AnalysisException | QueryFailureException | UnexpectedValueException e) {
+        } catch (AnalysisException | QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -141,7 +140,7 @@ public class Facade {
     public ArrayList<Room> getRooms() throws InternalErrorException {
         try {
             return roomManager.getRooms();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -151,7 +150,7 @@ public class Facade {
     public ArrayList<Order> getOrders() throws InternalErrorException {
         try {
             return orderManager.getOrders();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -160,7 +159,7 @@ public class Facade {
     public ArrayList<Order> getActualOrders(Date date) throws InternalErrorException {
         try {
             return orderManager.getActualOrders(date);
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -169,31 +168,43 @@ public class Facade {
     public ArrayList<Client> getClients() throws InternalErrorException {
         try {
             return clientManager.getClients();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
 
     }
 
-    public Integer getFreeRoomsCount(Date date) {
-        Integer result = orderManager.getFreeRooms(date).size();
+    public Integer getFreeRoomsCount(Date date) throws InternalErrorException {
+        Integer result = null;
+        try {
+            result = orderManager.getFreeRooms(date).size();
+        } catch (QueryFailureException | DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
         return result;
     }
 
     public Integer getActualClientCount(Date date) throws InternalErrorException {
         Integer result = null;
         try {
-            result = orderManager.getActualClientCount(date);
-        } catch (QueryFailureException | UnexpectedValueException e) {
+            result = orderManager.getActualClients(date).size();
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
         return result;
     }
 
-    public ArrayList<Room> getFreeRooms(Date date) {
-        ArrayList<Room> rooms = orderManager.getFreeRooms(date);
+    public ArrayList<Room> getFreeRooms(Date date) throws InternalErrorException {
+        ArrayList<Room> rooms = null;
+        try {
+            rooms = orderManager.getFreeRooms(date);
+        } catch (QueryFailureException | DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new InternalErrorException();
+        }
         return rooms;
     }
 
@@ -211,7 +222,7 @@ public class Facade {
         ArrayList<Service> services = null;
         try {
             services = serviceManager.getServices();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -228,7 +239,7 @@ public class Facade {
         Order order = null;
         try {
             order = orderManager.getActualOrder(client, now);
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -238,7 +249,7 @@ public class Facade {
     public ArrayList<Client> getActualClients(Date date) throws InternalErrorException {
         try {
             return orderManager.getActualClients(date);
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -296,7 +307,7 @@ public class Facade {
     public void exportClients() throws InternalErrorException {
         try {
             clientManager.exportAll();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -305,7 +316,7 @@ public class Facade {
     public void exportOrders() throws InternalErrorException {
         try {
             orderManager.exportAll();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -314,7 +325,7 @@ public class Facade {
     public void exportRooms() throws InternalErrorException {
         try {
             roomManager.exportAll();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -323,7 +334,7 @@ public class Facade {
     public void exportServices() throws InternalErrorException {
         try {
             serviceManager.exportAll();
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -332,7 +343,7 @@ public class Facade {
     public Boolean deleteClient(Client client) throws InternalErrorException {
         try {
             return clientManager.delete(client);
-        } catch (QueryFailureException | AnalysisException e) {
+        } catch (QueryFailureException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -341,7 +352,7 @@ public class Facade {
     public Boolean deleteOrder(Order order) throws InternalErrorException {
         try {
             return orderManager.delete(order);
-        } catch (QueryFailureException | AnalysisException e) {
+        } catch (QueryFailureException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -350,7 +361,7 @@ public class Facade {
     public Boolean deleteRoom(Room room) throws InternalErrorException {
         try {
             return roomManager.delete(room);
-        } catch (QueryFailureException | AnalysisException e) {
+        } catch (QueryFailureException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -359,7 +370,7 @@ public class Facade {
     public Boolean deleteService(Service service) throws InternalErrorException {
         try {
             return serviceManager.delete(service);
-        } catch (QueryFailureException | AnalysisException e) {
+        } catch (QueryFailureException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -368,7 +379,7 @@ public class Facade {
     public Boolean addClientWithID(Client client) throws InternalErrorException {
         try {
             return clientManager.add(client, false);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -377,7 +388,7 @@ public class Facade {
     public Boolean addRoomWithID(Room room) throws AnalysisException, InternalErrorException {
         try {
             return roomManager.add(room, false);
-        } catch (QueryFailureException | UnexpectedValueException e) {
+        } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -386,7 +397,7 @@ public class Facade {
     public Boolean addOrderWithID(Order order) throws InternalErrorException {
         try {
             return orderManager.add(order, false);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }
@@ -395,7 +406,7 @@ public class Facade {
     public Boolean addServiceWithID(Service service) throws InternalErrorException {
         try {
             return serviceManager.add(service, false);
-        } catch (QueryFailureException | UnexpectedValueException | AnalysisException e) {
+        } catch (QueryFailureException | UnexpectedValueException | AnalysisException | DatabaseConnectException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new InternalErrorException();
         }

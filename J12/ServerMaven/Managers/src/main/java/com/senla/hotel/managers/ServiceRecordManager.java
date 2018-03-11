@@ -1,6 +1,7 @@
 package com.senla.hotel.managers;
 
 import com.senla.hotel.dao.ServiceRecordDao;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.ServiceRecord;
 import com.senla.hotel.exceptions.DatabaseConnectException;
 import com.senla.hotel.exceptions.QueryFailureException;
@@ -8,6 +9,8 @@ import com.senla.hotel.utilities.CSVModule;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.ArrayList;
 
@@ -24,36 +27,81 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
         }
     }
 
-    @Override
-    public void add(ServiceRecord serviceRecord) throws QueryFailureException {
+
+    public ArrayList<ServiceRecord> getServiceRecords() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            ArrayList<ServiceRecord> clients = serviceRecordDao.getAll();
+            transaction.commit();
+            return clients;
+        } catch (QueryFailureException | DatabaseConnectException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void add(ServiceRecord serviceRecord) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
             serviceRecordDao.add(serviceRecord);
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public void delete(ServiceRecord serviceRecord) throws QueryFailureException {
+    public void delete(ServiceRecord serviceRecord) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
             serviceRecordDao.delete(serviceRecord);
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public synchronized void updateByImport() throws QueryFailureException {
+    public synchronized void updateByImport() throws QueryFailureException, DatabaseConnectException {
+        Session session = null;
+        Transaction transaction = null;
         try {
-            serviceRecordDao.batchCreateOrUpdate(importAll());
-        } catch ( QueryFailureException e) {
+            session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            for (ServiceRecord serviceRecord : importAll()) {
+                serviceRecordDao.createOrUpdate(serviceRecord);
+            }
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
-
     }
+
     @Override
     public synchronized ArrayList<ServiceRecord> importAll() {
         ArrayList<ServiceRecord> rooms = new ArrayList<>();
@@ -63,15 +111,22 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
 
 
     @Override
-    public synchronized void exportAll() throws QueryFailureException {
+    public synchronized void exportAll() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
             CSVModule.exportAll(serviceRecordDao.getAll());
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
-
 
 
 }

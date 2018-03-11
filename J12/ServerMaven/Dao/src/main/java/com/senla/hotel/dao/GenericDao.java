@@ -42,9 +42,9 @@ public abstract class GenericDao<T extends IEntity> implements IGenericDao<T> {
     }
 
     protected ArrayList<T> getAll(Class<T> entityClass) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
         try {
-            Session session = sessionFactory.openSession();
-            ArrayList<T> entities = new ArrayList<>();
+            ArrayList<T> entities;
             Criteria criteria = session.createCriteria(entityClass);
             entities = (ArrayList<T>) criteria.list();
             return entities;
@@ -52,106 +52,77 @@ public abstract class GenericDao<T extends IEntity> implements IGenericDao<T> {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }
+
     }
 
-    protected List<T> getAll(Class<T> entityClass, SortType sortType) throws QueryFailureException {
-            Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
+    public List<?> get(Criteria criteria) throws QueryFailureException {
         try {
-                List<T> entities = (List<T>) session.createCriteria(entityClass).addOrder(Order.asc(defineSortType(sortType))).list();
-                session.getTransaction().commit();
-                return entities;
-            } catch (HibernateException e) {
-                session.getTransaction().rollback();
-                logger.log(Level.DEBUG, e.getMessage());
-                throw new QueryFailureException();
-            }
-        }
-
-    public void create(T entity) throws QueryFailureException{
-      Session session = sessionFactory.openSession();
-      session.beginTransaction();
-      try{
-        session.save(entity);
-        session.getTransaction().commit();
-      }catch (HibernateException e){
-          session.getTransaction().rollback();
-          logger.log(Level.DEBUG, e.getMessage());
-          throw new QueryFailureException();
-      }
-    }
-
-    public void batchCreateOrUpdate(List<T> entities) throws QueryFailureException {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-          for (int i =0; i< entities.size(); i++){
-              session.saveOrUpdate(entities.get(i));
-              if (i%20 ==0){
-                  session.flush();
-                  session.clear();
-              }
-          }
-            transaction.commit();
-        } catch (HibernateException e){
-            transaction.rollback();
+            List<?> entities = (List<?>) criteria.list();
+            return entities;
+        } catch (HibernateException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }
-        finally {
-            session.close();
+    }
+
+    public List<T> getAll(Class<T> entityClass, SortType sortType) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            List<T> entities = (List<T>) session.createCriteria(entityClass).addOrder(Order.asc(defineSortType(sortType))).list();
+            return entities;
+        } catch (HibernateException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new QueryFailureException();
         }
     }
 
-    public void createOrUpdate(T entity) throws QueryFailureException{
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
+    public void create(T entity) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.save(entity);
+        } catch (HibernateException e) {
+            logger.log(Level.DEBUG, e.getMessage());
+            throw new QueryFailureException();
+        }
+    }
+
+    public void createOrUpdate(T entity) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
         try {
             session.saveOrUpdate(entity);
-            session.getTransaction().commit();
-        } catch (HibernateException e){
-            session.getTransaction().rollback();
+        } catch (HibernateException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }
     }
 
-    public T read(Integer id, Class<T> entityClass) throws QueryFailureException{
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        try{
-            T entity = (T) session.createCriteria(entityClass).add(Restrictions.eq("id", id)).uniqueResult();
-            session.getTransaction().commit();
+
+    public T read(Integer id, Class<T> entityClass) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            T entity = (T) session.createCriteria(entityClass).add(Restrictions.eq("id", id)).list().get(0);
             return entity;
-        }catch (HibernateException e){
-            session.getTransaction().rollback();
+        } catch (HibernateException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }
     }
 
-    public void update(T entity) throws  QueryFailureException {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
+    public void update(T entity) throws QueryFailureException {
+        Session session = sessionFactory.getCurrentSession();
         try {
             session.update(entity);
-            session.getTransaction().commit();
-        } catch (HibernateException e){
-            session.getTransaction().rollback();
+        } catch (HibernateException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }
     }
 
     public void delete(T entity) throws QueryFailureException {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         try {
             session.delete(entity);
-            session.getTransaction().commit();
-        } catch (HibernateException e){
-            session.getTransaction().rollback();
+        } catch (HibernateException e) {
             logger.log(Level.DEBUG, e.getMessage());
             throw new QueryFailureException();
         }

@@ -1,158 +1,232 @@
 package com.senla.hotel.managers;
 
+import com.senla.hotel.api.internal.IOrderManager;
 import com.senla.hotel.constants.SortType;
+import com.senla.hotel.dao.ClientDao;
 import com.senla.hotel.dao.OrderDao;
+import com.senla.hotel.dao.RoomDao;
+import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.DatabaseConnectException;
-import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.QueryFailureException;
 import com.senla.hotel.utilities.CSVModule;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class OrderManager implements com.senla.hotel.api.internal.IOrderManager {
+public class OrderManager implements IOrderManager {
     private static Logger logger = LogManager.getLogger(OrderManager.class);
     private OrderDao orderDao;
+    private ClientDao clientDao;
+    private RoomDao roomDao;
 
     public OrderManager() throws DatabaseConnectException {
         try {
             orderDao = new OrderDao();
+            clientDao = new ClientDao();
+            roomDao = new RoomDao();
         } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
-    private ArrayList<Client> makeClientList(ArrayList<Order> orders) {
-        ArrayList<Client> clients = new ArrayList<Client>();
-        for (Order order : orders) {
-            clients.add(order.getClient());
+    private Boolean isActive(Order order, Date now) {
+        if (order.getOrderFrom().before(now) && order.getOrderTo().after(now)) {
+            return true;
         }
-        return clients;
+        return false;
     }
 
-    private ArrayList<Room> makeRoomList(ArrayList<Order> orders) {
-        ArrayList<Room> rooms = new ArrayList<>();
-        for (Order order : orders) {
-            rooms.add(order.getRoom());
-        }
-        return rooms;
-    }
 
     @Override
-    public ArrayList<Order> selectByClient(Client client) throws QueryFailureException {
-        ArrayList<Order> result = new ArrayList<>();
+    public ArrayList<Order> selectByClient(Client client) throws QueryFailureException, DatabaseConnectException {
+        ArrayList<Order> result;
+        Transaction transaction = null;
         try {
-            for (Order order : orderDao.getAll()) {
-                if (order.getClient().equals(client)) {
-                    result.add(order);
-                }
-            }
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Criteria criteria = session.createCriteria(Order.class);
+            criteria.add(Restrictions.eq("client_id", client));
+            result = new ArrayList(orderDao.get(criteria));
+            transaction.commit();
         } catch (QueryFailureException e) {
-            logger.log(Level.DEBUG, e.getMessage());
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
             throw e;
-        }
-        return result;
-    }
-
-    @Override
-    public ArrayList<Order> selectByRoom(Room room) throws QueryFailureException {
-        ArrayList<Order> result = new ArrayList<>();
-        try {
-            for (Order order : orderDao.getAll()) {
-                if (order.getRoom().equals(room)) {
-                    result.add(order);
-                }
-            }
-        } catch (QueryFailureException e) {
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
         return result;
     }
 
+    public Integer compareDates(Order order, Order other) {
+        if (order.getOrderTo().before(other.getOrderFrom())) {
+            return -1;
+        }
+        if (order.getOrderFrom().after(other.getOrderTo())) {
+            return 1;
+        }
+        return 0;
+    }
+
     @Override
-    public ArrayList<Order> sort(SortType sortType) throws QueryFailureException {
+    public ArrayList<Order> selectByRoom(Room room) throws QueryFailureException, DatabaseConnectException {
+        ArrayList<Order> result;
+        Transaction transaction = null;
         try {
-            return orderDao.getAll(sortType);
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Criteria criteria = session.createCriteria(Order.class);
+            criteria.add(Restrictions.eq("room_id", room));
+            result = new ArrayList(orderDao.get(criteria));
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
+        return result;
     }
 
     @Override
-    public Order getActualOrder(Client client, Date now) throws QueryFailureException {
+    public ArrayList<Order> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            for (Order order : selectByClient(client)) {
-                if (order.isActive(now)) {
-                    return order;
-                }
-            }
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            ArrayList result = orderDao.getAll(sortType);
+            transaction.commit();
+            return result;
         } catch (QueryFailureException e) {
+            transaction.rollback();
             logger.log(Level.DEBUG, e);
             throw e;
-        }
-        return null;
-    }
-
-    @Override
-    public Order getOrderByID(Integer orderID) throws QueryFailureException {
-        if (orderID == null) {
-            return null;
-        }
-        try {
-            return orderDao.getById(orderID);
-        } catch (QueryFailureException  e) {
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public ArrayList<Order> getActualOrders(Date now) throws QueryFailureException {
-        ArrayList<Order> actualOrders = null;
+    public Order getActualOrder(Client client, Date now) throws QueryFailureException, DatabaseConnectException {
+        ArrayList<Order> result;
+        Transaction transaction = null;
         try {
-            actualOrders = new ArrayList<Order>(orderDao.getAll());
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Criteria criteria = session.createCriteria(Order.class);
+            criteria.add(Restrictions.and(Restrictions.eq("client_id", client), Restrictions.le("date_from", now)));
+            result = new ArrayList(orderDao.get(criteria));
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
-        actualOrders.removeIf(order -> !order.isActive(now) || order.getRoom().isOnService());
-        return actualOrders;
+        return result.get(0);
     }
 
+
     @Override
-    public ArrayList<Client> getActualClients(Date now) throws QueryFailureException {
+    public Order getOrderByID(Integer orderID) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            return makeClientList(getActualOrders(now));
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Order result = orderDao.getById(orderID);
+            transaction.commit();
+            return result;
         } catch (QueryFailureException e) {
+            transaction.rollback();
             logger.log(Level.DEBUG, e);
             throw e;
-
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
         }
     }
 
     @Override
-    public Integer getActualClientCount(Date now) throws QueryFailureException {
+    public ArrayList<Order> getActualOrders(Date now) throws QueryFailureException, DatabaseConnectException {
+        ArrayList result;
+        Transaction transaction = null;
         try {
-            return getActualClients(now).size();
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Criteria criteria = session.createCriteria(Order.class);
+            criteria.add(Restrictions.le("date_from", now)).add(Restrictions.ge("date_to", now));
+            result = new ArrayList(orderDao.get(criteria));
+            transaction.commit();
+            return result;
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public ArrayList<Room> getFreeRooms(Date date) {
+    public ArrayList<Client> getActualClients(Date now) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
+        ArrayList<Client> result;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Criteria selectActualOrders = session.createCriteria(Order.class);
+            selectActualOrders.add(Restrictions.le("date_from", now)).add(Restrictions.ge("date_to", now));
+            result = new ArrayList(clientDao.getAll());
+            transaction.commit();
+            return result;
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
+    }
+
+
+    @Override
+    public ArrayList<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException {
         ArrayList<Room> freeRooms = new ArrayList<Room>();
+        Transaction transaction = null;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            freeRooms = new ArrayList(roomDao.getAll());
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
         return freeRooms;
     }
 
@@ -165,47 +239,76 @@ public class OrderManager implements com.senla.hotel.api.internal.IOrderManager 
         return days * order.getRoom().getPricePerDay();
     }
 
-    private Boolean isRoomAvailable(Order order) {
-        int clientCount = 0;
-        return clientCount < order.getRoom().getCapacity();
-    }
-
-    @Override
-    public synchronized Boolean add(Order order, Date date) throws QueryFailureException {
+    public synchronized Boolean add(Order order) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            return orderDao.add(order);
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Boolean result = orderDao.add(order);
+            transaction.commit();
+            return result;
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public synchronized Boolean add(Order order, boolean addId) throws QueryFailureException {
+    public synchronized Boolean add(Order order, boolean addId) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            return orderDao.add(order);
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            orderDao.update(order);
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
+            logger.log(Level.DEBUG, e);
+            throw e;
+        }
+        return true;
+    }
+
+    @Override
+    public Order getOrderById(Integer id) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
+        try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            Order order = orderDao.getById(id);
+            transaction.commit();
+            return order;
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
-    @Override
-    public Order getOrderById(Integer id) throws  QueryFailureException {
-        try {
-            return orderDao.getById(id);
-        } catch (QueryFailureException e) {
-            logger.log(Level.DEBUG, e);
-            throw e;
-        }
-    }
-
 
     @Override
-    public ArrayList<Order> getOrders() throws QueryFailureException {
+    public ArrayList<Order> getOrders() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            return orderDao.getAll();
-        } catch (QueryFailureException e) {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            ArrayList<Order> orders = orderDao.getAll();
+            transaction.commit();
+            return orders;
+        } catch (QueryFailureException | DatabaseConnectException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         }
@@ -228,18 +331,28 @@ public class OrderManager implements com.senla.hotel.api.internal.IOrderManager 
     }
 
     @Override
-    public synchronized void updateByImport() throws  QueryFailureException {
+    public synchronized void updateByImport() throws QueryFailureException, DatabaseConnectException {
+        Session session = null;
+        Transaction transaction = null;
         try {
-            orderDao.batchCreateOrUpdate(importAll());
-        } catch ( QueryFailureException e) {
+            session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            for (Order order : importAll()) {
+                orderDao.createOrUpdate(order);
+            }
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
-
     }
 
     @Override
-    public synchronized ArrayList<Order> importAll()  {
+    public synchronized ArrayList<Order> importAll() {
         ArrayList<Order> orders = new ArrayList<>();
 
         CSVModule.importAll(Order.class).forEach(arg0 -> {
@@ -251,20 +364,36 @@ public class OrderManager implements com.senla.hotel.api.internal.IOrderManager 
 
 
     @Override
-    public synchronized void exportAll() throws QueryFailureException {
+    public synchronized void exportAll() throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
-            CSVModule.exportAll(getOrders());
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            CSVModule.exportAll(orderDao.getAll());
+            transaction.commit();
         } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
     }
 
     @Override
-    public synchronized Boolean delete(Order order) throws QueryFailureException {
+    public synchronized Boolean delete(Order order) throws QueryFailureException, DatabaseConnectException {
+        Transaction transaction = null;
         try {
+            Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
             orderDao.delete(order);
-        } catch ( QueryFailureException e) {
+            transaction.commit();
+        } catch (QueryFailureException e) {
+            transaction.rollback();
+            logger.log(Level.DEBUG, e);
+            throw e;
+        } catch (DatabaseConnectException e) {
             logger.log(Level.DEBUG, e);
             throw e;
         }
