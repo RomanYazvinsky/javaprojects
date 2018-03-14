@@ -1,13 +1,14 @@
-package com.senla.hotel.api.internal;
+package com.senla.hotel.api.internal.managers;
 
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface IServiceManager {
-    ArrayList<Service> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
+    List<Service> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     Boolean add(Service service, boolean addId) throws QueryFailureException, UnexpectedValueException, AnalysisException, DatabaseConnectException;
 
@@ -15,7 +16,7 @@ public interface IServiceManager {
 
     Service getServiceByID(Integer serviceID) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Service> getServices() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
+    List<Service> getServices() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     String[] toStringArray(ArrayList<Service> services);
 

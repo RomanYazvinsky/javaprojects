@@ -1,4 +1,4 @@
-package com.senla.hotel.api.internal;
+package com.senla.hotel.api.internal.managers;
 
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.entities.Client;
@@ -8,13 +8,14 @@ import com.senla.hotel.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public interface IOrderManager {
     ArrayList<Order> selectByClient(Client client) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     ArrayList<Order> selectByRoom(Room room) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
+    List<Order> sort(SortType sortType) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     Order getActualOrder(Client client, Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
@@ -22,9 +23,9 @@ public interface IOrderManager {
 
     ArrayList<Order> getActualOrders(Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Client> getActualClients(Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
+    List<Client> getActualClients(Date now) throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException;
+    List<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException;
 
     Integer getPriceForRoom(Order order);
 
@@ -34,7 +35,7 @@ public interface IOrderManager {
 
     Order getOrderById(Integer id) throws AnalysisException, QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
-    ArrayList<Order> getOrders() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
+    List<Order> getOrders() throws QueryFailureException, UnexpectedValueException, DatabaseConnectException;
 
     Boolean closeOrder(Order order, Date now);
 

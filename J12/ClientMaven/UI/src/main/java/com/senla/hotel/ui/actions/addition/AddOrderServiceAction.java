@@ -1,9 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.exceptions.ActionForceStopException;
-import com.senla.hotel.ui.actions.selectors.SelectOrderAction;
-import com.senla.hotel.ui.actions.selectors.SelectServiceAction;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

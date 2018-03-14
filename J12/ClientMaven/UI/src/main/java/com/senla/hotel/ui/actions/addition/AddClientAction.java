@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -25,7 +25,7 @@ public class AddClientAction implements IAction {
         String userInput = Input.userInput();
         try {
             Client client = new Client(userInput);
-            Message request = new Message(PublicAPI.ADD_CLIENT, new Object[]{client});
+            Message request = new Message(FacadeAPI.ADD_CLIENT, new Object[]{client});
             writer.writeObject(request);
             reader.readObject();
         } catch (NumberFormatException | NullPointerException | IOException | ClassNotFoundException e) {

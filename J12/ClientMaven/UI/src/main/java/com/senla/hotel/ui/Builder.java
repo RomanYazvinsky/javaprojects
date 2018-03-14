@@ -1,7 +1,7 @@
 package com.senla.hotel.ui;
 
-import com.senla.hotel.api.internal.IBuilder;
-import com.senla.hotel.api.internal.IMenu;
+import com.senla.hotel.api.ui.IBuilder;
+import com.senla.hotel.api.ui.IMenu;
 import com.senla.hotel.ui.actions.ExitAction;
 import com.senla.hotel.ui.actions.addition.AddClientAction;
 import com.senla.hotel.ui.actions.addition.AddOrderAction;

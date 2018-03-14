@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>hotel</groupId>
-            <artifactId>hotel-server-api</artifactId>
+            <artifactId>hotel-client-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

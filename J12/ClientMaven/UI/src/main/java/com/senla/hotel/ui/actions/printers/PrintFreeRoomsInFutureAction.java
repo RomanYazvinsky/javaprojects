@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.printers;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
@@ -29,7 +29,7 @@ public class PrintFreeRoomsInFutureAction implements IAction {
         Printer.println("<>Enter the date");
         Date date = DateCreator.parseString(Input.userInput());
         try {
-            Message request = new Message(PublicAPI.GET_FREE_ROOMS, new Object[]{date});
+            Message request = new Message(FacadeAPI.GET_FREE_ROOMS, new Object[]{date});
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
 

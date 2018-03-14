@@ -1,6 +1,6 @@
 package com.senla.hotel.managers;
 
-import com.senla.hotel.api.internal.IRoomManager;
+import com.senla.hotel.api.internal.managers.IRoomManager;
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.dao.connector.DBConnector;
@@ -36,11 +36,13 @@ public class RoomManager implements IRoomManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Boolean result = roomDao.add(room);
+            roomDao.create(session, room);
             transaction.commit();
-            return result;
+            return true;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -51,12 +53,12 @@ public class RoomManager implements IRoomManager {
 
 
     @Override
-    public ArrayList<Room> getRooms() throws QueryFailureException, DatabaseConnectException {
+    public List<Room> getRooms() throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<Room> rooms = roomDao.getAll();
+            List<Room> rooms = roomDao.getAll(session);
             transaction.commit();
             return rooms;
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -75,11 +77,13 @@ public class RoomManager implements IRoomManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Room result = roomDao.getById(roomID);
+            Room result = roomDao.read(session, roomID);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -89,16 +93,18 @@ public class RoomManager implements IRoomManager {
     }
 
     @Override
-    public ArrayList<Room> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+    public List<Room> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList result = roomDao.getAll(sortType);
+            List result = roomDao.getAll(session, sortType);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -124,11 +130,13 @@ public class RoomManager implements IRoomManager {
             session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             for (Room room : importAll()) {
-                roomDao.createOrUpdate(room);
+                roomDao.createOrUpdate(session, room);
             }
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -151,10 +159,12 @@ public class RoomManager implements IRoomManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            CSVModule.exportAll(roomDao.getAll());
+            CSVModule.exportAll(roomDao.getAll(session));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -169,10 +179,12 @@ public class RoomManager implements IRoomManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            roomDao.delete(room);
+            roomDao.delete(session, room);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {

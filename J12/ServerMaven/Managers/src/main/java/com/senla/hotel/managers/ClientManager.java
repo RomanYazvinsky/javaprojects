@@ -1,13 +1,12 @@
 package com.senla.hotel.managers;
 
+import com.senla.hotel.api.internal.managers.IClientManager;
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.dao.ClientDao;
 import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.DatabaseConnectException;
-import com.senla.hotel.exceptions.EmptyObjectException;
 import com.senla.hotel.exceptions.QueryFailureException;
-import com.senla.hotel.exceptions.UnexpectedValueException;
 import com.senla.hotel.utilities.CSVModule;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -16,8 +15,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ClientManager implements com.senla.hotel.api.internal.IClientManager {
+public class ClientManager implements IClientManager {
     private static Logger logger = LogManager.getLogger(ClientManager.class);
     private ClientDao clientDao;
 
@@ -36,11 +36,13 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Boolean result = clientDao.add(client);
+            clientDao.create(session, client);
             transaction.commit();
-            return result;
+            return true;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -55,11 +57,13 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Client result = clientDao.getById(id);
+            Client result = clientDao.read(session, id);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -69,16 +73,18 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
     }
 
     @Override
-    public ArrayList<Client> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+    public List<Client> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList result = clientDao.getAll(sortType);
+            List result = clientDao.getAll(session, sortType);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -88,12 +94,12 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
     }
 
     @Override
-    public synchronized ArrayList<Client> getClients() throws QueryFailureException, DatabaseConnectException {
+    public synchronized List<Client> getClients() throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<Client> clients = clientDao.getAll();
+            List<Client> clients = clientDao.getAll(session);
             transaction.commit();
             return clients;
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -129,11 +135,13 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
             session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             for (Client client : importAll()) {
-                clientDao.createOrUpdate(client);
+                clientDao.createOrUpdate(session, client);
             }
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -148,10 +156,12 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            CSVModule.exportAll(clientDao.getAll());
+            CSVModule.exportAll(clientDao.getAll(session));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -167,10 +177,12 @@ public class ClientManager implements com.senla.hotel.api.internal.IClientManage
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            clientDao.delete(client);
+            clientDao.delete(session, client);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {

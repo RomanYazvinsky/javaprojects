@@ -1,6 +1,6 @@
 package com.senla.hotel.managers;
 
-import com.senla.hotel.api.internal.IOrderManager;
+import com.senla.hotel.api.internal.managers.IOrderManager;
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.dao.ClientDao;
 import com.senla.hotel.dao.OrderDao;
@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
@@ -62,7 +61,9 @@ public class OrderManager implements IOrderManager {
             result = new ArrayList(orderDao.get(criteria));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -94,7 +95,9 @@ public class OrderManager implements IOrderManager {
             result = new ArrayList(orderDao.get(criteria));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -105,16 +108,18 @@ public class OrderManager implements IOrderManager {
     }
 
     @Override
-    public ArrayList<Order> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+    public List<Order> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList result = orderDao.getAll(sortType);
+            List result = orderDao.getAll(session, sortType);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -135,7 +140,9 @@ public class OrderManager implements IOrderManager {
             result = new ArrayList(orderDao.get(criteria));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -152,11 +159,13 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Order result = orderDao.getById(orderID);
+            Order result = orderDao.read(session, orderID);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -178,7 +187,9 @@ public class OrderManager implements IOrderManager {
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -188,19 +199,21 @@ public class OrderManager implements IOrderManager {
     }
 
     @Override
-    public ArrayList<Client> getActualClients(Date now) throws QueryFailureException, DatabaseConnectException {
+    public List<Client> getActualClients(Date now) throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
-        ArrayList<Client> result;
+        List<Client> result;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             Criteria selectActualOrders = session.createCriteria(Order.class);
             selectActualOrders.add(Restrictions.le("date_from", now)).add(Restrictions.ge("date_to", now));
-            result = new ArrayList(clientDao.getAll());
+            result = clientDao.getAll(session);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -211,16 +224,18 @@ public class OrderManager implements IOrderManager {
 
 
     @Override
-    public ArrayList<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException {
-        ArrayList<Room> freeRooms = new ArrayList<Room>();
+    public List<Room> getFreeRooms(Date date) throws QueryFailureException, DatabaseConnectException {
+        List<Room> freeRooms = new ArrayList<Room>();
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            freeRooms = new ArrayList(roomDao.getAll());
+            freeRooms = roomDao.getAll(session);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -244,11 +259,13 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Boolean result = orderDao.add(order);
+            orderDao.create(session, order);
             transaction.commit();
-            return result;
+            return true;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -263,10 +280,12 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            orderDao.update(order);
+            orderDao.update(session, order);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -282,11 +301,13 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Order order = orderDao.getById(id);
+            Order order = orderDao.read(session, id);
             transaction.commit();
             return order;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -297,12 +318,12 @@ public class OrderManager implements IOrderManager {
 
 
     @Override
-    public ArrayList<Order> getOrders() throws QueryFailureException, DatabaseConnectException {
+    public List<Order> getOrders() throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<Order> orders = orderDao.getAll();
+            List<Order> orders = orderDao.getAll(session);
             transaction.commit();
             return orders;
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -338,11 +359,13 @@ public class OrderManager implements IOrderManager {
             session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             for (Order order : importAll()) {
-                orderDao.createOrUpdate(order);
+                orderDao.createOrUpdate(session, order);
             }
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -369,10 +392,12 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            CSVModule.exportAll(orderDao.getAll());
+            CSVModule.exportAll(orderDao.getAll(session));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -387,10 +412,12 @@ public class OrderManager implements IOrderManager {
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            orderDao.delete(order);
+            orderDao.delete(session, order);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {

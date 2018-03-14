@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.printers;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.message.Message;
 import org.apache.logging.log4j.Level;
@@ -21,7 +21,7 @@ public class PrintFreeRoomsCountAction implements IAction {
     @Override
     public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
         try {
-            Message request = new Message(PublicAPI.GET_FREE_ROOMS_COUNT, new Object[]{new GregorianCalendar().getTime()});
+            Message request = new Message(FacadeAPI.GET_FREE_ROOMS_COUNT, new Object[]{new GregorianCalendar().getTime()});
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
 

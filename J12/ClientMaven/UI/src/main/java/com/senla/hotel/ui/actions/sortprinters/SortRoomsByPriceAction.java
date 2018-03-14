@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.sortprinters;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
@@ -23,7 +23,7 @@ public class SortRoomsByPriceAction implements IAction {
     @Override
     public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
         try {
-            Message request = new Message(PublicAPI.GET_ROOMS);
+            Message request = new Message(FacadeAPI.GET_ROOMS);
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
 
@@ -32,7 +32,7 @@ public class SortRoomsByPriceAction implements IAction {
                 logger.log(Level.DEBUG, new EmptyObjectException().getMessage());
                 throw new ActionForceStopException();
             }
-            request = new Message(PublicAPI.SORT_ROOMS_BY_PRICE, new Object[]{rooms});
+            request = new Message(FacadeAPI.SORT_ROOMS_BY_PRICE, new Object[]{rooms});
             writer.writeObject(request);
             reader.readObject();
             Printer.printEntities(rooms);

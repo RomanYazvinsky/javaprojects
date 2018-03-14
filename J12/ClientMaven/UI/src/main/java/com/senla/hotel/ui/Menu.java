@@ -1,9 +1,10 @@
 package com.senla.hotel.ui;
 
+import com.senla.hotel.api.ui.IMenu;
+import com.senla.hotel.api.ui.IMenuItem;
+
 import java.util.ArrayList;
 
-import com.senla.hotel.api.internal.IMenu;
-import com.senla.hotel.api.internal.IMenuItem;
 
 public class Menu implements IMenu {
 	private ArrayList<IMenuItem> menuItems;

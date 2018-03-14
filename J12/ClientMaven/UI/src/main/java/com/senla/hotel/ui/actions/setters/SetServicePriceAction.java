@@ -1,6 +1,6 @@
 package com.senla.hotel.ui.actions.setters;
 
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.ui.actions.selectors.SelectServiceAction;
 import org.apache.logging.log4j.Level;

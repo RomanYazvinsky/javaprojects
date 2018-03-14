@@ -1,6 +1,6 @@
 package com.senla.hotel.api;
 
-public class PublicAPI {
+public class FacadeAPI {
 
 	public static String ADD_CLIENT = "addClient";
 	public static String ADD_ORDER = "addOrder";
@@ -53,5 +53,4 @@ public class PublicAPI {
 	public static String ADD_ROOM_WITH_ID = "addRoomWithID";
 	public static String ADD_ORDER_WITH_ID = "addOrderWithID";
 	public static String ADD_SERVICE_WITH_ID = "addServiceWithID";
-
-	}
+}

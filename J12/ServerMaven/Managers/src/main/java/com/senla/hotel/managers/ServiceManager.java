@@ -1,5 +1,6 @@
 package com.senla.hotel.managers;
 
+import com.senla.hotel.api.internal.managers.IServiceManager;
 import com.senla.hotel.constants.SortType;
 import com.senla.hotel.dao.ServiceDao;
 import com.senla.hotel.dao.connector.DBConnector;
@@ -13,11 +14,10 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.rmi.ServerError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceManager implements com.senla.hotel.api.internal.IServiceManager {
+public class ServiceManager implements IServiceManager {
     private static Logger logger = LogManager.getLogger(ServiceManager.class);
     private ServiceDao serviceDao;
 
@@ -31,16 +31,18 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
     }
 
     @Override
-    public ArrayList<Service> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
+    public List<Service> sort(SortType sortType) throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<Service> result = serviceDao.getAll(sortType);
+            List<Service> result = serviceDao.getAll(session, sortType);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -55,11 +57,13 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Boolean result = serviceDao.add(service);
+            serviceDao.create(session, service);
             transaction.commit();
-            return result;
+            return true;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -86,11 +90,13 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            Service result = serviceDao.getById(serviceID);
+            Service result = serviceDao.read(session, serviceID);
             transaction.commit();
             return result;
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -100,12 +106,12 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
     }
 
     @Override
-    public ArrayList<Service> getServices() throws QueryFailureException, DatabaseConnectException {
+    public List<Service> getServices() throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<Service> clients = serviceDao.getAll();
+            List<Service> clients = serviceDao.getAll(session);
             transaction.commit();
             return clients;
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -142,11 +148,13 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
             session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             for (Service service : importAll()) {
-                serviceDao.createOrUpdate(service);
+                serviceDao.createOrUpdate(session, service);
             }
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -161,10 +169,12 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            CSVModule.exportAll(serviceDao.getAll());
+            CSVModule.exportAll(serviceDao.getAll(session));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -179,10 +189,12 @@ public class ServiceManager implements com.senla.hotel.api.internal.IServiceMana
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            serviceDao.delete(service);
+            serviceDao.delete(session, service);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {

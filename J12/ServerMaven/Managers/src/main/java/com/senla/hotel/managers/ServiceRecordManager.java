@@ -1,5 +1,6 @@
 package com.senla.hotel.managers;
 
+import com.senla.hotel.api.internal.managers.IServiceRecordManager;
 import com.senla.hotel.dao.ServiceRecordDao;
 import com.senla.hotel.dao.connector.DBConnector;
 import com.senla.hotel.entities.ServiceRecord;
@@ -13,8 +14,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ServiceRecordManager implements com.senla.hotel.api.internal.IServiceRecordManager {
+public class ServiceRecordManager implements IServiceRecordManager {
     private static Logger logger = LogManager.getLogger(ServiceRecordManager.class);
     private ServiceRecordDao serviceRecordDao;
 
@@ -28,12 +30,12 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
     }
 
 
-    public ArrayList<ServiceRecord> getServiceRecords() throws QueryFailureException, DatabaseConnectException {
+    public List<ServiceRecord> getServiceRecords() throws QueryFailureException, DatabaseConnectException {
         Transaction transaction = null;
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            ArrayList<ServiceRecord> clients = serviceRecordDao.getAll();
+            List<ServiceRecord> clients = serviceRecordDao.getAll(session);
             transaction.commit();
             return clients;
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -51,10 +53,12 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            serviceRecordDao.add(serviceRecord);
+            serviceRecordDao.create(session, serviceRecord);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -69,10 +73,12 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            serviceRecordDao.delete(serviceRecord);
+            serviceRecordDao.delete(session, serviceRecord);
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -89,11 +95,13 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
             session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             for (ServiceRecord serviceRecord : importAll()) {
-                serviceRecordDao.createOrUpdate(serviceRecord);
+                serviceRecordDao.createOrUpdate(session, serviceRecord);
             }
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {
@@ -116,10 +124,12 @@ public class ServiceRecordManager implements com.senla.hotel.api.internal.IServi
         try {
             Session session = DBConnector.getInstance().getSessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
-            CSVModule.exportAll(serviceRecordDao.getAll());
+            CSVModule.exportAll(serviceRecordDao.getAll(session));
             transaction.commit();
         } catch (QueryFailureException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.log(Level.DEBUG, e);
             throw e;
         } catch (DatabaseConnectException e) {

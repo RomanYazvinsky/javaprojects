@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -27,7 +27,7 @@ public class AddRoomAction implements IAction {
         try {
             Room room = new Room(Integer.parseInt(params[0].trim()), Integer.parseInt(params[1].trim()),
                     Integer.parseInt(params[2].trim()), Integer.parseInt(params[3].trim()));
-            Message request = new Message(PublicAPI.ADD_ROOM, new Object[]{room});
+            Message request = new Message(FacadeAPI.ADD_ROOM, new Object[]{room});
             writer.writeObject(request);
             reader.readObject();
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IOException | ClassNotFoundException e) {

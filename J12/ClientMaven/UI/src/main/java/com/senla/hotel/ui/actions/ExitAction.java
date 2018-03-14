@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.message.Message;
 import org.apache.logging.log4j.Level;
@@ -19,7 +19,7 @@ public class ExitAction implements IAction {
 	@Override
 	public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 		try {
-			Message request = new Message(PublicAPI.SAVE);
+			Message request = new Message(FacadeAPI.SAVE);
 			writer.writeObject(request);
 			reader.readObject();
 		} catch (NumberFormatException | NullPointerException | IOException | ClassNotFoundException e) {

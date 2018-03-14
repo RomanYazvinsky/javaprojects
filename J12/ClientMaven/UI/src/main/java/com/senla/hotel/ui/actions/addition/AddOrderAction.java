@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Order;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -31,7 +31,7 @@ public class AddOrderAction implements IAction {
         try {
             Order order = new Order(SelectRoomAction.getRoom(), SelectClientAction.getClient(),
                     DateCreator.parseString(params[0].trim()), DateCreator.parseString(params[1].trim()));
-            Message request = new Message(PublicAPI.ADD_ORDER, new Object[]{order});
+            Message request = new Message(FacadeAPI.ADD_ORDER, new Object[]{order});
             writer.writeObject(request);
             reader.readObject();
         } catch (NumberFormatException | EmptyObjectException

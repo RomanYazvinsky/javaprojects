@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.io;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.entities.Client;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.message.Message;
@@ -24,7 +24,7 @@ public class ClientImportAction implements IAction {
     @Override
     public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
         try {
-            Message request = new Message(PublicAPI.IMPORT_CLIENTS, null);
+            Message request = new Message(FacadeAPI.IMPORT_CLIENTS, null);
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
             ArrayList<Client> clients = (ArrayList<Client>) response.getData()[0];
@@ -35,10 +35,10 @@ public class ClientImportAction implements IAction {
             }
             i = Integer.parseInt(Input.userInput()) - 1;
             Client client = clients.get(i);
-            request = new Message(PublicAPI.DELETE_CLIENT, new Object[]{client});
+            request = new Message(FacadeAPI.DELETE_CLIENT, new Object[]{client});
             writer.writeObject(request);
             reader.readObject();
-            request = new Message(PublicAPI.ADD_CLIENT_WITH_ID, new Object[]{client});
+            request = new Message(FacadeAPI.ADD_CLIENT_WITH_ID, new Object[]{client});
             writer.writeObject(request);
             reader.readObject();
 

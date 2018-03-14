@@ -1,6 +1,6 @@
 package com.senla.hotel.facade;
 
-import com.senla.hotel.api.internal.*;
+import com.senla.hotel.api.internal.managers.*;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.constants.RoomStatus;
@@ -17,6 +17,7 @@ import utilities.injection.DependencyInjector;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Facade {
     private static Logger logger = LogManager.getLogger(Facade.class);
@@ -137,7 +138,7 @@ public class Facade {
         return service;
     }
 
-    public ArrayList<Room> getRooms() throws InternalErrorException {
+    public List<Room> getRooms() throws InternalErrorException {
         try {
             return roomManager.getRooms();
         } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
@@ -147,7 +148,7 @@ public class Facade {
     }
 
 
-    public ArrayList<Order> getOrders() throws InternalErrorException {
+    public List<Order> getOrders() throws InternalErrorException {
         try {
             return orderManager.getOrders();
         } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
@@ -165,7 +166,7 @@ public class Facade {
         }
     }
 
-    public ArrayList<Client> getClients() throws InternalErrorException {
+    public List<Client> getClients() throws InternalErrorException {
         try {
             return clientManager.getClients();
         } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
@@ -197,8 +198,8 @@ public class Facade {
         return result;
     }
 
-    public ArrayList<Room> getFreeRooms(Date date) throws InternalErrorException {
-        ArrayList<Room> rooms = null;
+    public List<Room> getFreeRooms(Date date) throws InternalErrorException {
+        List<Room> rooms = null;
         try {
             rooms = orderManager.getFreeRooms(date);
         } catch (QueryFailureException | DatabaseConnectException e) {
@@ -218,8 +219,8 @@ public class Facade {
     }
 
 
-    public ArrayList<Service> getServices() throws InternalErrorException {
-        ArrayList<Service> services = null;
+    public List<Service> getServices() throws InternalErrorException {
+        List<Service> services = null;
         try {
             services = serviceManager.getServices();
         } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {
@@ -246,7 +247,7 @@ public class Facade {
         return order;
     }
 
-    public ArrayList<Client> getActualClients(Date date) throws InternalErrorException {
+    public List<Client> getActualClients(Date date) throws InternalErrorException {
         try {
             return orderManager.getActualClients(date);
         } catch (QueryFailureException | UnexpectedValueException | DatabaseConnectException e) {

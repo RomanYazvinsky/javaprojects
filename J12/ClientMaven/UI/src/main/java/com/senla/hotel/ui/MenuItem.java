@@ -1,8 +1,8 @@
 package com.senla.hotel.ui;
 
-import com.senla.hotel.api.internal.IAction;
-import com.senla.hotel.api.internal.IMenu;
-import com.senla.hotel.api.internal.IMenuItem;
+import com.senla.hotel.api.ui.IAction;
+import com.senla.hotel.api.ui.IMenu;
+import com.senla.hotel.api.ui.IMenuItem;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.ui.actions.NoAction;
 import org.apache.logging.log4j.Level;
@@ -30,14 +30,6 @@ public class MenuItem implements IMenuItem {
         this.title = title;
         this.action = action;
         nextMenu = Builder.getInstance().getRootMenu();
-    }
-
-    /* (non-Javadoc)
-     * @see com.senla.hotel.ui.IMenuItem#setNextMenu(com.senla.hotel.api.internal.IMenu)
-     */
-    @Override
-    public void setNextMenu(IMenu menu) {
-        nextMenu = menu;
     }
 
     /* (non-Javadoc)
@@ -75,6 +67,14 @@ public class MenuItem implements IMenuItem {
     @Override
     public IMenu getNextMenu() {
         return nextMenu;
+    }
+
+    /* (non-Javadoc)
+     * @see com.senla.hotel.ui.IMenuItem#setNextMenu(IMenu)
+     */
+    @Override
+    public void setNextMenu(IMenu menu) {
+        nextMenu = menu;
     }
 
 }

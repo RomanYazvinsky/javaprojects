@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.exceptions.EmptyObjectException;
@@ -32,7 +32,7 @@ public class AddRoomCloneAction implements IAction {
             }
             Room room = (Room) SelectRoomAction.getRoom().clone();
             room.setNumber(number);
-            Message request = new Message(PublicAPI.ADD_ROOM, new Object[]{room});
+            Message request = new Message(FacadeAPI.ADD_ROOM, new Object[]{room});
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
             Boolean result = (Boolean) response.getData()[0];

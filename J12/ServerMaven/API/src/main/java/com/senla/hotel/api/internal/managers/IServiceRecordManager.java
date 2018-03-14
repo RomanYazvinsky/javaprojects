@@ -1,4 +1,4 @@
-package com.senla.hotel.api.internal;
+package com.senla.hotel.api.internal.managers;
 
 import com.senla.hotel.entities.ServiceRecord;
 import com.senla.hotel.exceptions.*;

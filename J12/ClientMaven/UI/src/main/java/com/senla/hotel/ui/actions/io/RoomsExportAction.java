@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.io;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.message.Message;
 import org.apache.logging.log4j.Level;
@@ -18,7 +18,7 @@ public class RoomsExportAction implements IAction {
     @Override
     public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
         try {
-            Message request = new Message(PublicAPI.EXPORT_ROOMS, null);
+            Message request = new Message(FacadeAPI.EXPORT_ROOMS, null);
             writer.writeObject(request);
             reader.readObject();
         } catch (ClassNotFoundException | IOException e) {

@@ -1,8 +1,8 @@
 package com.senla.hotel.ui;
 
-import com.senla.hotel.api.internal.IMenu;
-import com.senla.hotel.api.internal.IMenuItem;
-import com.senla.hotel.api.internal.INavigator;
+import com.senla.hotel.api.ui.IMenu;
+import com.senla.hotel.api.ui.IMenuItem;
+import com.senla.hotel.api.ui.INavigator;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

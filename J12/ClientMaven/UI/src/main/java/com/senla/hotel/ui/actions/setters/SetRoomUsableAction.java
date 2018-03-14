@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.setters;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.constants.RoomStatus;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -27,7 +27,7 @@ public class SetRoomUsableAction implements IAction {
         try {
             room = SelectRoomAction.getRoom();
             if (room.isOnService()) {
-                Message request = new Message(PublicAPI.SET_ROOM_STATUS,
+                Message request = new Message(FacadeAPI.SET_ROOM_STATUS,
                         new Object[]{SelectRoomAction.getRoom(), RoomStatus.FREE_NOW});
                 writer.writeObject(request);
                 Message response = (Message) reader.readObject();

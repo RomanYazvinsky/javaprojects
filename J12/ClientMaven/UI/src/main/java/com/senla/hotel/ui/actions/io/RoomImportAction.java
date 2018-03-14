@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.io;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.entities.Room;
 import com.senla.hotel.exceptions.ActionForceStopException;
 import com.senla.hotel.message.Message;
@@ -25,7 +25,7 @@ public class RoomImportAction implements IAction {
     public void execute(ObjectOutputStream writer, ObjectInputStream reader) throws ActionForceStopException {
 
         try {
-            Message request = new Message(PublicAPI.IMPORT_ROOMS, null);
+            Message request = new Message(FacadeAPI.IMPORT_ROOMS, null);
             writer.writeObject(request);
             Message response = (Message) reader.readObject();
             ArrayList<Room> rooms = (ArrayList<Room>) response.getData()[0];
@@ -37,10 +37,10 @@ public class RoomImportAction implements IAction {
             i = Integer.parseInt(Input.userInput()) - 1;
             Room room = rooms.get(i);
 
-            request = new Message(PublicAPI.DELETE_ROOM, new Object[]{room});
+            request = new Message(FacadeAPI.DELETE_ROOM, new Object[]{room});
             writer.writeObject(request);
             reader.readObject();
-            request = new Message(PublicAPI.ADD_ROOM_WITH_ID, new Object[]{room});
+            request = new Message(FacadeAPI.ADD_ROOM_WITH_ID, new Object[]{room});
             writer.writeObject(request);
             reader.readObject();
 

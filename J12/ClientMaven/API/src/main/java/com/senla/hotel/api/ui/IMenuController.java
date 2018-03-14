@@ -1,4 +1,4 @@
-package com.senla.hotel.api.internal;
+package com.senla.hotel.api.ui;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

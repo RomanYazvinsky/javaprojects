@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.actions.addition;
 
-import com.senla.hotel.api.PublicAPI;
-import com.senla.hotel.api.internal.IAction;
+import com.senla.hotel.api.FacadeAPI;
+import com.senla.hotel.api.ui.IAction;
 import com.senla.hotel.constants.Messages;
 import com.senla.hotel.entities.Service;
 import com.senla.hotel.exceptions.ActionForceStopException;
@@ -26,7 +26,7 @@ public class AddServiceAction implements IAction {
         String[] params = Input.userInput().split(",");
         try {
             Service service = new Service(Integer.parseInt(params[0].trim()), params[1].trim());
-            Message request = new Message(PublicAPI.ADD_SERVICE, new Object[]{service});
+            Message request = new Message(FacadeAPI.ADD_SERVICE, new Object[]{service});
             writer.writeObject(request);
             reader.readObject();
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IOException | ClassNotFoundException e) {

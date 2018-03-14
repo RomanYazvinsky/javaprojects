@@ -1,6 +1,6 @@
-package main.java.com.senla.hotel.client;
+package com.senla.hotel.client;
 
-import com.senla.hotel.api.internal.IMenuController;
+import com.senla.hotel.api.ui.IMenuController;
 import com.senla.hotel.constants.Constants;
 import com.senla.hotel.constants.PropertyNames;
 import com.senla.hotel.exceptions.EmptyObjectException;

@@ -1,8 +1,8 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.annotations.*;
+import com.senla.hotel.annotations.CsvEntity;
+import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.jmx.Server;
@@ -13,6 +13,7 @@ import java.io.Serializable;
 import static com.senla.hotel.constants.Constants.serviceExportFile;
 import static com.senla.hotel.constants.Constants.serviceHeaderCSV;
 import static com.senla.hotel.constants.EntityColumnOrder.*;
+
 @Entity
 @Table(name = "services")
 @CsvEntity(csvHeader = serviceHeaderCSV, filename = serviceExportFile, valueSeparator = ",", entityId = "id")
@@ -111,14 +112,6 @@ public class Service implements IEntity, Serializable {
     @Override
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public void setId(String id) {
-        try {
-            this.id = Integer.valueOf(id);
-        } catch (NumberFormatException e) {
-            logger.log(Level.DEBUG, e.getMessage());
-        }
     }
 
 }

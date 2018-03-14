@@ -10,7 +10,8 @@
     <modules>
         <module>Client</module>
         <module>UI</module>
-       <module>../ServerMaven</module>
+        <module>../ServerMaven</module>
+        <module>API</module>
     </modules>
     <packaging>pom</packaging>
 

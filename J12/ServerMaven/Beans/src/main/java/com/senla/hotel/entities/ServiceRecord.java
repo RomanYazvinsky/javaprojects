@@ -1,6 +1,7 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.annotations.*;
+import com.senla.hotel.annotations.CsvEntity;
+import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
 
 import javax.persistence.*;
@@ -10,10 +11,11 @@ import static com.senla.hotel.constants.Constants.serviceRecordExportFile;
 import static com.senla.hotel.constants.Constants.serviceRecordHeaderCSV;
 import static com.senla.hotel.constants.EntityColumnOrder.ID;
 import static com.senla.hotel.constants.EntityColumnOrder.SERVICE_DATE;
+
 @Entity
 @Table(name = "ord_serv")
 @CsvEntity(csvHeader = serviceRecordHeaderCSV, entityId = "id", filename = serviceRecordExportFile, valueSeparator = ",")
-public class ServiceRecord implements IEntity{
+public class ServiceRecord implements IEntity {
 
     @CsvProperty(columnNumber = ID, propertyType = PropertyType.SIMPLE_PROPERTY)
     private Integer id;
@@ -21,6 +23,8 @@ public class ServiceRecord implements IEntity{
     private Order order;
     @CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = 3, getterMethod = "getId", setterMethod = "setId")
     private Service service;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date")
     @CsvProperty(propertyType = PropertyType.COMPOSITE_PROPERTY, columnNumber = SERVICE_DATE, getterMethod = "getTime")
     private Date date;
 
@@ -40,6 +44,9 @@ public class ServiceRecord implements IEntity{
         return order;
     }
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "service_id")
@@ -47,11 +54,17 @@ public class ServiceRecord implements IEntity{
         return service;
     }
 
+    public void setService(Service service) {
+        this.service = service;
+    }
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date")
+
     public Date getDate() {
         return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Id
@@ -63,17 +76,5 @@ public class ServiceRecord implements IEntity{
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 }

@@ -1,13 +1,10 @@
 package com.senla.hotel.entities;
 
-import com.senla.hotel.annotations.*;
+import com.senla.hotel.annotations.CsvEntity;
+import com.senla.hotel.annotations.CsvProperty;
 import com.senla.hotel.constants.PropertyType;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -93,9 +90,6 @@ public class Order implements Serializable, IEntity {
     }
 
 
-
-
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -140,14 +134,6 @@ public class Order implements Serializable, IEntity {
     @Override
     public Integer getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        try {
-            this.id = Integer.valueOf(id);
-        } catch (NumberFormatException e) {
-            logger.log(Level.DEBUG, e.getMessage());
-        }
     }
 
     @Override
