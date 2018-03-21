@@ -1,0 +1,13 @@
+<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD
+  Web Application 2.3//EN' 'http://java.sun.com/dtd/web-app_2_3.dtd'>
+
+<web-app>
+
+
+
+    <context-param>
+        <param-name>log4jContextName</param-name>
+        <param-value>../webapps/</param-value>
+    </context-param>
+
+</web-app>
