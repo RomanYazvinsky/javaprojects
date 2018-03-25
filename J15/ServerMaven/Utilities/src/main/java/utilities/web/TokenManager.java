@@ -56,7 +56,7 @@ public class TokenManager {
     }
 
     public String add(User user) {
-        String token = Jwts.builder().setId(user.getUsername()).compact();
+        String token = Jwts.builder().setId(user.getUsername()).setSubject(((Long)System.nanoTime()).toString()).compact();
         tokens.put(token, user);
         return token;
     }

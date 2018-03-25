@@ -19,8 +19,7 @@ import static com.senla.hotel.constants.Constants.*;
 public class BatchOrderServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(BatchOrderServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET);

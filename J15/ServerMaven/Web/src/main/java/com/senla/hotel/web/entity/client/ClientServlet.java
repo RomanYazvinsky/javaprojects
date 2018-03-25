@@ -13,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.senla.hotel.constants.Constants.*;
 
@@ -21,8 +20,7 @@ import static com.senla.hotel.constants.Constants.*;
 public class ClientServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(ClientServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET);
@@ -33,15 +31,14 @@ public class ClientServlet extends HttpServlet {
         } catch (Exception e) {
             logger.log(Level.DEBUG, e.getMessage());
             try {
-                facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET_ERROR+ e.getMessage());
+                facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET_ERROR + e.getMessage());
             } catch (InternalErrorException e1) {
                 logger.log(Level.DEBUG, e1.getMessage());
             }
         }
     }
 
-    public void doPut(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_PUT);
@@ -58,8 +55,7 @@ public class ClientServlet extends HttpServlet {
         }
     }
 
-    public void doDelete(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_DELETE);

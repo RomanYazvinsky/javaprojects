@@ -19,12 +19,11 @@ import static com.senla.hotel.constants.Constants.*;
 public class BatchServiceServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(BatchServiceServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET);
-            JSONArray objects = null;
+            JSONArray objects;
             objects = new JSONArray(facade.getServices());
             res.getWriter().println(objects);
         } catch (Exception e) {

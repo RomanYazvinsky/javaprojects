@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.senla.hotel.constants.Constants.*;
 
@@ -19,13 +18,11 @@ import static com.senla.hotel.constants.Constants.*;
 public class BatchServiceRecordServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(BatchServiceRecordServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET);
-            JSONArray objects = null;
-            objects = new JSONArray(facade.getServiceRecords());
+            JSONArray objects = new JSONArray(facade.getServiceRecords());
             res.getWriter().println(objects);
         } catch (Exception e) {
             logger.log(Level.DEBUG, e.getMessage());

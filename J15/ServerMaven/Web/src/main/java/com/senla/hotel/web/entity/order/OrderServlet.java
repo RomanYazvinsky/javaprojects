@@ -13,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.senla.hotel.constants.Constants.*;
 
@@ -21,8 +20,7 @@ import static com.senla.hotel.constants.Constants.*;
 public class OrderServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(OrderServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_GET);
@@ -40,8 +38,7 @@ public class OrderServlet extends HttpServlet {
         }
     }
 
-    public void doPut(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_PUT);
@@ -58,8 +55,7 @@ public class OrderServlet extends HttpServlet {
         }
     }
 
-    public void doDelete(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
             facade.log(req.getHeader(AUTHORIZATION), this.getClass().getName() + DO_DELETE);

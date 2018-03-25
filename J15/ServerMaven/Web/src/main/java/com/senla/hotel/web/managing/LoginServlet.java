@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import utilities.parsers.JsonEntityParser;
 import utilities.web.TokenManager;
 
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import static com.senla.hotel.constants.Constants.*;
 
@@ -22,13 +22,16 @@ import static com.senla.hotel.constants.Constants.*;
 public class LoginServlet extends HttpServlet {
     private static Logger logger = LogManager.getLogger(LoginServlet.class);
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) {
         Facade facade = Facade.getInstance();
         try {
-            String username = req.getParameter(USERNAME);
-            String password = req.getParameter(PASSWORD);
-            password = TokenManager.hash(password);
+            JSONObject parameters = new JSONObject(JsonEntityParser.parseBuffer(req.getReader()));
+            String username = parameters.getString(USERNAME);
+            String password = parameters.getString(PASSWORD);
+            if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+                res.getWriter().println(BAD_LOGIN_PASSWORD);
+                return;
+            }
             User user = facade.getUser(username, password);
             if (user == null) {
                 res.getWriter().println(NO_SUCH_ACCOUNT);
@@ -40,7 +43,7 @@ public class LoginServlet extends HttpServlet {
             JSONObject result = new JSONObject();
             result.append(TOKEN, token);
             res.getWriter().println(result);
-        } catch (InternalErrorException | NoSuchAlgorithmException e) {
+        } catch (InternalErrorException | IOException e) {
             logger.log(Level.DEBUG, e.getMessage());
         }
     }

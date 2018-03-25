@@ -35,7 +35,8 @@ public class Constants {
     public static final String NO_SUCH_ACCOUNT = "no such account";
     public static final String TOKEN = "token";
     public static final String REGISTRATION_FAILURE = "Registration failure";
-
+    public static final String LOGOUT = "LOGOUT: ";
+    public static final String LOGOUT_FAILURE = "logout failure";
 
 
     public static final String APPLICATION_JSON = "application/json";
