@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="EduPortalDatabaseConnection">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>by.edu.server.beans.people.User</class>
+        <class>by.edu.server.beans.people.info.Person</class>
+        <class>by.edu.server.beans.people.info.PersonalInfo</class>
+        <class>by.edu.server.beans.people.info.Contacts</class>
+        <class>by.edu.server.beans.people.Student</class>
+        <class>by.edu.server.beans.people.Lecturer</class>
+        <class>by.edu.server.beans.people.groups.CourseGroup</class>
+        <class>by.edu.server.beans.people.groups.SpecialityGroup</class>
+        <class>by.edu.server.beans.university.Place</class>
+        <class>by.edu.server.beans.university.Chair</class>
+        <class>by.edu.server.beans.university.Faculty</class>
+        <class>by.edu.server.beans.courses.SubjectClass</class>
+        <class>by.edu.server.beans.courses.Subject</class>
+        <class>by.edu.server.beans.courses.Course</class>
+        <class>by.edu.server.beans.courses.JournalRecord</class>
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/mydb"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.connection.password" value="12345678"/>
+            <property name="hibernate.archive.autodetection" value="class"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+    </persistence-unit>
+</persistence>
